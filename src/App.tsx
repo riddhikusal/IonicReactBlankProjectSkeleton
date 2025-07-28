@@ -1,53 +1,52 @@
-import { Redirect, Route } from 'react-router-dom';
-import { IonApp, IonRouterOutlet, setupIonicReact } from '@ionic/react';
-import { IonReactRouter } from '@ionic/react-router';
-import Home from './pages/Home';
+// src/App.tsx
+import React, { useEffect, useState } from 'react';
+import { IonApp, IonContent } from '@ionic/react';
+import { usePlatform } from './hooks/usePlatform';
+import { getPlatformVersionStatus } from './services/getVersionService';
+import VersionUpdateModal from './components/VersionUpdateModal';
 
-/* Core CSS required for Ionic components to work properly */
-import '@ionic/react/css/core.css';
+const App: React.FC = () => {
+  const platformInfo = usePlatform();
+  const [showUpdatePopup, setShowUpdatePopup] = useState(false);
+  const [isObsolete, setIsObsolete] = useState(false);
+  const [message, setMessage] = useState('');
 
-/* Basic CSS for apps built with Ionic */
-import '@ionic/react/css/normalize.css';
-import '@ionic/react/css/structure.css';
-import '@ionic/react/css/typography.css';
+  useEffect(() => {
+    const checkAppVersion = async () => {
+      try {
+        const { showPopup, isObsolete, message } = await getPlatformVersionStatus();
+        setMessage(message);
+        setIsObsolete(isObsolete);
+        setShowUpdatePopup(showPopup);
+      } catch (err) {
+        console.error('Version check failed', err);
+      }
+    };
 
-/* Optional CSS utils that can be commented out */
-import '@ionic/react/css/padding.css';
-import '@ionic/react/css/float-elements.css';
-import '@ionic/react/css/text-alignment.css';
-import '@ionic/react/css/text-transformation.css';
-import '@ionic/react/css/flex-utils.css';
-import '@ionic/react/css/display.css';
+    checkAppVersion();
+  }, []);
 
-/**
- * Ionic Dark Mode
- * -----------------------------------------------------
- * For more info, please see:
- * https://ionicframework.com/docs/theming/dark-mode
- */
+  const handleUpdate = () => {
+    // Example: Open App Store/Play Store/PWA reload
+    window.open('https://play.google.com/store/apps/details?id=your.app.id', '_blank');
+  };
 
-/* import '@ionic/react/css/palettes/dark.always.css'; */
-/* import '@ionic/react/css/palettes/dark.class.css'; */
-import '@ionic/react/css/palettes/dark.system.css';
+  return (
+    <IonApp>
+      <IonContent>
+        <h2>Welcome to My App</h2>
+        <p>Platform: {platformInfo.name}</p>
 
-/* Theme variables */
-import './theme/variables.css';
-
-setupIonicReact();
-
-const App: React.FC = () => (
-  <IonApp>
-    <IonReactRouter>
-      <IonRouterOutlet>
-        <Route exact path="/home">
-          <Home />
-        </Route>
-        <Route exact path="/">
-          <Redirect to="/home" />
-        </Route>
-      </IonRouterOutlet>
-    </IonReactRouter>
-  </IonApp>
-);
+        <VersionUpdateModal
+          isOpen={showUpdatePopup}
+          isObsolete={isObsolete}
+          message={message}
+          onClose={() => setShowUpdatePopup(false)}
+          onUpdate={handleUpdate}
+        />
+      </IonContent>
+    </IonApp>
+  );
+};
 
 export default App;
