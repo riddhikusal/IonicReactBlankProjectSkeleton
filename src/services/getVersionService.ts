@@ -1,14 +1,15 @@
 // src/services/getVersionService.ts
 import { App } from '@capacitor/app';
-import { Capacitor } from '@capacitor/core';
 import { checkVersion } from '../api/versionApi';
 import { parseVersionResponse } from '../utils/versionUtils';
+import { getPlatform } from '../utils/platform';
 
 export const getPlatformVersionStatus = async () => {
-  const platform = Capacitor.getPlatform();
+  const platformInfo = getPlatform();
+  const platform = platformInfo.code;
   let version = '1';
 
-  if (platform !== 'web') {
+  if (platform == 'android' || platform == 'ios') {
     const info = await App.getInfo();
     version = info.version;
   }

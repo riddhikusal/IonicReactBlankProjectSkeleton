@@ -1,12 +1,12 @@
 // src/App.tsx
 import React, { useEffect, useState } from 'react';
 import { IonApp, IonContent } from '@ionic/react';
-import { usePlatform } from './hooks/usePlatform';
+import { getPlatform } from './utils/platform';
 import { getPlatformVersionStatus } from './services/getVersionService';
 import VersionUpdateModal from './components/VersionUpdateModal';
 
 const App: React.FC = () => {
-  const platformInfo = usePlatform();
+  const platformInfo = getPlatform();
   const [showUpdatePopup, setShowUpdatePopup] = useState(false);
   const [isObsolete, setIsObsolete] = useState(false);
   const [message, setMessage] = useState('');
