@@ -1,0 +1,15 @@
+.padAIheader-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+IonHeader,
+ion-header {
+  box-shadow: none !important;
+  background-color: transparent !important;
+}
+.padAIlogo{
+    height: 61px;
+    width: auto;
+    margin: 20px;
+}
