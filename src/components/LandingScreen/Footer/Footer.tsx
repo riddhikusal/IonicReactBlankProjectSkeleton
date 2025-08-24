@@ -6,7 +6,7 @@ import React from 'react';
         <div className='padAIFooter-container'> 
             <IonImg src="/assets/images/landingScreens/footer.png" alt="logo" className='padAIFooterLogo'/>
             <div className='padAIFooterText-container'>
-                <p>© 2025 Padai. All rights reserved.</p>
+                <p>© 2025 Padai</p>
             </div>
         </div>
     );

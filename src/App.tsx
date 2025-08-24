@@ -9,7 +9,7 @@ import { Redirect, Route } from 'react-router-dom';
 import Home from './pages/Home';
 import AppRoutes from './routes/AppRoutes';
 import { setupIonicReact } from '@ionic/react';
-
+import './App.css';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
