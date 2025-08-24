@@ -1,0 +1,16 @@
+.padAIlandingScreen-page{
+    position: relative;
+}
+.padAIvectorTwoBg{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: -1;
+}
+.padAIlandingScreen-content{
+    position: relative;
+    --background-color: transparent !important;
+    --background: transparent !important;
+    z-index: 1;
+}

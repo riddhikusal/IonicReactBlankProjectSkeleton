@@ -8,9 +8,10 @@ import PadaiLanguageContainer from '../../components/LanguageScreen/LanguageCont
 import './LanguageScreen.css';
 const PadAILanguageScreen: React.FC = () => {
   return (
-    <IonPage>
+    <IonPage className='padAIlandingScreen-page'>
+      <IonImg src="/assets/images/landingScreens/vectorTwoBg.png" alt="headerBanner" className='padAIvectorTwoBg' />
       <PadaiHeader />
-      <IonContent>
+      <IonContent className='padAIlandingScreen-content'>
         <PadaiHeaderBanner />
         <PadaiLanguageContainer />
         <PadaiFooter />
