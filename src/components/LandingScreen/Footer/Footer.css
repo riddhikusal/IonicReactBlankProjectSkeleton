@@ -10,6 +10,7 @@
     right: 0;
     overflow: hidden;
     height: 130px;
+    z-index: -1;
 }
 .padAIFooterLogo{
     width: 100%;
