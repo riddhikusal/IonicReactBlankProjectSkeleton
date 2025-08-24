@@ -24,7 +24,7 @@ const PadAIStateAndSchoolSelection = ({ setStep, loginForm, setLoginForm }: Stat
                     <IonText className='ion-margin-top'>
                         <p className='padAIInputLabel'>State</p>
                     </IonText>
-                    <IonItem className='padAIInput'>
+                    <IonItem className='padAIInput' lines='none'>
                         <IonSelect aria-label="state" interface="modal" placeholder="Select state" label-placement="stacked" value={loginForm.login_screen_state_and_school_selection.state} onIonChange={(e) => setLoginForm({ ...loginForm, login_screen_state_and_school_selection: { ...loginForm.login_screen_state_and_school_selection, state: e.detail.value || '' } })}>
                             <IonSelectOption value="Delhi">Delhi</IonSelectOption>
                             <IonSelectOption value="Maharashtra">Maharashtra</IonSelectOption>
@@ -40,7 +40,7 @@ const PadAIStateAndSchoolSelection = ({ setStep, loginForm, setLoginForm }: Stat
                     <IonText className='ion-margin-top'>
                         <p className='padAIInputLabel'>School</p>
                     </IonText>
-                    <IonItem className='padAIInput'>
+                    <IonItem className='padAIInput' lines='none'>
                         <IonSelect aria-label="school" interface="modal" placeholder="Select school" label-placement="stacked" value={loginForm.login_screen_state_and_school_selection.school} onIonChange={(e) => setLoginForm({ ...loginForm, login_screen_state_and_school_selection: { ...loginForm.login_screen_state_and_school_selection, school: e.detail.value || '' } })}>
                             <IonSelectOption value="School 1">School 1</IonSelectOption>
                             <IonSelectOption value="School 2">School 2</IonSelectOption>

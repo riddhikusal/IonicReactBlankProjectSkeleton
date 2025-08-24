@@ -27,14 +27,14 @@ const PadAISignUpForm = ({ setStep, loginForm, setLoginForm }: SignUpFormProps) 
                     <IonText className='ion-margin-top'>
                         <p className='padAIInputLabel'>Board</p>
                     </IonText>
-                    <IonItem className='padAIInput'>
+                    <IonItem className='padAIInput' lines='none'>
                         <IonInput type="text" placeholder="Enter your board" value={signUpForm.board} onIonChange={(e) => setSignUpForm({ ...signUpForm, board: e.detail.value || '' })} />
                     </IonItem>
                     {/* Class */}
                     <IonText className='ion-margin-top'>
                         <p className='padAIInputLabel'>Class</p>
                     </IonText>
-                    <IonItem className='padAIInput'>
+                    <IonItem className='padAIInput' lines='none'>
                         <IonInput type="tel" placeholder="Enter your class" value={signUpForm.class} onIonChange={(e) => setSignUpForm({ ...signUpForm, class: e.detail.value || '' })} />
                     </IonItem>
 
@@ -42,7 +42,7 @@ const PadAISignUpForm = ({ setStep, loginForm, setLoginForm }: SignUpFormProps) 
                     <IonText className='ion-margin-top'>
                         <p className='padAIInputLabel'>Language (Medium)</p>
                     </IonText>
-                    <IonItem className='padAIInput'>
+                    <IonItem className='padAIInput' lines='none'>
                         <IonSelect aria-label="language_medium" interface="modal" placeholder="Select language medium" label-placement="stacked" value={signUpForm.language_medium} onIonChange={(e) => setSignUpForm({ ...signUpForm, language_medium: e.detail.value || '' })}>
                             <IonSelectOption value="English">English</IonSelectOption>
                             <IonSelectOption value="Hindi">Hindi</IonSelectOption>
@@ -54,7 +54,7 @@ const PadAISignUpForm = ({ setStep, loginForm, setLoginForm }: SignUpFormProps) 
                     <IonText className='ion-margin-top'>
                         <p className='padAIInputLabel'>Language (Native)</p>
                     </IonText>
-                    <IonItem className='padAIInput'>
+                    <IonItem className='padAIInput' lines='none'>
                         <IonSelect aria-label="language_native" interface="modal" placeholder="Select language native" label-placement="stacked" value={signUpForm.language_native} onIonChange={(e) => setSignUpForm({ ...signUpForm, language_native: e.detail.value || '' })}>
                             <IonSelectOption value="English">English</IonSelectOption>
                             <IonSelectOption value="Hindi">Hindi</IonSelectOption>

@@ -65,7 +65,7 @@ const PadAIPhoneNoValidation = ({ setStep, loginForm, setLoginForm }: PhoneNoVal
                             <IonText className='ion-margin-top'>
                                 <p className='padAIInputLabel'>Phone Number</p>
                             </IonText>
-                            <IonItem className='padAIInput'>
+                            <IonItem className='padAIInput' lines='none'>
                                 <IonInput type="tel" placeholder="Enter your phone number" value={phoneNo} onIonChange={(e) => setPhoneNo(e.detail.value || '')} />
                             </IonItem>
                         </>
@@ -76,7 +76,7 @@ const PadAIPhoneNoValidation = ({ setStep, loginForm, setLoginForm }: PhoneNoVal
                             <IonText className='ion-margin-top'>
                                 <p className='padAIInputLabel'>Email</p>
                             </IonText>
-                            <IonItem className='padAIInput'>
+                            <IonItem className='padAIInput' lines='none'>
                                 <IonInput type="email" placeholder="Enter your email" value={email} onIonChange={(e) => setEmail(e.detail.value || '')} />
                             </IonItem>
                         </>
@@ -87,7 +87,7 @@ const PadAIPhoneNoValidation = ({ setStep, loginForm, setLoginForm }: PhoneNoVal
                             <IonText className='ion-margin-top'>
                                 <p className='padAIInputLabel'>Enter Password</p>
                             </IonText>
-                            <IonItem className='padAIInput'>
+                            <IonItem className='padAIInput' lines='none'>
                                 <IonInput type="password" placeholder='XXXXXXX' value="">
                                     <IonInputPasswordToggle slot="end"></IonInputPasswordToggle>
                                 </IonInput>
