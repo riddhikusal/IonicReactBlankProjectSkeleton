@@ -1,0 +1,15 @@
+.padAIvectorOne{
+    max-width: 300px;
+    width: auto;
+    height: auto;
+    margin: 5px auto;
+}
+.padAIbuttons-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+.padAIbuttons-container button{
+    width: 100%;
+}

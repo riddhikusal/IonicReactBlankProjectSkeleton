@@ -1,0 +1,8 @@
+.padAIheaderBanner{
+    max-width: 300px;
+    width: auto;
+    height: auto;
+    margin: 5px auto;
+    object-fit: contain;
+    object-position: center;
+}
