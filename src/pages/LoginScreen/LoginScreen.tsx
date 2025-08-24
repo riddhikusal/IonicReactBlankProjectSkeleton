@@ -6,6 +6,7 @@ import PadaiFooter from '../../components/LandingScreen/Footer/Footer';
 import PadAIStateAndSchoolSelection from '../../components/LoginScreen/StateAndSchoolSelection/StateAndSchoolSelection';
 import PadAIPhoneNoValidation from '../../components/LoginScreen/PhoneNoValidation/PhoneNoValidation';
 import { LoginForm, defaultLoginForm } from './LoginScreen.interface';
+import PadAISignUpForm from '../../components/LoginScreen/SignUpForm/SignUpForm';
 
 const PadAILoginScreen = () => {
     const [step, setStep] = useState(1);
@@ -17,6 +18,7 @@ const PadAILoginScreen = () => {
           <PadaiHeaderBanner />
           {step === 1 && <PadAIStateAndSchoolSelection setStep={setStep} loginForm={loginForm} setLoginForm={setLoginForm} />}
           {step === 2 && <PadAIPhoneNoValidation setStep={setStep} loginForm={loginForm} setLoginForm={setLoginForm} />}
+          {step === 3 && <PadAISignUpForm setStep={setStep} loginForm={loginForm} setLoginForm={setLoginForm} />}
           <PadaiFooter />
         </IonContent>
       </IonPage>
