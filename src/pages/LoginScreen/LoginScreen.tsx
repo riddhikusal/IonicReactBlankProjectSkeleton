@@ -15,7 +15,7 @@ const PadAILoginScreen = () => {
         <IonPage>
         <PadaiHeader />
         <IonContent>
-          <PadaiHeaderBanner />
+          {step !== 3 && <PadaiHeaderBanner />}
           {step === 1 && <PadAIStateAndSchoolSelection setStep={setStep} loginForm={loginForm} setLoginForm={setLoginForm} />}
           {step === 2 && <PadAIPhoneNoValidation setStep={setStep} loginForm={loginForm} setLoginForm={setLoginForm} />}
           {step === 3 && <PadAISignUpForm setStep={setStep} loginForm={loginForm} setLoginForm={setLoginForm} />}

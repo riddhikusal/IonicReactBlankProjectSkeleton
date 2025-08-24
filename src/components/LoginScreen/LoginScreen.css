@@ -1,8 +1,17 @@
+.padAILogin-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}
 .padAILoginCard {
     border-radius: 16px;
     box-shadow: none;
     border: 1px solid #E0E0E0;
     margin-top: 30px;
+    min-width: 300px;
+    max-width: 475px;
+    width: 100%;
 }
 .padAILoginTitle {
     font-size: 24px !important;
