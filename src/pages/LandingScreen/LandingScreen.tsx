@@ -9,9 +9,10 @@ import { useHistory } from 'react-router-dom';
 const LandingScreen: React.FC = () => {
   const history = useHistory();
   return (
-    <IonPage>
+    <IonPage className='padAIlandingScreen-page'>
+      <IonImg src="/assets/images/landingScreens/vectorTwoBg.png" alt="headerBanner" className='padAIvectorTwoBg' />
       <PadaiHeader />
-      <IonContent>
+      <IonContent className='padAIlandingScreen-content'>
         <PadaiHeaderBanner />
         <IonImg src="/assets/images/landingScreens/vectorOne.png" alt="headerBanner" className='padAIvectorOne' />
         <div className='padAIbuttons-container'>
