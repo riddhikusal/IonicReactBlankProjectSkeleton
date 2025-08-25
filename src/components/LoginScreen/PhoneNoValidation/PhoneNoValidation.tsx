@@ -110,6 +110,23 @@ const PadAIPhoneNoValidation = ({ setStep, loginForm, setLoginForm }: PhoneNoVal
                             {!isPhoneOrEmailVerified ? 'Send Password' : 'Continue'}
                         </PadaiButton>
                     </div>
+                    <div className=''>
+                        <PadaiButton
+                            onClick={(e) => {
+                                e.preventDefault();
+                                setStep(1);
+                            }}
+                            color='warning'
+                            size='large'
+                            type='button'
+                            fill='clear'
+                            expand='block'
+                        >
+                            <IonText className='padAILanguageSubTitle padAIGoBackBtn'>
+                                Go Back
+                            </IonText>
+                        </PadaiButton>
+                    </div>
                 </IonCardContent>
             </IonCard>
         </div>
