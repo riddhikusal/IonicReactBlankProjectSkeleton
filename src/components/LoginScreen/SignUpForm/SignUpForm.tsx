@@ -4,7 +4,7 @@ import { defaultRegistrationForm, LoginForm, RegistrationForm } from '../../../p
 import PadaiButton from '../../Common/Buttons/Button';
 
 interface SignUpFormProps {
-    setStep: (step: number) => void;
+    setStep: (step: string) => void;
     loginForm: LoginForm;
     setLoginForm: (loginForm: LoginForm) => void;
 }
@@ -13,7 +13,7 @@ const PadAISignUpForm = ({ setStep, loginForm, setLoginForm }: SignUpFormProps) 
     const [signUpForm, setSignUpForm] = useState<RegistrationForm>(JSON.parse(JSON.stringify(defaultRegistrationForm)));
     const handleContinue = () => {
         setLoginForm({ ...loginForm, registration_form: signUpForm });
-        setStep(2);
+        setStep('login');
     }
     return (
         <div className='padAILogin-container'>

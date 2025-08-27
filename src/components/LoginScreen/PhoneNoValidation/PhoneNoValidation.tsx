@@ -1,15 +1,17 @@
+//src/components/LoginScreen/PhoneNoValidation/PhoneNoValidation.tsx
 import { IonCard, IonCardContent, IonInput, IonInputPasswordToggle, IonItem, IonLabel, IonList, IonSegment, IonSegmentButton, IonSelect, IonSelectOption, IonText } from '@ionic/react';
 import React, { useState } from 'react';
 import '../LoginScreen.css';
 import PadaiButton from '../../Common/Buttons/Button';
 import { useHistory } from 'react-router-dom';
 import { LoginForm } from '../../../pages/LoginScreen/LoginScreen.interface';
+import { getMobileValidation } from '../../../services/loginService';
 
-const dummyPhoneNo = '9876543210';
-const dummyEmail = 'test@test.com';
+// const dummyPhoneNo = '9876543210';
+// const dummyEmail = 'test@test.com';
 
 interface PhoneNoValidationProps {
-    setStep: (step: number) => void;
+    setStep: (step: string) => void;
     loginForm: LoginForm;
     setLoginForm: (loginForm: LoginForm) => void;
 }
@@ -21,24 +23,28 @@ const PadAIPhoneNoValidation = ({ setStep, loginForm, setLoginForm }: PhoneNoVal
     const [password, setPassword] = useState<string>('');
     const [isPhoneOrEmailVerified, setIsPhoneOrEmailVerified] = useState<boolean>(false);
 
-    const handleContinue = () => {
-        if (segmentValue === 'phone') {
-            if (phoneNo === dummyPhoneNo) {
+    const handleContinue = async () => {
+        // if (segmentValue === 'phone') {
+            const res = await getMobileValidation(phoneNo);
+        alert(res);
+            const isRegistered = !!(res.isRegistered ?? res.registered ?? (res.status?.toLowerCase() === 'registered'));
+            if (isRegistered) {
                 setIsPhoneOrEmailVerified(true);
                 setLoginForm({ ...loginForm, phone_no: phoneNo });
             } else {
                 setIsPhoneOrEmailVerified(false);
-                setStep(3);
+                setStep('signup');
             }
-        } else {
-            if (email === dummyEmail) {
-                setIsPhoneOrEmailVerified(true);
-                setLoginForm({ ...loginForm, email: email });
-            } else {
-                setIsPhoneOrEmailVerified(false);
-                setStep(3);
-            }
-        }
+        // } 
+        // else {
+        //     if (email === dummyEmail) {
+        //         setIsPhoneOrEmailVerified(true);
+        //         setLoginForm({ ...loginForm, email: email });
+        //     } else {
+        //         setIsPhoneOrEmailVerified(false);
+        //         setStep(3);
+        //     }
+        // }
     }
 
     return (
@@ -51,27 +57,28 @@ const PadAIPhoneNoValidation = ({ setStep, loginForm, setLoginForm }: PhoneNoVal
                     </IonText>
 
 
-                    <IonSegment className='padAISegment' mode='ios' value={segmentValue} onIonChange={(e) => setSegmentValue(e.detail.value as 'phone' | 'email')}>
+                    {/* <IonSegment className='padAISegment' mode='ios' value={segmentValue} onIonChange={(e) => setSegmentValue(e.detail.value as 'phone' | 'email')}>
                         <IonSegmentButton value="phone" className='padAISegmentButton'>
                             <IonLabel>Phone</IonLabel>
                         </IonSegmentButton>
                         <IonSegmentButton value="email" className='padAISegmentButton'>
                             <IonLabel>Email</IonLabel>
                         </IonSegmentButton>
-                    </IonSegment>
+                    </IonSegment> */}
 
-                    {segmentValue === 'phone' && (
+                    {/* {segmentValue === 'phone' && ( */}
                         <>
                             <IonText className='ion-margin-top'>
                                 <p className='padAIInputLabel'>Phone Number</p>
                             </IonText>
                             <IonItem className='padAIInput' lines='none'>
-                                <IonInput type="tel" placeholder="Enter your phone number" value={phoneNo} onIonChange={(e) => setPhoneNo(e.detail.value || '')} />
+                                <IonInput type="tel" placeholder="Enter your phone number" value={phoneNo} onIonInput={(e) => setPhoneNo((e.target as HTMLInputElement).value || '')}
+ />
                             </IonItem>
                         </>
-                    )}
+                    {/* )} */}
 
-                    {segmentValue === 'email' && (
+                    {/* {segmentValue === 'email' && (
                         <>
                             <IonText className='ion-margin-top'>
                                 <p className='padAIInputLabel'>Email</p>
@@ -80,7 +87,7 @@ const PadAIPhoneNoValidation = ({ setStep, loginForm, setLoginForm }: PhoneNoVal
                                 <IonInput type="email" placeholder="Enter your email" value={email} onIonChange={(e) => setEmail(e.detail.value || '')} />
                             </IonItem>
                         </>
-                    )}
+                    )} */}
 
                     {isPhoneOrEmailVerified && (
                         <>
@@ -107,7 +114,8 @@ const PadAIPhoneNoValidation = ({ setStep, loginForm, setLoginForm }: PhoneNoVal
                             fill='solid'
                             expand='block'
                         >
-                            {!isPhoneOrEmailVerified ? 'Send Password' : 'Continue'}
+                            {/* {!isPhoneOrEmailVerified ? 'Send Password' : 'Continue'} */}
+                            'Validate & Continue'
                         </PadaiButton>
                     </div>
                 </IonCardContent>
