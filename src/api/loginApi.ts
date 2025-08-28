@@ -1,6 +1,8 @@
 // src/api/loginApi.ts
 import apiClient from './axiosInstance';
 
+// Validate Mobile API <start>
+
 interface ValidateMobileRequest {
   mobileNo: string;
 }
@@ -19,3 +21,30 @@ export const validateMobile = async (data: ValidateMobileRequest) => {
     { skipAuth: true } 
   );
 };
+
+// Validate Mobile API <end>
+
+
+// login API <start>
+
+export interface LoginRequest {
+  mobileNo: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  accessToken: string;
+  refreshToken: string;
+  status: string;
+  msg: string;
+}
+
+export const login = async (data: LoginRequest) => {
+  return apiClient.post<LoginResponse>(
+    '/api/v1/Authentication/login',
+    data,
+    { skipAuth: true } 
+  );
+};
+
+// login API <end>

@@ -5,7 +5,7 @@ import '../LoginScreen.css';
 import PadaiButton from '../../Common/Buttons/Button';
 import { useHistory } from 'react-router-dom';
 import { LoginForm } from '../../../pages/LoginScreen/LoginScreen.interface';
-import { getMobileValidation } from '../../../services/loginService';
+import { getMobileValidation, validateLogin } from '../../../services/loginService';
 
 // const dummyPhoneNo = '9876543210';
 // const dummyEmail = 'test@test.com';
@@ -21,31 +21,65 @@ const PadAIPhoneNoValidation = ({ setStep, loginForm, setLoginForm }: PhoneNoVal
     const [phoneNo, setPhoneNo] = useState<string>('');
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
-    const [isPhoneOrEmailVerified, setIsPhoneOrEmailVerified] = useState<boolean>(false);
+    const [isPhoneVerified, setisPhoneVerified] = useState<boolean>(false);
+    //const [isOtpRequested, setisOtpRequested] = useState<boolean>(false);
+    const [event, setEvent] = useState<'validate_mobile' | 'send_otp' | 'validate_otp' | 'login'>('validate_mobile');
 
     const handleContinue = async () => {
         // if (segmentValue === 'phone') {
+        if(event === 'validate_mobile'){ 
             const res = await getMobileValidation(phoneNo);
-        alert(res);
             const isRegistered = !!(res.isRegistered ?? res.registered ?? (res.status?.toLowerCase() === 'registered'));
             if (isRegistered) {
-                setIsPhoneOrEmailVerified(true);
+                setisPhoneVerified(true);
+                setEvent('login');
                 setLoginForm({ ...loginForm, phone_no: phoneNo });
             } else {
-                setIsPhoneOrEmailVerified(false);
-                setStep('signup');
+                // setisPhoneVerified(false);
+                // setStep('signup');
+                setEvent('send_otp');
             }
+        }
+        if(event === 'send_otp') {
+
+        }
+        if(event === 'login') {
+            const loginRes = await validateLogin(phoneNo, password);
+              if (loginRes.status?.toLowerCase() === 'success') {
+                    alert(loginRes.msg);
+                } else {
+                    alert('Login failed');
+                }
+        }
         // } 
         // else {
         //     if (email === dummyEmail) {
-        //         setIsPhoneOrEmailVerified(true);
+        //         setisPhoneVerified(true);
         //         setLoginForm({ ...loginForm, email: email });
         //     } else {
-        //         setIsPhoneOrEmailVerified(false);
+        //         setisPhoneVerified(false);
         //         setStep(3);
         //     }
         // }
     }
+
+    const getButtonText = (evnt) => {
+        let buttonText;
+        
+        switch (evnt) {
+            case 'validate_mobile':
+            buttonText = 'Validate & Continue';
+            break;
+            case 'login':
+            buttonText = 'Login';
+            break;
+            default:
+            buttonText = 'Continue';
+            break;
+        }
+        
+        return buttonText;
+    };
 
     return (
         <div className='padAILogin-container'>
@@ -89,13 +123,13 @@ const PadAIPhoneNoValidation = ({ setStep, loginForm, setLoginForm }: PhoneNoVal
                         </>
                     )} */}
 
-                    {isPhoneOrEmailVerified && (
+                    {isPhoneVerified && (
                         <>
                             <IonText className='ion-margin-top'>
                                 <p className='padAIInputLabel'>Enter Password</p>
                             </IonText>
                             <IonItem className='padAIInput' lines='none'>
-                                <IonInput type="password" placeholder='XXXXXXX' value="">
+                                <IonInput type="password" placeholder='XXXXXXX' value={password} onIonInput={(e) => setPassword((e.target as HTMLInputElement).value || '')}>
                                     <IonInputPasswordToggle slot="end"></IonInputPasswordToggle>
                                 </IonInput>
                             </IonItem>
@@ -114,8 +148,11 @@ const PadAIPhoneNoValidation = ({ setStep, loginForm, setLoginForm }: PhoneNoVal
                             fill='solid'
                             expand='block'
                         >
-                            {/* {!isPhoneOrEmailVerified ? 'Send Password' : 'Continue'} */}
-                            'Validate & Continue'
+                            {/* {!isPhoneVerified ? 'Validate & Continue' : 'Continue'} */}
+                            {/* {event === 'validate_mobile' ? 'Validate & Continue' : event === 'send_otp' ? 'Send OTP' : 'Login'} */}
+                            {/* {event === 'validate_mobile' ? 'Validate & Continue' : event === 'login' ? 'Login' : 'Continue'} */}
+                            {getButtonText(event)}
+                            
                         </PadaiButton>
                     </div>
                 </IonCardContent>
