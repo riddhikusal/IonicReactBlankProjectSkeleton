@@ -5,6 +5,7 @@ import PadaiButton from '../../Common/Buttons/Button';
 // import { useHistory } from 'react-router-dom';
 import { useIonRouter } from '@ionic/react';
 import { LoginForm } from '../../../pages/LoginScreen/LoginScreen.interface';
+import { useAlert } from '../../../hooks/alertHooks/useAlert';
 
 const dummyPhoneNo = '9876543210';
 const dummyEmail = 'test@test.com';
@@ -23,15 +24,19 @@ const PadAIPhoneNoValidation = ({ setStep, loginForm, setLoginForm }: PhoneNoVal
     const [isPhoneOrEmailVerified, setIsPhoneOrEmailVerified] = useState<boolean>(false);
     // const history = useHistory();
     const navigate = useIonRouter();
+
+    // Alert Hooks
+    const { presentAlert, dismiss } = useAlert();
+
     const handleContinue = () => {
         if (segmentValue === 'phone') {
             if (phoneNo == dummyPhoneNo) {
                 setIsPhoneOrEmailVerified(true);
                 setLoginForm({ ...loginForm, phone_no: phoneNo });
-                navigateToHomeScreen();
+                // navigateToHomeScreen();
             } else {
                 setIsPhoneOrEmailVerified(false);
-                setStep(3);
+                presentAlert({ message: 'Invalid phone number', header: 'Error', buttons: [() => { setStep(2); }] });
             }
         } else {
             if (email === dummyEmail) {
@@ -39,7 +44,7 @@ const PadAIPhoneNoValidation = ({ setStep, loginForm, setLoginForm }: PhoneNoVal
                 setLoginForm({ ...loginForm, email: email });
             } else {
                 setIsPhoneOrEmailVerified(false);
-                setStep(3);
+                setStep(2);
             }
         }
     }
@@ -75,7 +80,9 @@ const PadAIPhoneNoValidation = ({ setStep, loginForm, setLoginForm }: PhoneNoVal
                                 <p className='padAIInputLabel'>Phone Number</p>
                             </IonText>
                             <IonItem className='padAIInput' lines='none'>
-                                <IonInput type="tel" placeholder="Enter your phone number" value={phoneNo} onIonChange={(e) => {
+                                <IonInput type="tel" placeholder="Enter your phone number" value={phoneNo} onIonInput={(e) => {
+                                    console.log(e.target?.value);
+                                    console.log(typeof e.target?.value);
                                     setPhoneNo((e.target?.value as string) || '')}} />
                             </IonItem>
                         </>
@@ -87,7 +94,7 @@ const PadAIPhoneNoValidation = ({ setStep, loginForm, setLoginForm }: PhoneNoVal
                                 <p className='padAIInputLabel'>Email</p>
                             </IonText>
                             <IonItem className='padAIInput' lines='none'>
-                                <IonInput type="email" placeholder="Enter your email" value={email} onIonChange={(e) => setEmail((e.target?.value as string) || '')} />
+                                <IonInput type="email" placeholder="Enter your email" value={email} onIonInput={(e) => setEmail((e.target?.value as string) || '')} />
                             </IonItem>
                         </>
                     )}

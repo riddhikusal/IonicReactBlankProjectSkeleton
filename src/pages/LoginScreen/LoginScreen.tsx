@@ -13,13 +13,13 @@ const PadAILoginScreen: React.FC = () => {
   const [loginForm, setLoginForm] = useState<LoginForm>(JSON.parse(JSON.stringify(defaultLoginForm)));
   return (
     <IonPage className='padAIlandingScreen-page'>
-      {step !== 3 && <IonImg src="/assets/images/landingScreens/vectorTwoBg.png" alt="headerBanner" className='padAIvectorTwoBg' />}
+      {step !== 2 && <IonImg src="/assets/images/landingScreens/vectorTwoBg.png" alt="headerBanner" className='padAIvectorTwoBg' />}
       <PadaiHeader />
       <IonContent className='padAIlandingScreen-content'>
-        {step !== 3 && <PadaiHeaderBanner />}
-        {step === 1 && <PadAIStateAndSchoolSelection setStep={setStep} loginForm={loginForm} setLoginForm={setLoginForm} />}
-        {step === 2 && <PadAIPhoneNoValidation setStep={setStep} loginForm={loginForm} setLoginForm={setLoginForm} />}
-        {step === 3 && <PadAISignUpForm setStep={setStep} loginForm={loginForm} setLoginForm={setLoginForm} />}
+        {step !== 2 && <PadaiHeaderBanner />}
+        {/* {step === 1 && <PadAIStateAndSchoolSelection setStep={setStep} loginForm={loginForm} setLoginForm={setLoginForm} />} */}
+        {step === 1 && <PadAIPhoneNoValidation setStep={setStep} loginForm={loginForm} setLoginForm={setLoginForm} />}
+        {step === 2 && <PadAISignUpForm setStep={setStep} loginForm={loginForm} setLoginForm={setLoginForm} />}
         <PadaiFooter />
       </IonContent>
     </IonPage>
