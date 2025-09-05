@@ -8,7 +8,7 @@ import PadAIPhoneNoValidation from '../../components/LoginScreen/PhoneNoValidati
 import { LoginForm, defaultLoginForm } from './LoginScreen.interface';
 import PadAISignUpForm from '../../components/LoginScreen/SignUpForm/SignUpForm';
 
-const PadAILoginScreen = () => {
+const PadAILoginScreen: React.FC = () => {
   const [step, setStep] = useState(1);
   const [loginForm, setLoginForm] = useState<LoginForm>(JSON.parse(JSON.stringify(defaultLoginForm)));
   return (
