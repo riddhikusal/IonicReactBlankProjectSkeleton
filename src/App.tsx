@@ -1,15 +1,10 @@
-// src/App.tsx
-import React, { useEffect, useState } from 'react';
-import { IonApp, IonContent, IonRouterOutlet } from '@ionic/react';
-import { getPlatform } from './utils/platform';
-import { getPlatformVersionStatus } from './services/getVersionService';
-import VersionUpdateModal from './components/VersionUpdateModal';
+import { IonApp, IonRouterOutlet, IonSplitPane, setupIonicReact } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import { Redirect, Route } from 'react-router-dom';
-import Home from './pages/Home';
-import AppRoutes from './routes/AppRoutes';
-import { setupIonicReact } from '@ionic/react';
-import './App.css';
+
+import Menu from './components/Menu';
+// import Page from './pages/Page';
+import LandingScreen from './pages/LandingScreen/LandingScreen';
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -27,8 +22,25 @@ import '@ionic/react/css/text-transformation.css';
 import '@ionic/react/css/flex-utils.css';
 import '@ionic/react/css/display.css';
 
+/**
+ * Ionic Dark Mode
+ * -----------------------------------------------------
+ * For more info, please see:
+ * https://ionicframework.com/docs/theming/dark-mode
+ */
+
+/* import '@ionic/react/css/palettes/dark.always.css'; */
+/* import '@ionic/react/css/palettes/dark.class.css'; */
+import '@ionic/react/css/palettes/dark.system.css';
+
 /* Theme variables */
 import './theme/variables.css';
+import PadAILanguageScreen from './pages/LanguageScreen/LanguageScreen';
+import PadAILoginScreen from './pages/LoginScreen/LoginScreen';
+import './App.css';
+import { useEffect, useState } from 'react';
+import { getPlatform } from './utils/platform';
+
 
 setupIonicReact();
 
@@ -57,17 +69,34 @@ const App: React.FC = () => {
     // Example: Open App Store/Play Store/PWA reload
     window.open('https://play.google.com/store/apps/details?id=your.app.id', '_blank');
   };
-
+  
   return (
     <IonApp>
-        <AppRoutes />
-        {/* <VersionUpdateModal
-          isOpen={showUpdatePopup}
-          isObsolete={isObsolete}
-          message={message}
-          onClose={() => setShowUpdatePopup(false)}
-          onUpdate={handleUpdate}
-        /> */}
+      <IonReactRouter>
+        <IonSplitPane contentId="main">
+          <Menu />
+          <IonRouterOutlet id="main">
+            <Route path="/" exact={true}>
+              <Redirect to="/landing" />
+            </Route>
+            {/* <Route path="/folder/:name" exact={true}>
+              <Page />
+            </Route> */}
+            {/* Landing Screen */}
+            <Route path="/landing" exact={true}>
+              <LandingScreen />
+            </Route>
+            {/* Language Screen */}
+            <Route path="/language" exact={true}>
+              <PadAILanguageScreen />
+            </Route>
+            {/* Login Screen */}
+            <Route path="/login" exact={true}>
+              <PadAILoginScreen />
+            </Route>
+          </IonRouterOutlet>
+        </IonSplitPane>
+      </IonReactRouter>
     </IonApp>
   );
 };

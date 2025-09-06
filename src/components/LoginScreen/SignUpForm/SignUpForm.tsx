@@ -2,6 +2,7 @@ import { IonCard, IonCardContent, IonInput, IonItem, IonSelect, IonSelectOption,
 import React, { useState } from 'react';
 import { defaultRegistrationForm, LoginForm, RegistrationForm } from '../../../pages/LoginScreen/LoginScreen.interface';
 import PadaiButton from '../../Common/Buttons/Button';
+import { defaultAlertProps, useAlert } from '../../../hooks/alertHooks/useAlert';
 
 interface SignUpFormProps {
     setStep: (step: number) => void;
@@ -11,7 +12,12 @@ interface SignUpFormProps {
 
 const PadAISignUpForm = ({ setStep, loginForm, setLoginForm }: SignUpFormProps) => {
     const [signUpForm, setSignUpForm] = useState<RegistrationForm>(JSON.parse(JSON.stringify(defaultRegistrationForm)));
+    const { presentAlert, dismiss } = useAlert();
     const handleContinue = () => {
+        if (signUpForm.board === '' || signUpForm.class === '' || signUpForm.language_medium === '' || signUpForm.language_native === '') {
+            presentAlert({ message: 'Please enter all the fields', header: 'Error', buttonsActions: [() => { setStep(1); }, () => { setStep(1); }] });
+            return;
+        }
         setLoginForm({ ...loginForm, registration_form: signUpForm });
         setStep(2);
     }
@@ -75,6 +81,23 @@ const PadAISignUpForm = ({ setStep, loginForm, setLoginForm }: SignUpFormProps) 
                             expand='block'
                         >
                             Continue
+                        </PadaiButton>
+                    </div>
+                    <div className=''>
+                        <PadaiButton
+                            onClick={(e) => {
+                                e.preventDefault();
+                                setStep(2);
+                            }}
+                            color='warning'
+                            size='large'
+                            type='button'
+                            fill='clear'
+                            expand='block'
+                        >
+                            <IonText className='padAILanguageSubTitle padAIGoBackBtn'>
+                                Go Back
+                            </IonText>
                         </PadaiButton>
                     </div>
                 </IonCardContent>
