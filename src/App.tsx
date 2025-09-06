@@ -38,11 +38,38 @@ import './theme/variables.css';
 import PadAILanguageScreen from './pages/LanguageScreen/LanguageScreen';
 import PadAILoginScreen from './pages/LoginScreen/LoginScreen';
 import './App.css';
+import { useEffect, useState } from 'react';
+import { getPlatform } from './utils/platform';
 
 
 setupIonicReact();
 
 const App: React.FC = () => {
+  const platformInfo = getPlatform();
+  const [showUpdatePopup, setShowUpdatePopup] = useState(false);
+  const [isObsolete, setIsObsolete] = useState(false);
+  const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    // const checkAppVersion = async () => {
+    //   try {
+    //     const { showPopup, isObsolete, message } = await getPlatformVersionStatus();
+    //     setMessage(message);
+    //     setIsObsolete(isObsolete);
+    //     setShowUpdatePopup(showPopup);
+    //   } catch (err) {
+    //     console.error('Version check failed', err);
+    //   }
+    // };
+
+    // checkAppVersion();
+  }, []);
+
+  const handleUpdate = () => {
+    // Example: Open App Store/Play Store/PWA reload
+    window.open('https://play.google.com/store/apps/details?id=your.app.id', '_blank');
+  };
+  
   return (
     <IonApp>
       <IonReactRouter>
