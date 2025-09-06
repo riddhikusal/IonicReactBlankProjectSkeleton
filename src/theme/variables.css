@@ -1,2 +1,14 @@
 /* For information on how to create your own theme, please see:
 http://ionicframework.com/docs/theming/ */
+
+:root {
+
+    /* Warning */
+    --ion-color-warning: #f97316;
+    --ion-color-warning-rgb: 249, 115, 22;
+    --ion-color-warning-contrast: #ffffff;
+    --ion-color-warning-contrast-rgb: 0, 0, 0;
+    --ion-color-warning-shade: #db6513;
+    --ion-color-warning-tint: #fa812d;
+
+}

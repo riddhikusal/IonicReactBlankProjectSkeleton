@@ -3,7 +3,7 @@ import { useIonAlert } from "@ionic/react";
 export interface IAlertProps {
     message: string;
     header: string;
-    buttons: Function[];
+    buttonsActions: Function[];
     onDidDismiss?: Function;
     confirmButtonText?: string;
     cancelButtonText?: string;
@@ -11,7 +11,7 @@ export interface IAlertProps {
 export const defaultAlertProps: IAlertProps = {
     message: '',
     header: '',
-    buttons: [],
+    buttonsActions: [],
     onDidDismiss: () => {},
     confirmButtonText: 'OK',
     cancelButtonText: 'Cancel',
@@ -21,7 +21,7 @@ export const useAlert = () => {
     const presentAlert = ({
         message = '',
         header = '',
-        buttons = [],
+        buttonsActions = [],
         onDidDismiss = () => {},
         confirmButtonText = 'OK',
         cancelButtonText = 'Cancel',
@@ -29,7 +29,7 @@ export const useAlert = () => {
         present({
             header: header,
             message: message,
-            buttons: buttons.length > 1 ? [
+            buttons: buttonsActions.length > 1 ? [
               {
                 text: confirmButtonText,
                 htmlAttributes: {
@@ -37,7 +37,7 @@ export const useAlert = () => {
                 },
                 role: 'confirm',
                 handler: () => {
-                  buttons[0]();
+                  buttonsActions[0]();
                 },
               },
               {
@@ -47,7 +47,7 @@ export const useAlert = () => {
                 },
                 role: 'cancel',
                 handler: () => {
-                  buttons[1]();
+                  buttonsActions[1]();
                 },
               },
             ]:[
@@ -58,7 +58,7 @@ export const useAlert = () => {
                 },
                 role: 'cancel',
                 handler: () => {
-                  buttons[0]();
+                  buttonsActions[0]();
                 },
               },
             ],

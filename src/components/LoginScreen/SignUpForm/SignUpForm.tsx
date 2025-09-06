@@ -15,7 +15,7 @@ const PadAISignUpForm = ({ setStep, loginForm, setLoginForm }: SignUpFormProps) 
     const { presentAlert, dismiss } = useAlert();
     const handleContinue = () => {
         if (signUpForm.board === '' || signUpForm.class === '' || signUpForm.language_medium === '' || signUpForm.language_native === '') {
-            presentAlert({ message: 'Please enter all the fields', header: 'Error', buttons: [() => { setStep(1); }, () => { setStep(1); }] });
+            presentAlert({ message: 'Please enter all the fields', header: 'Error', buttonsActions: [() => { setStep(1); }, () => { setStep(1); }] });
             return;
         }
         setLoginForm({ ...loginForm, registration_form: signUpForm });

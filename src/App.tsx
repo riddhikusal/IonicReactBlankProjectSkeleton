@@ -1,6 +1,7 @@
 import { IonApp, IonRouterOutlet, IonSplitPane, setupIonicReact } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import { Redirect, Route } from 'react-router-dom';
+
 import Menu from './components/Menu';
 // import Page from './pages/Page';
 import LandingScreen from './pages/LandingScreen/LandingScreen';
@@ -36,6 +37,8 @@ import '@ionic/react/css/palettes/dark.system.css';
 import './theme/variables.css';
 import PadAILanguageScreen from './pages/LanguageScreen/LanguageScreen';
 import PadAILoginScreen from './pages/LoginScreen/LoginScreen';
+import './App.css';
+
 
 setupIonicReact();
 

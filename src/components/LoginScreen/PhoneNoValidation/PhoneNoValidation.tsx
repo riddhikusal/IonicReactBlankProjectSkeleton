@@ -6,6 +6,7 @@ import PadaiButton from '../../Common/Buttons/Button';
 import { useIonRouter } from '@ionic/react';
 import { LoginForm } from '../../../pages/LoginScreen/LoginScreen.interface';
 import { useAlert } from '../../../hooks/alertHooks/useAlert';
+import { useToaster } from '../../../hooks/toasterHooks/useToaster';
 
 const dummyPhoneNo = '9876543210';
 const dummyEmail = 'test@test.com';
@@ -27,16 +28,19 @@ const PadAIPhoneNoValidation = ({ setStep, loginForm, setLoginForm }: PhoneNoVal
 
     // Alert Hooks
     const { presentAlert, dismiss } = useAlert();
+    // Toaster Hooks
+    const { successToaster } = useToaster();
 
     const handleContinue = () => {
         if (segmentValue === 'phone') {
             if (phoneNo == dummyPhoneNo) {
                 setIsPhoneOrEmailVerified(true);
                 setLoginForm({ ...loginForm, phone_no: phoneNo });
+                successToaster('Phone number verified');
                 // navigateToHomeScreen();
             } else {
                 setIsPhoneOrEmailVerified(false);
-                presentAlert({ message: 'Invalid phone number', header: 'Error', buttons: [() => { setStep(2); }] });
+                presentAlert({ message: 'Invalid phone number', header: 'Error', buttonsActions: [() => { setStep(2); }] });
             }
         } else {
             if (email === dummyEmail) {
@@ -50,7 +54,7 @@ const PadAIPhoneNoValidation = ({ setStep, loginForm, setLoginForm }: PhoneNoVal
     }
 
     const navigateToHomeScreen = () => {
-        navigate.push('/landing','forward','replace');
+        navigate.push('/home','forward','replace');
     }
 
     return (
