@@ -5,7 +5,7 @@ import PadaiButton from '../../Common/Buttons/Button';
 import { defaultAlertProps, useAlert } from '../../../hooks/alertHooks/useAlert';
 
 interface SignUpFormProps {
-    setStep: (step: number) => void;
+    setStep: (step: string) => void;
     loginForm: LoginForm;
     setLoginForm: (loginForm: LoginForm) => void;
 }
@@ -19,7 +19,7 @@ const PadAISignUpForm = ({ setStep, loginForm, setLoginForm }: SignUpFormProps) 
             return;
         }
         setLoginForm({ ...loginForm, registration_form: signUpForm });
-        setStep(2);
+        setStep('login');
     }
     return (
         <div className='padAILogin-container'>
