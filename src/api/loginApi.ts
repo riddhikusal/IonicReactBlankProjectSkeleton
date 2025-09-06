@@ -47,4 +47,12 @@ export const login = async (data: LoginRequest) => {
   );
 };
 
+export const checkOtp = async (data: LoginRequest) => {
+  return apiClient.post<LoginResponse>(
+    '/api/v1/Authentication/validate-otp',
+    data,
+    { skipAuth: true } 
+  );
+};
+
 // login API <end>

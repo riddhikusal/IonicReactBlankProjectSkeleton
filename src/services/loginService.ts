@@ -20,3 +20,16 @@ export const validateLogin = async (mobileno: string, password: string) => {
 
   return (loginResponse.data);
 };
+
+export const validateOtp = async (mobileno: string, password: string) => {
+  const otpResponse = await checkOtp({mobileno, password});
+
+  
+  // Immediately persist tokens so interceptor can pick them up
+  if (otpResponse.data.accessToken && otpResponse.data.refreshToken) {
+    await saveAccessToken(otpResponse.data.accessToken);
+    await saveRefreshToken(otpResponse.data.refreshToken);
+  }
+
+  return (otpResponse.data);
+};

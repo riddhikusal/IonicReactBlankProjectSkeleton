@@ -6,6 +6,7 @@ import PadaiButton from '../../Common/Buttons/Button';
 import { useHistory } from 'react-router-dom';
 import { LoginForm } from '../../../pages/LoginScreen/LoginScreen.interface';
 import { getMobileValidation, validateLogin } from '../../../services/loginService';
+import { saveAccessToken, saveRefreshToken } from '../../../utils/tokenStorage';
 
 // const dummyPhoneNo = '9876543210';
 // const dummyEmail = 'test@test.com';
@@ -23,14 +24,15 @@ const PadAIPhoneNoValidation = ({ setStep, loginForm, setLoginForm }: PhoneNoVal
     const [password, setPassword] = useState<string>('');
     const [isPhoneVerified, setisPhoneVerified] = useState<boolean>(false);
     //const [isOtpRequested, setisOtpRequested] = useState<boolean>(false);
-    const [event, setEvent] = useState<'validate_mobile' | 'send_otp' | 'validate_otp' | 'login'>('validate_mobile');
+    const [event, setEvent] = useState<'validate_mobile' | 'validate_otp' | 'login'>('validate_mobile');
 
     const handleContinue = async () => {
         // if (segmentValue === 'phone') {
         if(event === 'validate_mobile'){ 
             const res = await getMobileValidation(phoneNo);
             const isRegistered = !!(res.isRegistered ?? res.registered ?? (res.status?.toLowerCase() === 'registered'));
-            if (isRegistered) {
+            const isPasswordSent = !!(res.isRegistered ?? res.registered ?? (res.status?.toLowerCase() === 'passwordsent'));
+            if (isRegistered || isPasswordSent) {
                 setisPhoneVerified(true);
                 setEvent('login');
                 setLoginForm({ ...loginForm, phone_no: phoneNo });
@@ -40,13 +42,25 @@ const PadAIPhoneNoValidation = ({ setStep, loginForm, setLoginForm }: PhoneNoVal
                 setEvent('send_otp');
             }
         }
-        if(event === 'send_otp') {
 
-        }
-        if(event === 'login') {
-            const loginRes = await validateLogin(phoneNo, password);
+        if(event === 'login' || event === 'validate_otp') {
+            var loginRes;
+            if (event === 'validate_otp') {
+             loginRes = await validateLogin(phoneNo, password);
+            } else {
+             loginRes = await validateLogin(phoneNo, password);
+            }
+                
               if (loginRes.status?.toLowerCase() === 'success') {
                     alert(loginRes.msg);
+                    // check if user profile is set or not
+                    if (loginRes.name && loginRes.name.trim() !== '' && loginRes.board && loginRes.board.trim() !== ''&& loginRes.class && loginRes.class.trim() !== '') {
+                        // redirect to home page
+                        //history.push('/home');
+                    } else {
+                        // redirect to signup page
+                        setStep('signup');
+                    }
                 } else {
                     alert('Login failed');
                 }
@@ -126,7 +140,7 @@ const PadAIPhoneNoValidation = ({ setStep, loginForm, setLoginForm }: PhoneNoVal
                     {isPhoneVerified && (
                         <>
                             <IonText className='ion-margin-top'>
-                                <p className='padAIInputLabel'>Enter Password</p>
+                                <p className='padAIInputLabel'>Enter Passcode</p>
                             </IonText>
                             <IonItem className='padAIInput' lines='none'>
                                 <IonInput type="password" placeholder='XXXXXXX' value={password} onIonInput={(e) => setPassword((e.target as HTMLInputElement).value || '')}>
