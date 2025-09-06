@@ -1,4 +1,4 @@
-import { IonCard, IonCardContent, IonCol, IonRow, IonText } from '@ionic/react';
+import { IonCard, IonCardContent, IonCol, IonRow, IonText, useIonRouter } from '@ionic/react';
 import React, { useState } from 'react';
 import PadaiLanguageButtons from '../LanguageButtons/LanguageButtons';
 import './LanguageContainer.css';
@@ -8,6 +8,7 @@ import { useHistory } from 'react-router-dom';
 const PadaiLanguageContainer: React.FC = () => {
     const [selectedLanguage, setSelectedLanguage] = useState<string>('');
     const history = useHistory();
+    const navigate = useIonRouter();
     return (
         <div className='padAIlanguage-container'>
             <IonCard className='padAILanguageCard'>
@@ -50,7 +51,7 @@ const PadaiLanguageContainer: React.FC = () => {
                         <PadaiButton
                             onClick={(e) => {
                                 e.preventDefault();
-                                history.push('/login');
+                                navigate.push('/login','forward');
                             }}
                             color='warning'
                             size='large'

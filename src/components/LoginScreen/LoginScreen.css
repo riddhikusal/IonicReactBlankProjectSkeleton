@@ -1,9 +1,10 @@
-.padAILogin-container{
+.padAILogin-container {
     display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
 }
+
 .padAILoginCard {
     border-radius: 16px;
     box-shadow: none;
@@ -13,26 +14,30 @@
     max-width: 475px;
     width: 100%;
 }
+
 .padAILoginTitle {
     font-size: 24px !important;
     font-weight: 600 !important;
     font-family: 'Inter', sans-serif !important;
     color: #000000 !important;
 }
+
 .padAILoginSubTitle,
 .padAIInputLabel {
     font-size: 16px !important;
     font-weight: 400 !important;
     font-family: 'Inter', sans-serif !important;
 }
-.padAIInputLabel{
+
+.padAIInputLabel {
     font-weight: 600 !important;
     color: #000000 !important;
     margin-top: 10px !important;
     margin-bottom: 5px !important;
 }
-.padAIInput{
-    border-radius: 16px !important;
+
+.padAIInput {
+    border-radius: 10px !important;
     border: 1px solid #E0E0E0 !important;
     margin-bottom: 10px !important;
     width: 100% !important;
@@ -40,13 +45,22 @@
     font-weight: 400 !important;
     font-family: 'Inter', sans-serif !important;
 }
-.padAISegment{
+
+.padAISegment {
     margin-top: 10px !important;
     padding: 3px !important;
 }
-.padAISegmentButton{
+
+.padAISegmentButton {
     font-size: 16px !important;
     font-weight: 400 !important;
     font-family: 'Inter', sans-serif !important;
     padding: 8px !important;
+}
+
+.padAIGoBackBtn {
+    text-align: center !important;
+    text-decoration: underline !important;
+    color: #aba9a5 !important;
+    margin-top: 10px !important;
 }
