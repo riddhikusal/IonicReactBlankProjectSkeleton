@@ -27,10 +27,12 @@ const PadAIPhoneNoValidation = ({ setStep, loginForm, setLoginForm }: PhoneNoVal
     const [isPhoneVerified, setisPhoneVerified] = useState<boolean>(false);
     //const [isOtpRequested, setisOtpRequested] = useState<boolean>(false);
     const [event, setEvent] = useState<'validate_mobile' | 'validate_otp' | 'login'>('validate_mobile');
+    const [showLoader, setShowLoader] = useState<boolean>(false);
 
     const handleContinue = async () => {
         // if (segmentValue === 'phone') {
         if(event === 'validate_mobile'){ 
+            setShowLoader(true);
             const res:any = await getMobileValidation(phoneNo);
             const isRegistered = !!(res.isRegistered ?? res.registered ?? (res.status?.toLowerCase() === 'registered'));
             const isPasswordSent = !!(res.isRegistered ?? res.registered ?? (res.status?.toLowerCase() === 'passwordsent'));
@@ -43,9 +45,11 @@ const PadAIPhoneNoValidation = ({ setStep, loginForm, setLoginForm }: PhoneNoVal
                 // setStep('signup');
                 setEvent('validate_otp');
             }
+            setShowLoader(false);
         }
 
         if(event === 'login' || event === 'validate_otp') {
+            setShowLoader(true);
             var loginRes:any;
             if (event === 'validate_otp') {
              loginRes = await validateLogin(phoneNo, password);
@@ -66,6 +70,7 @@ const PadAIPhoneNoValidation = ({ setStep, loginForm, setLoginForm }: PhoneNoVal
                 } else {
                     alert('Login failed');
                 }
+            setShowLoader(false);
         }
         // } 
         // else {
@@ -168,6 +173,7 @@ const PadAIPhoneNoValidation = ({ setStep, loginForm, setLoginForm }: PhoneNoVal
                             type='button'
                             fill='solid'
                             expand='block'
+                            showLoader={showLoader}
                         >
                             {/* {!isPhoneVerified ? 'Validate & Continue' : 'Continue'} */}
                             {/* {event === 'validate_mobile' ? 'Validate & Continue' : event === 'send_otp' ? 'Send OTP' : 'Login'} */}

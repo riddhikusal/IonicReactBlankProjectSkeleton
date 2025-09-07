@@ -12,7 +12,7 @@ const Commonheader = () => {
             <IonButtons slot="start">
               <IonMenuButton className="menuBtn" color={'dark'}></IonMenuButton>
             </IonButtons>
-            <IonImg src={'/assets/logo/padai_logo.png'} alt="logo" className='padAIlogo'>
+            <IonImg src={'/assets/logo/padai_logo.png'} alt="logo" className='padAIlogoInnerScreen'>
             </IonImg>
             <IonButtons slot="end">
               <IonButton className="padAI-commonheader-button" fill="clear" onClick={() => {
