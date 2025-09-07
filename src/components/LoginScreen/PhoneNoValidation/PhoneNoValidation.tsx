@@ -5,8 +5,9 @@ import '../LoginScreen.css';
 import PadaiButton from '../../Common/Buttons/Button';
 import { useHistory } from 'react-router-dom';
 import { LoginForm } from '../../../pages/LoginScreen/LoginScreen.interface';
-import { getMobileValidation, validateLogin } from '../../../services/loginService';
-import { saveAccessToken, saveRefreshToken } from '../../../utils/tokenStorage';
+import { getMobileValidation, validateLogin, validateOtp } from '../../../services/loginService';
+import { useAlert } from '../../../hooks/alertHooks/useAlert';
+
 
 // const dummyPhoneNo = '9876543210';
 // const dummyEmail = 'test@test.com';
@@ -20,6 +21,7 @@ interface PhoneNoValidationProps {
 const PadAIPhoneNoValidation = ({ setStep, loginForm, setLoginForm }: PhoneNoValidationProps) => {
     const [segmentValue, setSegmentValue] = useState<'phone' | 'email'>('phone');
     const [phoneNo, setPhoneNo] = useState<string>('');
+    const { presentAlert, dismiss } = useAlert();
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [isPhoneVerified, setisPhoneVerified] = useState<boolean>(false);
@@ -46,13 +48,15 @@ const PadAIPhoneNoValidation = ({ setStep, loginForm, setLoginForm }: PhoneNoVal
         if(event === 'login' || event === 'validate_otp') {
             var loginRes;
             if (event === 'validate_otp') {
-             loginRes = await validateLogin(phoneNo, password);
+             loginRes = await validateOtp(phoneNo, password);
             } else {
              loginRes = await validateLogin(phoneNo, password);
             }
                 
               if (loginRes.status?.toLowerCase() === 'success') {
-                    alert(loginRes.msg);
+                    //alert(loginRes.msg);
+                    presentAlert({ message: loginRes.msg, header: 'Login', buttonsActions: [() => { }] });
+
                     // check if user profile is set or not
                     if (loginRes.name && loginRes.name.trim() !== '' && loginRes.board && loginRes.board.trim() !== ''&& loginRes.class && loginRes.class.trim() !== '') {
                         // redirect to home page

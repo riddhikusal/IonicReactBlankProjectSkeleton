@@ -56,3 +56,25 @@ export const checkOtp = async (data: LoginRequest) => {
 };
 
 // login API <end>
+
+// Signup Form APIs <start>
+export interface Language {
+  code: string;
+  name: string;
+  languageText: string;
+  firstChar: string;
+}
+
+export interface GetLanguagesResponse {
+  languages: Language[];
+}
+
+export const getLanguages = async () => {
+  return apiClient.post<GetLanguagesResponse>(
+    '/api/Content/getLanguages',
+    {},
+    { skipAuth: true }   // no token needed
+  );
+};
+
+// Signup Form APIs <end>
