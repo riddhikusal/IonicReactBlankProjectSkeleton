@@ -21,7 +21,7 @@ const processQueue = (error: any, token: string | null = null) => {
 };
 
 const apiClient: AxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'https://localhost:7171/api',
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'https://kys-edu.com:90',
   timeout: 10000,
 });
 
