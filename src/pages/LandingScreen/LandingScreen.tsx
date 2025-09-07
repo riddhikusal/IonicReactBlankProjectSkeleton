@@ -16,11 +16,6 @@ const LandingScreen: React.FC = () => {
       <PadaiHeader />
       <IonContent className='padAIlandingScreen-content'>
         <PadaiHeaderBanner />
-        <IonButton onClick={() => {
-          navigate.push('/language','forward');
-        }}>
-          <IonIcon icon="arrow-forward"></IonIcon>
-        </IonButton>
         <IonImg src="/assets/images/landingScreens/vectorOne.png" alt="headerBanner" className='padAIvectorOne' />
         <div className='padAIbuttons-container'>
           <PadaiButton children="Get Started Free"

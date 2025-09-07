@@ -41,3 +41,10 @@ body {
     font-family: 'Inter', sans-serif !important;
     padding: 8px !important;
 }
+.padAIvectorTwoBg{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: -1;
+}

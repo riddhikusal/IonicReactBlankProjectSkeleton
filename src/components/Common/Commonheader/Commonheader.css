@@ -1,0 +1,27 @@
+.padAIlogo {
+    height: 36px !important;
+    width: auto;
+    margin: 9px !important;
+}
+
+IonHeader,
+ion-header,
+ion-toolbar {
+    box-shadow: none !important;
+    background-color: transparent !important;
+    border: none !important;
+    --border-color: none !important;
+    --border-width: 0px !important;
+    --background: transparent !important;
+}
+
+.padAI-commonheader-button {
+    padding: 4px;
+    border: 1px solid #ededed8c;
+    border-radius: 10px;
+}
+.menuBtn{
+    border: 1px solid #e5e5e5;
+    padding: 4px;
+    border-radius: 10px
+}

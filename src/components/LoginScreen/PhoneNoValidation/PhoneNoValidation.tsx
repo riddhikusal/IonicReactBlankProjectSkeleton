@@ -54,7 +54,7 @@ const PadAIPhoneNoValidation = ({ setStep, loginForm, setLoginForm }: PhoneNoVal
     }
 
     const navigateToHomeScreen = () => {
-        navigate.push('/home','forward','replace');
+        navigate.push('/home', 'forward', 'replace');
     }
 
     return (
@@ -87,7 +87,8 @@ const PadAIPhoneNoValidation = ({ setStep, loginForm, setLoginForm }: PhoneNoVal
                                 <IonInput type="tel" placeholder="Enter your phone number" value={phoneNo} onIonInput={(e) => {
                                     console.log(e.target?.value);
                                     console.log(typeof e.target?.value);
-                                    setPhoneNo((e.target?.value as string) || '')}} />
+                                    setPhoneNo((e.target?.value as string) || '')
+                                }} />
                             </IonItem>
                         </>
                     )}
@@ -120,7 +121,7 @@ const PadAIPhoneNoValidation = ({ setStep, loginForm, setLoginForm }: PhoneNoVal
                         <PadaiButton
                             onClick={(e) => {
                                 e.preventDefault();
-                                handleContinue();
+                                !isPhoneOrEmailVerified ? handleContinue() : navigateToHomeScreen();
                             }}
                             color='warning'
                             size='large'
