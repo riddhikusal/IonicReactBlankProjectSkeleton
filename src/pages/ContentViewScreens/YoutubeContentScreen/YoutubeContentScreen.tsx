@@ -6,7 +6,7 @@ import PadaiYouTubePlayer from "../../../components/ContentView/YoutubePlayer/Yo
 const PadAIYoutubeContentScreen: React.FC = () => {
     return (
         <IonPage className='padAIYoutubeContentScreen-page'>
-            <PadaiYouTubePlayer />
+            <YoutubeContent />
             
         </IonPage>
     );
@@ -25,7 +25,7 @@ const YoutubeContent = () => {
           flexShrink: 0,
         }}
       >
-        <PadaiYouTubePlayer
+        {/* <PadaiYouTubePlayer
           video={{
             id: video.id,
             title: video.title,
@@ -34,7 +34,7 @@ const YoutubeContent = () => {
             duration: "",
             description: video.description || "",
           }}
-        />
+        /> */}
       </div>
     )
   }
