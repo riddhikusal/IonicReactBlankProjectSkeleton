@@ -1,0 +1,30 @@
+.padAIlandingScreen-page{
+    /* position: relative; */
+}
+.padAIvectorTwoBg{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: -1;
+}
+.padAIlandingScreen-content{
+    position: relative;
+    --background-color: transparent !important;
+    --background: transparent !important;
+    z-index: 1;
+}
+.padAIvectorOne{
+    height: 35vh;
+    width: auto;
+    margin: 5px auto;
+}
+.padAIbuttons-container{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+.padAIbuttons-container button{
+    width: 100%;
+}

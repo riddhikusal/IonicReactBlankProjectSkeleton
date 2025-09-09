@@ -1,0 +1,7 @@
+{
+  "name": "PadAI",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react-vite"
+}

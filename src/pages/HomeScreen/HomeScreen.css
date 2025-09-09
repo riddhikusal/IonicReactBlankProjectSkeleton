@@ -1,0 +1,61 @@
+.padAIvectorTwoBg{
+    scale: 1.5;
+}
+.padAIHomeSection-Container{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    padding-top: 30px;
+}
+.padAIvectorBookIcon{
+    height: 130px;
+}
+
+.padAIhomeScreen-content{
+    position: relative;
+    --background-color: transparent !important;
+    --background: transparent !important;
+    z-index: 1;
+}
+.padAIHomesubTitle,
+.padAIHomebigTitle,
+.padAIHomesemisubTitle{
+    margin: 5px 10px;
+    text-align: center;
+}
+
+
+.padAIHomesubTitle{
+    font-size: 16px;
+    font-weight: 400;
+    font-family: 'Inter', sans-serif;
+}
+.padAIHomebigTitle{
+    font-size: 24px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+}
+.padAIHomesemisubTitle{
+    font-size: 13px;
+    font-weight: 300;
+    font-family: 'Inter', sans-serif;
+    text-align: center;
+}
+.padAIHome-dropdown-section{
+    width: 100%;
+    padding: 1px 20px;
+}
+.padAIHomeScreenDropdown{
+    padding: 0px;
+    border: 1px solid #bfbfbf;
+    height: 37px;
+    display: flex;
+    border-radius: 6px;
+}
+.padAIHomeContinueBtn{
+    max-width: 150px;
+    margin: 15px auto;
+}

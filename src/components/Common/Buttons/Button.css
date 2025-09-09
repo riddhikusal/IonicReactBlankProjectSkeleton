@@ -1,0 +1,13 @@
+
+.padAIdefaultButtonDesign{
+    box-shadow: none !important;
+    --box-shadow: none !important;
+    font-family: 'Inter', sans-serif !important;
+    --border-radius: 10px !important;
+}
+.padAIbuttonLarge{
+    font-size: 1.1rem !important;
+    color: white !important;
+    --ion-color-contrast: white !important;
+    text-transform: capitalize;
+}

@@ -1,0 +1,7 @@
+.no-poster .vjs-poster{
+    display: none;
+  }
+  .content-card.video-content{
+    max-height: calc(100vh - 50px);
+    overflow: scroll;
+  }
