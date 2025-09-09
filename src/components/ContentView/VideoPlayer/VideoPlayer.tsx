@@ -6,7 +6,7 @@ import type { VideoPlayerProps } from '../media';
 import { getVideoMimeType } from '../media-types';
 import './VideoPlayer.css';
 
-const VideoPlayer = forwardRef<Player | null, VideoPlayerProps>(({ video, autoplay = false }, ref) => {
+const PadAIVideoPlayer = forwardRef<Player | null, VideoPlayerProps>(({ video, autoplay = false }, ref) => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const playerRef = useRef<Player | null>(null);
 
@@ -50,7 +50,7 @@ const VideoPlayer = forwardRef<Player | null, VideoPlayerProps>(({ video, autopl
 
   return (
     <div>
-      <div className="p-1 reel">
+      <div className="ion-padding reel">
         {/* Video container with required class and data attribute */}
         <div data-vjs-player>
           <div className="w-full  aspect-video mx-auto">
@@ -81,6 +81,6 @@ const VideoPlayer = forwardRef<Player | null, VideoPlayerProps>(({ video, autopl
     </div>
   );
 });
-VideoPlayer.displayName = "VideoPlayer";
+PadAIVideoPlayer.displayName = "VideoPlayer";
 
-export default VideoPlayer;
+export default PadAIVideoPlayer;
