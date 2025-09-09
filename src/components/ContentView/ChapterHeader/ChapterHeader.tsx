@@ -1,15 +1,17 @@
 import { IonItem, IonLabel, IonText } from "@ionic/react";
 import './ChapterHeader.css';
 
-const ChapterHeader = () => {
+const PadAIChapterHeader = () => {
     return (
-        <IonItem>
+        <IonItem className="padAIchapterHeader-item" lines="full">
             <IonLabel>
-                <IonText>Chapter 1</IonText>
-                <IonText>Chapter 1</IonText>
+                <IonText className="padAIchapterHeader-item-subtitle"><p>Chapter 1</p> </IonText>
+                <IonText className="padAIchapterHeader-item-title">
+                    <p>Magnetic Effects of Electric Current</p>
+                </IonText>
             </IonLabel>
         </IonItem>
     )
 }
 
-export default ChapterHeader;
+export default PadAIChapterHeader;
