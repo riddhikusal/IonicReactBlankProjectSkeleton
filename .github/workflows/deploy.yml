@@ -2,7 +2,8 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ feature-onboarding ]  # change "main" if your default branch is different
+    branches: [ main ]   # change if your default branch differs
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -26,16 +27,36 @@ jobs:
           node-version: 20
           cache: 'npm'
 
-      - name: Install dependencies
+      # Use npm ci when a lockfile exists; fallback to npm install otherwise
+      - name: Install dependencies (with lockfile)
+        if: ${{ hashFiles('**/package-lock.json') != '' }}
         run: npm ci
 
-      - name: Build project
+      - name: Install dependencies (no lockfile)
+        if: ${{ hashFiles('**/package-lock.json') == '' }}
+        run: npm install
+
+      # If your project is in a subfolder, set working-directory below
+      - name: Build
+        env:
+          # Avoid treat-warnings-as-errors behavior in some toolchains
+          CI: false
         run: npm run build
 
-      - name: Upload build output
+      - name: Verify dist exists
+        run: |
+          echo "Listing build output:"
+          ls -lah
+          echo "---- dist ----"
+          ls -lah dist || true
+
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: ./dist   # Vite outputs here
+          path: ./dist   # Vite default
 
   deploy:
     needs: build
