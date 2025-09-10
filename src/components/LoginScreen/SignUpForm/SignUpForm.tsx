@@ -9,6 +9,7 @@ import { LoginForm } from '../../../pages/LoginScreen/LoginScreen.interface';
 import { useAlert } from '../../../hooks/alertHooks/useAlert';
 import { getLanguages, Language } from '../../../api/loginApi'; // <-- uses your POST API
 import { getUserProfile } from '../../../utils/profileStorage';
+import { signupUser } from '../../../services/loginService';
 
 type Props = {
   setStep: (s: 'phone' | 'login' | 'signup') => void;
@@ -58,19 +59,19 @@ const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm }) 
     })();
   }, [loginForm]);
 
-  // keep parent form in sync (only fields it knows/uses)
-  useEffect(() => {
-    setLoginForm({
-      ...loginForm,
-      phone_no: mobileNo,
-      full_name: name,
-      emailId,
-      board,
-      class: studentClass,
-      langMedium,
-      langNative,
-    } as LoginForm);
-  }, [mobileNo, name, emailId, board, studentClass, langMedium, langNative]); // eslint-disable-line
+  // // keep parent form in sync (only fields it knows/uses)
+  // useEffect(() => {
+  //   setLoginForm({
+  //     ...loginForm,
+  //     phone_no: mobileNo,
+  //     full_name: name,
+  //     emailId,
+  //     board,
+  //     class: studentClass,
+  //     langMedium,
+  //     langNative,
+  //   } as LoginForm);
+  // }, [mobileNo, name, emailId, board, studentClass, langMedium, langNative]); // eslint-disable-line
 
   const canSubmit = useMemo(() => {
     const baseOk = !!name && !!mobileNo && !!langMedium && !!langNative;
@@ -108,24 +109,41 @@ const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm }) 
 
     try {
       setLoading(true);
-      // TODO: call your real signup endpoint here
-      // const resp = await registerUser(payload);
 
-      await presentAlert({
-        header: 'Success',
-        message: 'Account details captured. You can proceed to login.',
-        buttonsActions: [() => {}, () => {}],
+      const resp = await signupUser({
+        name: name.trim(),
+        mobile: mobileNo.trim(),
+        emailId: emailId.trim() || '',
+        board,
+        class: studentClass,
+        langMedium,
+        langNative,
       });
-      setStep('phone');
+
+      if (resp?.status === 'UPDATED') {
+        await presentAlert({
+          header: 'Success',
+          message: resp?.msg || 'Account created! Please log in with your new credentials.',
+          buttonsActions: [() => { }, () => { }],
+        });
+        // go to home
+      } else {
+        await presentAlert({
+          header: 'Signup failed',
+          message: resp?.msg || 'Something went wrong while creating your account.',
+          buttonsActions: [() => { }, () => { }],
+        });
+      }
     } catch (e: any) {
       await presentAlert({
         header: 'Signup failed',
         message: e?.message ?? 'Something went wrong while creating your account.',
-        buttonsActions: [() => {}, () => {}],
+        buttonsActions: [() => { }, () => { }],
       });
     } finally {
       setLoading(false);
     }
+
   };
 
   const renderLangOptions = () =>
@@ -155,10 +173,10 @@ const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm }) 
 
           <IonItem lines="full" className="padAI-login-input">
             <IonLabel position="stacked">Mobile Number</IonLabel>
-            <IonInput type="tel" value={mobileNo} placeholder="10-digit mobile number" onIonChange={(e) => setMobileNo((e.detail.value || '').trim())} />
+            <IonInput type="tel" value={mobileNo} placeholder="10-digit mobile number" readonly/>
           </IonItem>
 
-          <IonItem lines="full" className="padAI-login-input">
+          {/* <IonItem lines="full" className="padAI-login-input">
             <IonLabel position="stacked">Board</IonLabel>
             <IonInput value={board} placeholder="(Optional) e.g., CBSE, ICSE" onIonChange={(e) => setBoard(e.detail.value || '')} />
           </IonItem>
@@ -166,6 +184,34 @@ const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm }) 
           <IonItem lines="full" className="padAI-login-input">
             <IonLabel position="stacked">Class</IonLabel>
             <IonInput value={studentClass} placeholder="(Optional) e.g., 10" onIonChange={(e) => setStudentClass(e.detail.value || '')} />
+          </IonItem> */}
+          <IonItem lines="full" className="padAI-login-input">
+            <IonLabel position="stacked">Board</IonLabel>
+            <IonSelect
+              interface="popover"
+              placeholder="Select board"
+              value={board}
+              onIonChange={(e) => setBoard(e.detail.value)}
+            >
+              <IonSelectOption value="CBSE">CBSE</IonSelectOption>
+              <IonSelectOption value="ICSE">ICSE</IonSelectOption>
+            </IonSelect>
+          </IonItem>
+
+          <IonItem lines="full" className="padAI-login-input">
+            <IonLabel position="stacked">Class</IonLabel>
+            <IonSelect
+              interface="popover"
+              placeholder="Select class"
+              value={studentClass}
+              onIonChange={(e) => setStudentClass(e.detail.value)}
+            >
+              {[...Array(10)].map((_, i) => (
+                <IonSelectOption key={i + 1} value={(i + 1).toString()}>
+                  {i + 1}
+                </IonSelectOption>
+              ))}
+            </IonSelect>
           </IonItem>
 
           <IonItem lines="full" className="padAI-login-input">

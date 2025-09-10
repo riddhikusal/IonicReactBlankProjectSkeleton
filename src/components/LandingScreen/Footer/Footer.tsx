@@ -4,7 +4,7 @@ import React from 'react';
     const PadaiFooter: React.FC = () => {
     return (
         <div className='padAIFooter-container'> 
-            <IonImg src="/assets/images/landingScreens/footer.png" alt="logo" className='padAIFooterLogo'/>
+            <IonImg src={`${import.meta.env.BASE_URL}/assets/images/landingScreens/footer.png`} alt="logo" className='padAIFooterLogo'/>
             <div className='padAIFooterText-container'>
                 <p>© 2025 Padai</p>
             </div>
