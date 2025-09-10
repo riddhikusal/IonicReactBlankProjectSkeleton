@@ -2,7 +2,7 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main ]   # change if your default branch differs
+    branches: [ feature-onboarding ]   # change if your default branch differs
   workflow_dispatch:
 
 permissions:
