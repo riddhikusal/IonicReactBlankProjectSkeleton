@@ -123,8 +123,8 @@ body {
     font-weight: 600;
     font-size: 14px;
     letter-spacing: 0.5px;
-    background: linear-gradient(135deg, #2a6720 0%, #02044d 100%);
-    box-shadow: 0 4px 15px rgba(42, 103, 32, 0.4);
+    background: linear-gradient(135deg, #2C07BE 0%, #8A68F9 50%, #FF28F4 100%);
+    box-shadow: 0 4px 15px rgba(44, 7, 190, 0.4);
     transition: all 0.3s ease;
     overflow: hidden;
     display: flex;
@@ -150,7 +150,7 @@ body {
     right: -2px;
     bottom: -2px;
     /* background: linear-gradient(45deg, #2a6720, #02044d, #1e4d2b, #0a1f5c, #3a7d2a, #030b6b); */
-    background: linear-gradient(45deg, #ebe723, #c18b39, #1e4d2b, #0a1f5c, #3a7d2a, #136b03);
+    background: linear-gradient(45deg, #2C07BE, #8A68F9, #FF28F4, #2C07BE, #8A68F9, #FF28F4);
     background-size: 400% 400%;
     z-index: -1;
     border-radius: 26px;
@@ -176,7 +176,7 @@ body {
   
   .btnGradient:hover {
     transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(42, 103, 32, 0.6);
+    box-shadow: 0 8px 25px rgba(44, 7, 190, 0.6);
   }
   
   .btnGradient:hover::before {
@@ -190,7 +190,7 @@ body {
   
   .btnGradient:active {
     transform: translateY(0);
-    box-shadow: 0 4px 15px rgba(42, 103, 32, 0.4);
+    box-shadow: 0 4px 15px rgba(44, 7, 190, 0.4);
   }
   
   /* Mobile-specific adjustments */

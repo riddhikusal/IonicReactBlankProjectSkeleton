@@ -10,7 +10,12 @@
 
 .reel {
   height: 245px;
-  width: 100%;
+  width: 96%;
+  border: 1px solid rgb(243, 243, 243);
+  padding: 0px;
+  border-radius: 18px;
+  overflow: hidden;
+  margin: 10px auto;
 }
 
 .reel div[data-vjs-player],
