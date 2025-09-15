@@ -113,7 +113,7 @@ const PadAIPhoneNoValidation = ({ setStep, loginForm, setLoginForm }: PhoneNoVal
                 <IonCardContent>
                     <IonText className='ion-margin-bottom'>
                         <p className='padAILoginTitle'>Sign In/ Sign Up</p>
-                        <p className='padAILoginSubTitle'>Use your mobile phone number or email</p>
+                        <p className='padAILoginSubTitle'>Use your mobile phone number</p>
                     </IonText>
 
 

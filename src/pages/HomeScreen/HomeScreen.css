@@ -59,3 +59,38 @@
     max-width: 150px;
     margin: 15px auto;
 }
+.padAIHomeScreenUserGreeting{
+    padding: 10px 20px;
+}
+.padAIHomeScreenUserGreetingText{
+    font-size: 21px;
+    font-weight: 900;
+    font-family: 'Inter', sans-serif;
+    padding: 0px;
+    margin: 0px;
+}
+.padAIHomeScreenUserGreeting-text-subtitle{
+    font-size: 16px;
+    font-weight: 400;
+    font-family: 'Inter', sans-serif;
+    font-style: italic;
+    padding: 0px;
+    margin: 0px;
+}
+.padAIHomeScreenUserBooksFilter{
+    width: 100%;
+    padding: 1px 20px;
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+    gap: 10px;
+}
+.padAIHomeScreenUserBooksFilter-text{
+    font-size: 16px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+}
+
+.padAIHomeScreenUserBooksFilter-text-active{
+    border-bottom: 2px solid #000000;
+}
