@@ -15,8 +15,9 @@ const PadAIBooksContainer: React.FC<IBooksContainerProps> = ({ booksImage, books
     return (
         <IonCol size="4">
             <IonImg src={booksImage} alt={booksName} className='padAIHomeScreenUserBooksImage' />
-            <IonText className="ion-text-wrap" style={{ textOverflow: 'ellipsis' }}>
-                <p className='padAIHomeScreenUserBooksFilter-text'>{booksName}</p>
+            <IonText className="ion-text-wrap padAIHomeScreenUserBooks-text-container" style={{ textOverflow: 'ellipsis' }}>
+                <p className='padAIHomeScreenUserBooks-text'>{booksName}, {booksSubject}</p>
+                <p className='padAIHomeScreenUserBooks-text author-text'>{booksAuthor}</p>
             </IonText>
         </IonCol>
     )
