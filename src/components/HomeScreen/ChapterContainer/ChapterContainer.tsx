@@ -5,14 +5,17 @@ export interface IChapterContainerProps {
     id: number;
     chapterImage: string;
     chapterName: string;
+    chapterSubject: string;
     lastReadDateTime: string;
+    showStarIcon: boolean;
+    showArrowIcon: boolean;
 }
 
-const PadAIChapterContainer: React.FC<IChapterContainerProps> = ({ id, chapterImage, chapterName, lastReadDateTime }) => {
+const PadAIChapterContainer: React.FC<IChapterContainerProps> = ({ id, chapterImage, chapterName, lastReadDateTime, chapterSubject, showStarIcon, showArrowIcon }) => {
     const navigate = useIonRouter();
 
     const goToContentView = () => {
-        navigate.push('/chapter', 'forward');
+        navigate.push('/chapter-details', 'forward');
     }
 
     return (
@@ -25,17 +28,18 @@ const PadAIChapterContainer: React.FC<IChapterContainerProps> = ({ id, chapterIm
                     <div className="padAIHomeScreenUserChapterTextContainerHeader">
                         <p className='padAIHomeScreenUserChapter-text chapter-text'>Chapter {id + 1}</p>
                         <IonButtons>
-                            <IonButton fill="clear">
+                            {showStarIcon && <IonButton fill="clear">
                                 <IonIcon icon={starOutline} />
-                            </IonButton>
-                            <IonButton fill="clear">
+                            </IonButton>}
+                            {showArrowIcon && <IonButton fill="clear">
                                 <IonIcon icon={arrowForward} />
-                            </IonButton>
+                            </IonButton>}
                         </IonButtons>
                     </div>
                     <IonText className="ion-text-wrap padAIHomeScreenUserChapter-text-container" style={{ textOverflow: 'ellipsis' }}>
                         {/* <p className='padAIHomeScreenUserChapter-text chapter-text'>Chapter {id + 1}</p> */}
                         <p className='padAIHomeScreenUserChapter-text chapter-name'>{chapterName}</p>
+                        {chapterSubject && <p className='padAIHomeScreenUserChapter-text chapter-subject'>{chapterSubject}</p>}
                         <p className='padAIHomeScreenUserChapter-text author-text'>{lastReadDateTime}</p>
                     </IonText>
                 </IonCol>

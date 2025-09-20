@@ -43,6 +43,7 @@ import { getPlatform } from './utils/platform';
 import PadAIHomeScreen from './pages/HomeScreen/HomeScreen';
 import PadAIVideoContentScreen from './pages/ContentViewScreens/VideoContentScreen/VideoContentScreen';
 import PadAIChaptersScreen from './pages/ChaptersScreen/ChaptersScreen';
+import PadAIChapterDetailsScreen from './pages/ChapterDetailsScreen/ChapterDetailsScreen';
 
 
 setupIonicReact();
@@ -104,6 +105,10 @@ const App: React.FC = () => {
             {/* Chapter Screen */}
             <Route path="/chapters-list" exact={true}>
               <PadAIChaptersScreen />
+            </Route>
+            {/* Chapter Details Screen */}
+            <Route path="/chapter-details" exact={true}>
+              <PadAIChapterDetailsScreen />
             </Route>
             {/* Video Content Screen */}
             <Route path="/video-content" exact={true}>

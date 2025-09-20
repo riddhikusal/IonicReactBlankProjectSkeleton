@@ -81,7 +81,15 @@ const PadAIChaptersScreen: React.FC = () => {
             <IonContent>
                 <IonRow className="padAIHomeScreenUserChapterRow">
                     {chapters.map((chapter, index) => (
-                        <PadAIChapterContainer key={index} id={index} chapterImage={chapter.chapterImage} chapterName={chapter.chapterName} lastReadDateTime={chapter.lastReadDateTime} />
+                        <PadAIChapterContainer 
+                        key={index} 
+                        id={index} 
+                        chapterImage={chapter.chapterImage} 
+                        chapterName={chapter.chapterName} 
+                        lastReadDateTime={chapter.lastReadDateTime} 
+                        chapterSubject={''} 
+                        showStarIcon={true} 
+                        showArrowIcon={true} />
                     ))}
                 </IonRow>
             </IonContent>
