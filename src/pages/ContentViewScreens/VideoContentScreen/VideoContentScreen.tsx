@@ -1,4 +1,4 @@
-import { IonContent, IonHeader, IonToolbar, IonTitle } from "@ionic/react";
+import { IonContent, IonHeader, IonToolbar, IonTitle, IonFooter } from "@ionic/react";
 
 import { IonPage } from "@ionic/react";
 import PadAIBackheader from "../../../components/Common/Backheader/Backheader";
@@ -16,8 +16,11 @@ const PadAIVideoContentScreen: React.FC = () => {
                 <PadAIVideoPlayer
                     video={VideoContentDummy}
                 />
-                <PadAIContentAIPanel />
+                {/* <PadAIContentAIPanel /> */}
             </IonContent>
+            <IonFooter>
+                <PadAIContentAIPanel />
+            </IonFooter>
         </IonPage>
     );
 };
