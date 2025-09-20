@@ -1,0 +1,49 @@
+.padAIHomeScreenUserChapterImage{
+    height: 120px;
+}
+.padAIHomeScreenUserChapterContainer{
+    background: #fdfdfd;
+    padding: 0px !important;
+    border-radius: 10px;
+    width: 100% !important;
+    margin-bottom: 10px !important;
+    border: 1px solid #e7e7e7;
+}
+.padAIHomeScreenUserChapterCardRow{
+    width: 100% !important;
+}
+.padAIHomeScreenUserChapter-text-container p{
+    margin: 0px;
+    padding: 1px 10px;
+    align-items: flex-start;
+    padding-bottom: 10px;
+}
+.chapter-name{
+    font-size: 20px !important;
+    font-weight: 600 !important;
+    font-family: 'Inter', sans-serif !important;
+    color: #000 !important;
+    text-align: left;
+    margin-top: 3px !important;
+    margin-bottom: 10px !important;
+}
+.chapter-text{
+    margin: 0px !important;
+}
+.padAIHomeScreenUserChapterTextContainer{
+    margin: 0px;
+    align-items: flex-start;
+    /* padding: 1px 12px !important; */
+}
+.padAIHomeScreenUserChapterTextContainerHeader{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: 1px 10px !important;
+    border-bottom: 1px solid #dfdfdf;
+}
+.padAIHomeScreenUserChapterTextContainerHeader ion-icon{
+    font-size: 20px;
+    color: #000;
+}

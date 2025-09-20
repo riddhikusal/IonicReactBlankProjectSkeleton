@@ -1,7 +1,6 @@
-import { IonCol, IonContent, IonHeader, IonImg, IonItem, IonPage, IonRow, IonSegment, IonSegmentButton, IonSelect, IonSelectOption, IonText, IonTitle, IonToolbar, useIonRouter } from '@ionic/react';
+import {  IonContent, IonHeader, IonImg,  IonPage, IonRow, IonSegment, IonSegmentButton,  IonText,  useIonRouter } from '@ionic/react';
 import './HomeScreen.css';
 import Commonheader from '../../components/Common/Commonheader/Commonheader';
-import PadaiButton from '../../components/Common/Buttons/Button';
 import { useState } from 'react';
 import PadAIBooksContainer from '../../components/HomeScreen/BooksContainer/BooksContainer';
 const user = {
@@ -127,7 +126,7 @@ const PadAIHomeScreen: React.FC = () => {
         <IonPage>
             <Commonheader />
             <IonImg src="/assets/images/dashboardScreen/topVectorOne.png" alt="headerBanner" className='padAIvectorTwoBg' />
-            <IonContent className='padAIhomeScreen-content'>
+            <IonHeader>
                 <div className="padAIHomeScreenUserGreeting">
                     <IonText>
                         <p className='padAIHomeScreenUserGreetingText'>Hello, {user?.name || 'Guest'} </p>
@@ -152,6 +151,8 @@ const PadAIHomeScreen: React.FC = () => {
                         ))}
                     </IonSegment>
                 </div>
+            </IonHeader>
+            <IonContent className='padAIhomeScreen-content'>
                 <div className='padAIHomeSection-Container'>
                     <IonRow>
                         {books.map((book, index) => (

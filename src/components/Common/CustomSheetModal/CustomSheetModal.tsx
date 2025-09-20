@@ -110,7 +110,7 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
           <div className="modal-handle" />
           <div className="modal-actions">
             <IonButton 
-              fill="clear" 
+              fill="clear"
               onClick={handleExpand}
               className="expand-button"
             >

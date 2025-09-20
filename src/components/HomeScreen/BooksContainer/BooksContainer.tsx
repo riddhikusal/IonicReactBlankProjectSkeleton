@@ -1,4 +1,4 @@
-import { IonCol, IonImg, IonRow, IonText } from "@ionic/react";
+import { IonCol, IonImg, IonRow, IonText, useIonRouter } from "@ionic/react";
 import './BooksContainer.css';
 
 
@@ -11,9 +11,13 @@ export interface IBooksContainerProps {
 // /assets/images/books/1.png'
 
 const PadAIBooksContainer: React.FC<IBooksContainerProps> = ({ booksImage, booksName, booksAuthor, booksSubject }) => {
+    const navigate = useIonRouter();
 
+    const goToChapter = () => {
+        navigate.push('/chapters-list', 'forward');
+    }
     return (
-        <IonCol size="4">
+        <IonCol size="4" onClick={goToChapter}>
             <IonImg src={booksImage} alt={booksName} className='padAIHomeScreenUserBooksImage' />
             <IonText className="ion-text-wrap padAIHomeScreenUserBooks-text-container" style={{ textOverflow: 'ellipsis' }}>
                 <p className='padAIHomeScreenUserBooks-text'>{booksName}, {booksSubject}</p>
