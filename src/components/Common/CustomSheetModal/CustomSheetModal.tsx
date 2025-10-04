@@ -8,6 +8,7 @@ interface Message {
   text: string;
   isUser: boolean;
   timestamp: Date;
+  type: 'ai' | 'user' | 'selected-text';
 }
 
 interface CustomSheetModalProps {
@@ -15,17 +16,45 @@ interface CustomSheetModalProps {
   onClose: () => void;
   trigger?: string;
   selectedText?: string;
-
 }
-
-const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, trigger }) => {
+const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, trigger, selectedText }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isInitialAppear, setIsInitialAppear] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      text: 'Hello! How can I help you today?',
+      text: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. In, nihil voluptas qui voluptatum laborum officiis quidem facere deleniti aliquid quia iusto modi nam reprehenderit animi sequi molestiae consectetur consequatur. Natus, sunt doloribus, aperiam vero molestiae mollitia tempora aut cupiditate est suscipit magni pariatur amet nam voluptatum error eos quisquam minima culpa repellendus. Nulla nihil optio assumenda eum excepturi omnis, earum quidem. Laborum corporis accusamus nobis reprehenderit? Ea reprehenderit at eaque. Nihil, iste facilis saepe impedit, vero quos repellat enim nostrum praesentium, dolore ipsa voluptates vel quo aspernatur ex ullam asperiores alias minus voluptas obcaecati rerum quaerat! Nihil iste quod error!',
       isUser: false,
-      timestamp: new Date()
+      timestamp: new Date(),
+      type: 'ai'
+    },
+    {
+      id: '2',
+      text: 'This is a long selected text that should be displayed with ellipses to show that it\'s been copied or selected from somewhere else in the application. This text represents content that the user has highlighted or copied from a document, article, or any other source.',
+      isUser: false,
+      timestamp: new Date(Date.now() - 300000),
+      type: 'selected-text'
+    },
+    {
+      id: '3',
+      text: 'Can you help me understand this concept better?',
+      isUser: true,
+      timestamp: new Date(Date.now() - 180000),
+      type: 'user'
+    },
+    {
+      id: '4',
+      text: 'Of course! I\'d be happy to help you understand this concept. Based on the selected text you\'ve shared, it appears to be discussing complex theoretical concepts. Let me break it down for you in simpler terms.',
+      isUser: false,
+      timestamp: new Date(Date.now() - 120000),
+      type: 'ai'
+    },
+    {
+      id: '5',
+      text: 'Another piece of selected text from a different source that demonstrates how the selected text message type works with different content lengths.',
+      isUser: false,
+      timestamp: new Date(Date.now() - 60000),
+      type: 'selected-text'
     }
   ]);
   const [inputText, setInputText] = useState('');
@@ -35,8 +64,15 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
+      setIsInitialAppear(true);
+      // Remove initial appear class after animation completes
+      const timer = setTimeout(() => {
+        setIsInitialAppear(false);
+      }, 300);
+      return () => clearTimeout(timer);
     } else {
       document.body.style.overflow = 'unset';
+      setIsInitialAppear(false);
     }
 
     return () => {
@@ -67,7 +103,8 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
         id: Date.now().toString(),
         text: inputText.trim(),
         isUser: true,
-        timestamp: new Date()
+        timestamp: new Date(),
+        type: 'user'
       };
       
       setMessages(prev => [...prev, newMessage]);
@@ -79,7 +116,8 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
           id: (Date.now() + 1).toString(),
           text: 'I received your message: "' + newMessage.text + '". This is a simulated response.',
           isUser: false,
-          timestamp: new Date()
+          timestamp: new Date(),
+          type: 'ai'
         };
         setMessages(prev => [...prev, aiResponse]);
       }, 1000);
@@ -93,6 +131,10 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
     }
   };
 
+  const handleRemoveSelectedText = (messageId: string) => {
+    setMessages(prev => prev.filter(msg => msg.id !== messageId));
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -103,7 +145,7 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
       {/* Modal */}
       <div 
         ref={modalRef}
-        className={`custom-sheet-modal ${isExpanded ? 'expanded' : 'collapsed'}`}
+        className={`custom-sheet-modal ${isExpanded ? 'expanded' : 'collapsed'} ${isInitialAppear ? 'initial-appear' : ''}`}
       >
         {/* Header */}
         <div className="modal-header">
@@ -133,17 +175,42 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
               {messages.map((message) => (
                 <div 
                   key={message.id} 
-                  className={`message ${message.isUser ? 'user-message' : 'ai-message'}`}
+                  className={`message ${message.type === 'user' ? 'user-message' : message.type === 'selected-text' ? 'selected-text-message' : 'ai-message'}`}
                 >
-                  <div className="message-bubble">
-                    <IonText>{message.text}</IonText>
-                    <div className="message-time">
-                      {message.timestamp.toLocaleTimeString([], { 
-                        hour: '2-digit', 
-                        minute: '2-digit' 
-                      })}
+                  {message.type === 'selected-text' ? (
+                    <div className="selected-text-container">
+                      <div className="selected-text-header">
+                        <span className="selected-text-label">Selected Text</span>
+                        <IonButton 
+                          fill="clear" 
+                          size="small"
+                          onClick={() => handleRemoveSelectedText(message.id)}
+                          className="remove-selected-button"
+                        >
+                          <IonIcon icon={close} />
+                        </IonButton>
+                      </div>
+                      <div className="selected-text-content">
+                        <IonText>{message.text}</IonText>
+                      </div>
+                      <div className="message-time">
+                        {message.timestamp.toLocaleTimeString([], { 
+                          hour: '2-digit', 
+                          minute: '2-digit' 
+                        })}
+                      </div>
                     </div>
-                  </div>
+                  ) : (
+                    <div className="message-bubble">
+                      <IonText>{message.text}</IonText>
+                      <div className="message-time">
+                        {message.timestamp.toLocaleTimeString([], { 
+                          hour: '2-digit', 
+                          minute: '2-digit' 
+                        })}
+                      </div>
+                    </div>
+                  )}
                 </div>
               ))}
               <div ref={messagesEndRef} />

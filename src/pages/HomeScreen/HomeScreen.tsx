@@ -1,8 +1,11 @@
-import {  IonContent, IonHeader, IonImg,  IonPage, IonRow, IonSegment, IonSegmentButton,  IonText,  useIonRouter } from '@ionic/react';
+import { IonCol, IonContent, IonHeader, IonImg, IonPage, IonRow, IonSegment, IonSegmentButton, IonSkeletonText, IonText, useIonRouter } from '@ionic/react';
 import './HomeScreen.css';
 import Commonheader from '../../components/Common/Commonheader/Commonheader';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import PadAIBooksContainer from '../../components/HomeScreen/BooksContainer/BooksContainer';
+import { GetSubjects } from '../../services/homeService';
+import { useToaster } from '../../hooks/toasterHooks/useToaster';
+import { IGetSubjectsRequest, IGetSubjectsResponse } from '../../api/contentApi/contentApi.interface';
 const user = {
     name: 'John Doe'
 }
@@ -120,8 +123,55 @@ const books = [
     },
 ]
 const PadAIHomeScreen: React.FC = () => {
+    const { dangerToaster } = useToaster();
     const navigate = useIonRouter();
     const [selectedSubject, setSelectedSubject] = useState<string>('All');
+    const [subjects, setSubjects] = useState<IGetSubjectsResponse[]>([]);
+    const [filteredSubjects, setFilteredSubjects] = useState<IGetSubjectsResponse[]>([]);
+    const [isubjectDataLoading, setIsubjectDataLoading] = useState<boolean>(false);
+
+    const getAllSubjects = async () => {
+        try {
+            setIsubjectDataLoading(true);
+            let getData: IGetSubjectsRequest = {
+                language: 'en',
+                classId: 13
+            }
+            const res = await GetSubjects(getData);
+            console.log("Component", res);
+            if (res.responseStatus === 'DATA_FOUND') {
+                setSubjects(res.data);
+                setFilteredSubjects(res.data);
+            } else {
+                dangerToaster(res.message);
+            }
+        } catch (error: any) {
+            console.log(error);
+            setSubjects([]);
+            dangerToaster(error.message);
+
+        } finally {
+            setIsubjectDataLoading(false);
+        }
+    }
+
+    const filterSubjects = () => {
+        if (selectedSubject === 'All') {
+            setFilteredSubjects(subjects);
+            return;
+        }
+        setFilteredSubjects(subjects.filter((subject) => subject.info === selectedSubject));
+    }
+
+    useEffect(() => {
+        getAllSubjects();
+    }, []);
+
+    useEffect(() => {
+        console.log("selectedSubject", selectedSubject);
+        filterSubjects();
+    }, [selectedSubject]);
+
     return (
         <IonPage>
             <Commonheader />
@@ -136,28 +186,43 @@ const PadAIHomeScreen: React.FC = () => {
                     </IonText>
                 </div>
                 <div className='padAIHomeScreenUserBooksFilter'>
-                    <IonSegment scrollable={true} value="All">
-                        <IonSegmentButton value="All">
-                            <IonText onClick={() => setSelectedSubject('All')}>
-                                <p className={`padAIHomeScreenUserBooksFilter-text`}>All</p>
-                            </IonText>
-                        </IonSegmentButton>
-                        {subjects.map((subject, index) => (
-                            <IonSegmentButton key={index} value={subject.name}>
-                                <IonText key={index} onClick={() => setSelectedSubject(subject.name)}>
-                                    <p className={`padAIHomeScreenUserBooksFilter-text`}>{subject.name}</p>
-                                </IonText>
-                            </IonSegmentButton>
-                        ))}
+                    <IonSegment scrollable={true} value={selectedSubject}>
+                        {isubjectDataLoading && [1, 2, 3, 4].map((index) => <IonSegmentButton><IonSkeletonText key={index} animated={true} style={{ width: '80px' }}></IonSkeletonText></IonSegmentButton>)}
+                        {!isubjectDataLoading && (
+                            <>
+                                <IonSegmentButton value="All" onClick={() => setSelectedSubject('All')}>
+                                    <IonText>
+                                        <p className={`padAIHomeScreenUserBooksFilter-text`}>All</p>
+                                    </IonText>
+                                </IonSegmentButton>
+                                {subjects.map((subject, index) => (
+                                    <IonSegmentButton key={index} value={subject.info} onClick={() => setSelectedSubject(subject.info)}>
+                                        <IonText key={index}>
+                                            <p className={`padAIHomeScreenUserBooksFilter-text`}>{subject.info}</p>
+                                        </IonText>
+                                    </IonSegmentButton>
+                                ))}
+                            </>)}
                     </IonSegment>
                 </div>
             </IonHeader>
             <IonContent className='padAIhomeScreen-content'>
                 <div className='padAIHomeSection-Container'>
-                    <IonRow>
-                        {books.map((book, index) => (
-                            <PadAIBooksContainer key={index} booksImage={book.image} booksName={book.name} booksAuthor={book.author} booksSubject={book.subject} />
-                        ))}
+                    <IonRow className='padAIHomeSection-Container-Row'>
+                        {isubjectDataLoading && [1, 2, 3, 4, 5, 6, 7, 8, 9].map((index) =>
+                        (<IonCol size="4">
+                            <IonText className="ion-text-wrap padAIHomeScreenUserBooks-text-container" style={{ textOverflow: 'ellipsis' }}>
+                                <IonSkeletonText animated={true} style={{ width: '120px', height: '180px' }}></IonSkeletonText>
+                            </IonText>
+                        </IonCol>)
+
+                        )}
+                        {!isubjectDataLoading && (
+                            <>
+                                {filteredSubjects.map((book, index) => (
+                                    <PadAIBooksContainer key={index} booksImage={book.image} booksName={book.info} booksAuthor={'N/A'} booksSubject={book.info} booksSubjectId={book.subjectId} />
+                                ))}
+                            </>)}
                     </IonRow>
                 </div>
             </IonContent>

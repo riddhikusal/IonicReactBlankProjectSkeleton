@@ -9,11 +9,11 @@ const PadAIContentAIPanel = () => {
     const modal = useRef<HTMLIonModalElement>(null);
     return (<>
         <div className='padAIcontentAIPanel-container-overlay'>
-            {showSelectedText && <div className='padAIcontentAIPanel-description-container'>
+            {/* {showSelectedText && <div className='padAIcontentAIPanel-description-container'>
                 <IonText className='padAIcontentAIPanel-description-text'><p>
                     " Lorem ipsum dolor sit amet consectetur adipisicing elit. Qui laudantium perferendis magni at illum, earum itaque quaerat impedit soluta, optio placeat! Ab ipsam earum ex sit praesentium vitae! Repellat saepe commodi laudantium atque, praesentium aliquam expedita corrupti necessitatibus eaque possimus."
                 </p></IonText>
-            </div>}
+            </div>} */}
             <div className="padAIcontentAIPanel-container">
                 <div className="padAIFooterFlexBtnContainer">
                     <IonButton
@@ -36,6 +36,7 @@ const PadAIContentAIPanel = () => {
         <CustomSheetModal
             isOpen={isModalOpen}
             onClose={() => setIsModalOpen(false)}
+            selectedText={'Lorem ipsum dolor sit amet consectetur adipisicing elit. In, nihil voluptas qui voluptatum laborum officiis quidem facere deleniti aliquid quia iusto modi nam reprehenderit animi sequi molestiae consectetur consequatur. Natus, sunt doloribus, aperiam vero molestiae mollitia tempora aut cupiditate est suscipit magni pariatur amet nam voluptatum error eos quisquam minima culpa repellendus. Nulla nihil optio assumenda eum excepturi omnis, earum quidem. Laborum corporis accusamus nobis reprehenderit? Ea reprehenderit at eaque. Nihil, iste facilis saepe impedit, vero quos repellat enim nostrum praesentium, dolore ipsa voluptates vel quo aspernatur ex ullam asperiores alias minus voluptas obcaecati rerum quaerat! Nihil iste quod error!'}
         />
     </>
 

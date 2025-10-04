@@ -9,6 +9,8 @@ const chapter = {
     lastReadDateTime: 'Last Read: 10/09/2025',
 }
 
+
+
 const PadAIChapterDetailsScreen: React.FC = () => {
     return (
         <IonPage>

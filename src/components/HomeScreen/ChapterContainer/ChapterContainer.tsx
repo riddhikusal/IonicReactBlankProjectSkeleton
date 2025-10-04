@@ -9,13 +9,14 @@ export interface IChapterContainerProps {
     lastReadDateTime: string;
     showStarIcon: boolean;
     showArrowIcon: boolean;
+    index:number
 }
 
-const PadAIChapterContainer: React.FC<IChapterContainerProps> = ({ id, chapterImage, chapterName, lastReadDateTime, chapterSubject, showStarIcon, showArrowIcon }) => {
+const PadAIChapterContainer: React.FC<IChapterContainerProps> = ({ id, chapterImage, chapterName, lastReadDateTime, chapterSubject, showStarIcon, showArrowIcon,index }) => {
     const navigate = useIonRouter();
 
     const goToContentView = () => {
-        navigate.push('/chapter-details', 'forward');
+        navigate.push('/chapter-details?id='+id, 'forward');
     }
 
     return (
@@ -26,7 +27,7 @@ const PadAIChapterContainer: React.FC<IChapterContainerProps> = ({ id, chapterIm
                 </IonCol>
                 <IonCol size="9" className="padAIHomeScreenUserChapterTextContainer colBorderClass">
                     <div className="padAIHomeScreenUserChapterTextContainerHeader">
-                        <p className='padAIHomeScreenUserChapter-text chapter-text'>Chapter {id + 1}</p>
+                        <p className='padAIHomeScreenUserChapter-text chapter-text'>Chapter {index + 1}</p>
                         <IonButtons>
                             {showStarIcon && <IonButton fill="clear">
                                 <IonIcon icon={starOutline} />

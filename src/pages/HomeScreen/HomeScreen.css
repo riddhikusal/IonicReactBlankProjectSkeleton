@@ -94,3 +94,7 @@
 .padAIHomeScreenUserBooksFilter-text-active{
     border-bottom: 2px solid #000000;
 }
+
+.padAIHomeSection-Container-Row{
+    width: 100% !important;
+}

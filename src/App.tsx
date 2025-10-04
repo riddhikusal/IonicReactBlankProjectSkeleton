@@ -106,14 +106,23 @@ const App: React.FC = () => {
             <Route path="/chapters-list" exact={true}>
               <PadAIChaptersScreen />
             </Route>
+            {/* Chapter Screen with dynamic route parameter */}
+            <Route path="/chapters-list/:bookId" exact={true}>
+              <PadAIChaptersScreen />
+            </Route>
             {/* Chapter Details Screen */}
-            <Route path="/chapter-details" exact={true}>
+            <Route path="/chapter-details/:id" exact={true}>
               <PadAIChapterDetailsScreen />
             </Route>
             {/* Video Content Screen */}
             <Route path="/video-content" exact={true}>
               <PadAIVideoContentScreen />
             </Route>
+            
+            {/* Catch-all route - redirect any invalid route to home */}
+            {/* <Route path="*">
+              <Redirect to="/home" />
+            </Route> */}
           </IonRouterOutlet>
         </IonSplitPane>
       </IonReactRouter>

@@ -1,9 +1,14 @@
 import { IonContent, IonHeader, IonImg, IonRow, IonText, IonTitle, useIonRouter } from "@ionic/react";
 import './ChaptersScreen.css';
 import { IonPage } from "@ionic/react";
+import { useLocation, useParams } from 'react-router-dom';
+import { useEffect, useState } from "react";
 
 import PadAIBackheader from "../../components/Common/Backheader/Backheader";
 import PadAIChapterContainer from "../../components/HomeScreen/ChapterContainer/ChapterContainer";
+import { GetChapters } from "../../services/homeService";
+import { IGetChapterRequest, IGetChapterResponse } from "../../api/contentApi/contentApi.interface";
+import { useToaster } from "../../hooks/toasterHooks/useToaster";
 
 const chapters = [
     {
@@ -60,7 +65,47 @@ const chapters = [
 
 
 const PadAIChaptersScreen: React.FC = () => {
+    const { dangerToaster } = useToaster();
     const navigate = useIonRouter();
+    const location = useLocation();
+    const { bookId } = useParams<{ bookId: string }>();
+    const [chapters, setChapters] = useState<IGetChapterResponse[]>([]);
+
+    // Method 1: Get query parameters from URL
+    const searchParams = new URLSearchParams(location.search);
+    const subjectId = searchParams.get('subjectId');
+    const subject = searchParams.get('subject');
+    const bookName = searchParams.get('bookName');
+
+    // Method 2: Get route parameters (from /chapters-list/:bookId)
+    const routeBookId = bookId;
+
+    // Method 3: Get state data (if passed via navigate.push with state)
+    const stateData = location.state as any;
+
+
+
+    const getChapters = async () => {
+        if (subjectId) {
+            let getData: IGetChapterRequest = {
+                subjectId: Number(subjectId),
+                language: 'en'
+            }
+            const res = await GetChapters(getData);
+            if (res.responseStatus === 'DATA_FOUND') {
+                setChapters(res.data);
+            } else {
+                setChapters([]);
+                dangerToaster(res.message);
+                navigate.push('/home');
+            }
+        }
+    }
+
+    useEffect(() => {
+        console.log(subjectId, subject, bookName, routeBookId, stateData);
+        getChapters();
+    }, [subjectId, subject, bookName, routeBookId, stateData]);
 
     return (
         <IonPage>
@@ -70,10 +115,11 @@ const PadAIChaptersScreen: React.FC = () => {
             <IonHeader>
                 <div className="padAIHomeScreenUserGreeting">
                     <IonText>
-                        <p className='padAIHomeScreenUserGreetingText'>SCIENCE (NCERT) </p>
+                        <p className='padAIHomeScreenUserGreetingText'>{subject || 'SCIENCE (NCERT)'}</p>
                     </IonText>
                     <IonText className='padAIHomeScreenUserGreeting-text-subtitle'>
                         Total Chapters : 10
+                        {bookName && <span> | Book: {bookName}</span>}
                     </IonText>
                 </div>
             </IonHeader>
@@ -81,15 +127,17 @@ const PadAIChaptersScreen: React.FC = () => {
             <IonContent>
                 <IonRow className="padAIHomeScreenUserChapterRow">
                     {chapters.map((chapter, index) => (
-                        <PadAIChapterContainer 
-                        key={index} 
-                        id={index} 
-                        chapterImage={chapter.chapterImage} 
-                        chapterName={chapter.chapterName} 
-                        lastReadDateTime={chapter.lastReadDateTime} 
-                        chapterSubject={''} 
-                        showStarIcon={true} 
-                        showArrowIcon={true} />
+                        <PadAIChapterContainer
+                            key={index}
+                            id={chapter.chapterId}
+                            chapterImage={chapter.image}
+                            chapterName={chapter.title}
+                            lastReadDateTime={new Date().toLocaleDateString()}
+                            chapterSubject={''}
+                            showStarIcon={true}
+                            showArrowIcon={true}
+                            index={index}
+                        />
                     ))}
                 </IonRow>
             </IonContent>

@@ -83,7 +83,7 @@ ion-modal .modal-wrapper {
 /* Ensure the content panel stays fixed at bottom and on top */
 .padAIcontentAIPanel-container-overlay {
     position: fixed !important;
-    bottom: 7px !important;
+    bottom: 25px !important;
     z-index: 1000 !important;
     isolation: isolate;
 }
