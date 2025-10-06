@@ -1,4 +1,4 @@
-import { IonContent, IonHeader, IonImg, IonRow, IonText, IonTitle, useIonRouter } from "@ionic/react";
+import { IonCol, IonContent, IonHeader, IonImg, IonItem, IonLabel, IonList, IonListHeader, IonRow, IonSkeletonText, IonText, IonThumbnail, IonTitle, useIonRouter } from "@ionic/react";
 import './ChaptersScreen.css';
 import { IonPage } from "@ionic/react";
 import { useLocation, useParams } from 'react-router-dom';
@@ -10,58 +10,6 @@ import { GetChapters } from "../../services/homeService";
 import { IGetChapterRequest, IGetChapterResponse } from "../../api/contentApi/contentApi.interface";
 import { useToaster } from "../../hooks/toasterHooks/useToaster";
 
-const chapters = [
-    {
-        chapterImage: '/assets/images/chapters/Ch01.jpeg',
-        chapterName: 'Chemical Reactions and Equations',
-        lastReadDateTime: 'Last Read: 10/09/2025'
-    },
-    {
-        chapterImage: '/assets/images/chapters/Ch02.jpeg',
-        chapterName: 'Atoms and Molecules',
-        lastReadDateTime: 'Last Read: 10/09/2025'
-    },
-    {
-        chapterImage: '/assets/images/chapters/Ch03.jpeg',
-        chapterName: 'Molecules and Ions',
-        lastReadDateTime: 'Last Read: 10/09/2025'
-    },
-    {
-        chapterImage: '/assets/images/chapters/Ch04.jpeg',
-        chapterName: 'Atomic Structure',
-        lastReadDateTime: 'Last Read: 10/09/2025'
-    },
-    {
-        chapterImage: '/assets/images/chapters/Ch05.jpeg',
-        chapterName: 'Periodic Classification of Elements',
-        lastReadDateTime: 'Last Read: 10/09/2025'
-    },
-    {
-        chapterImage: '/assets/images/chapters/Ch06.jpeg',
-        chapterName: 'Life Processes',
-        lastReadDateTime: 'Last Read: 10/09/2025'
-    },
-    {
-        chapterImage: '/assets/images/chapters/Ch07.jpeg',
-        chapterName: 'The S-Block Elements',
-        lastReadDateTime: 'Last Read: 10/09/2025'
-    },
-    {
-        chapterImage: '/assets/images/chapters/Ch08.jpeg',
-        chapterName: 'The P-Block Elements',
-        lastReadDateTime: 'Last Read: 10/09/2025'
-    },
-    {
-        chapterImage: '/assets/images/chapters/Ch09.jpeg',
-        chapterName: 'The D-Block Elements',
-        lastReadDateTime: 'Last Read: 10/09/2025'
-    },
-    {
-        chapterImage: '/assets/images/chapters/Ch10.jpeg',
-        chapterName: 'The f-Block Elements',
-        lastReadDateTime: 'Last Read: 10/09/2025'
-    }
-]
 
 
 const PadAIChaptersScreen: React.FC = () => {
@@ -70,6 +18,7 @@ const PadAIChaptersScreen: React.FC = () => {
     const location = useLocation();
     const { bookId } = useParams<{ bookId: string }>();
     const [chapters, setChapters] = useState<IGetChapterResponse[]>([]);
+    const [isChaptersLoading, setIsChaptersLoading] = useState(false);
 
     // Method 1: Get query parameters from URL
     const searchParams = new URLSearchParams(location.search);
@@ -86,19 +35,30 @@ const PadAIChaptersScreen: React.FC = () => {
 
 
     const getChapters = async () => {
-        if (subjectId) {
-            let getData: IGetChapterRequest = {
-                subjectId: Number(subjectId),
-                language: 'en'
+        try {
+            if (subjectId) {
+                setIsChaptersLoading(true);
+                let getData: IGetChapterRequest = {
+                    subjectId: Number(subjectId),
+                    language: 'en'
+                }
+                const res = await GetChapters(getData);
+                if (res.responseStatus === 'DATA_FOUND') {
+                    setChapters(res.data);
+                } else {
+                    setChapters([]);
+                    dangerToaster(res.message);
+                    navigate.push('/home');
+                }
             }
-            const res = await GetChapters(getData);
-            if (res.responseStatus === 'DATA_FOUND') {
-                setChapters(res.data);
-            } else {
-                setChapters([]);
-                dangerToaster(res.message);
-                navigate.push('/home');
-            }
+        } catch (error) {
+            console.log(error);
+            setChapters([]);
+            dangerToaster('Something went wrong');
+            navigate.push('/home');
+        }
+        finally {
+            setIsChaptersLoading(false);
         }
     }
 
@@ -118,15 +78,37 @@ const PadAIChaptersScreen: React.FC = () => {
                         <p className='padAIHomeScreenUserGreetingText'>{subject || 'SCIENCE (NCERT)'}</p>
                     </IonText>
                     <IonText className='padAIHomeScreenUserGreeting-text-subtitle'>
-                        Total Chapters : 10
-                        {bookName && <span> | Book: {bookName}</span>}
+                        Total Chapters : {chapters.length}
                     </IonText>
                 </div>
             </IonHeader>
 
             <IonContent>
                 <IonRow className="padAIHomeScreenUserChapterRow">
-                    {chapters.map((chapter, index) => (
+                    {isChaptersLoading && [1, 2, 3, 4, 5, 6, 7].map((item) => (<IonCol size='12' key={item}>
+                        <IonList style={{ width: '100%' }}>
+                            <IonListHeader>
+                                <IonSkeletonText animated={true} style={{ width: '80px' }}></IonSkeletonText>
+                            </IonListHeader>
+                            <IonItem lines="none">
+                                <IonThumbnail slot="start">
+                                    <IonSkeletonText animated={true}></IonSkeletonText>
+                                </IonThumbnail>
+                                <IonLabel>
+                                    <h3>
+                                        <IonSkeletonText animated={true} style={{ width: '80%' }}></IonSkeletonText>
+                                    </h3>
+                                    <p>
+                                        <IonSkeletonText animated={true} style={{ width: '60%' }}></IonSkeletonText>
+                                    </p>
+                                    <p>
+                                        <IonSkeletonText animated={true} style={{ width: '30%' }}></IonSkeletonText>
+                                    </p>
+                                </IonLabel>
+                            </IonItem>
+                        </IonList>
+                    </IonCol>))}
+                    {!isChaptersLoading && chapters.map((chapter, index) => (
                         <PadAIChapterContainer
                             key={index}
                             id={chapter.chapterId}

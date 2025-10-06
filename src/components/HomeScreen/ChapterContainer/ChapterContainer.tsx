@@ -16,7 +16,8 @@ const PadAIChapterContainer: React.FC<IChapterContainerProps> = ({ id, chapterIm
     const navigate = useIonRouter();
 
     const goToContentView = () => {
-        navigate.push('/chapter-details?id='+id, 'forward');
+        // Use route parameters instead of query parameters to match the route definition
+        navigate.push(`/chapter-details/${id}`, 'forward');
     }
 
     return (
@@ -41,7 +42,7 @@ const PadAIChapterContainer: React.FC<IChapterContainerProps> = ({ id, chapterIm
                         {/* <p className='padAIHomeScreenUserChapter-text chapter-text'>Chapter {id + 1}</p> */}
                         <p className='padAIHomeScreenUserChapter-text chapter-name'>{chapterName}</p>
                         {chapterSubject && <p className='padAIHomeScreenUserChapter-text chapter-subject'>{chapterSubject}</p>}
-                        <p className='padAIHomeScreenUserChapter-text author-text'>{lastReadDateTime}</p>
+                        <p className='padAIHomeScreenUserChapter-text author-text'>Last Read: {lastReadDateTime}</p>
                     </IonText>
                 </IonCol>
             </IonRow>

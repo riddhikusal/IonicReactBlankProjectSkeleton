@@ -1,6 +1,6 @@
 // src/api/contentApi/contentApi.ts
 import apiClient from '../axiosInstance';
-import { IChapter, IGetChapterRequest, IGetSubjectsRequest } from './contentApi.interface';
+import { IChapter, IGetChapterRequest, IGetChapterResourcesRequest, IGetSubjectsRequest } from './contentApi.interface';
 
 const ContentApiEndpoints = {
     getLanguages: '/api/AIContent/languages',
@@ -32,6 +32,13 @@ export const getSubjects = async (data: IGetSubjectsRequest) => {
 
 export const getChapters = async (data: IGetChapterRequest) => {
     return apiClient.get(ContentApiEndpoints.getChapters, {
+        params: data
+    },
+        { skipAuth: true });
+};
+
+export const getChapterResources = async (data: IGetChapterResourcesRequest) => {
+    return apiClient.get(ContentApiEndpoints.getChapterResource, {
         params: data
     },
         { skipAuth: true });

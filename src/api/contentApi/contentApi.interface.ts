@@ -1,44 +1,50 @@
 // Content API Interfaces
 
+// Content Types Enum
+export type ContentType = 
+    | "web-link" 
+    | "html" 
+    | "video" 
+    | "youtube-video" 
+    | "interactive";
+
+// Resource Item Interface
 export interface IResourceItem {
-    id?: string;
-    name?: string;
+    id: string;
+    name: string;
     url?: string;
-    lang?: string;
-    script?: string;
-    contentType?: string;
+    contentType: ContentType;
     language?: string;
+    script?: string;
     htmlView?: string;
     content?: string;
 }
 
-export interface IBookReaderResource {
-    contentType?: string;
-    name?: string;
-    pdf?: IResourceItem[];
-    html?: IResourceItem[];
+// Chapter Resources Interface - matches the exact structure from your object
+export interface IChapterResources {
+    "BOOK READER": IResourceItem[];
+    "FLASHCARDS": IResourceItem[];
+    "NOTES & REFERENCES": IResourceItem[];
+    "QUESTION ANSWERS": IResourceItem[];
+    "QUIZ": IResourceItem[];
+    "VIDEO EXPLAINERS": IResourceItem[];
 }
 
-export interface IChapterResources {
-    "BOOK READER"?: IBookReaderResource[];
+// Main Response Interface
+export interface IGetChapterResourcesResponse {
+    "BOOK READER"?: IResourceItem[];
+    "FLASHCARDS"?: IResourceItem[];
     "NOTES & REFERENCES"?: IResourceItem[];
-    "VIDEO EXPLAINERS"?: IResourceItem[];
     "QUESTION ANSWERS"?: IResourceItem[];
     "QUIZ"?: IResourceItem[];
-    "FLASHCARDS"?: IResourceItem[];
+    "VIDEO EXPLAINERS"?: IResourceItem[];
 }
 
-export interface IChapterContent {
-    resources?: IChapterResources;
+export interface IGetChapterResourcesRequest{
+    language:string;
+    chapterId:number;
 }
 
-export interface IChapter {
-    id?: string;
-    title?: string;
-    info?: string;
-    image?: string;
-    content?: IChapterContent;
-}
 
 
 

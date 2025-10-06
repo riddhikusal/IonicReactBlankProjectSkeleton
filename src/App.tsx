@@ -111,6 +111,9 @@ const App: React.FC = () => {
               <PadAIChaptersScreen />
             </Route>
             {/* Chapter Details Screen */}
+            <Route path="/chapter-details/" exact={true}>
+              <PadAIChapterDetailsScreen />
+            </Route>
             <Route path="/chapter-details/:id" exact={true}>
               <PadAIChapterDetailsScreen />
             </Route>
