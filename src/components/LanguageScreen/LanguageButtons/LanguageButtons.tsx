@@ -14,21 +14,23 @@ interface IPadaiLanguageButtonsProps {
 
 const PadaiLanguageButtons: React.FC<IPadaiLanguageButtonsProps> = ({ language, isActive, onClick }) => {
     return (
-        <PadaiButton
-            onClick={(e) => {
-                onClick(language);
-            }}
-            color={isActive ? 'warning' : 'light'}
-            size="large"
-            type="button"
-            fill="solid"
-            expand="block"
-        >
-          <div className='padAILanguageButton-container'>
-            <IonText> {language} </IonText>
-            {isActive && <IonIcon icon={checkmark} />}
-          </div>
-        </PadaiButton>
+        <div className='padAILanBtnBox'>
+            <PadaiButton
+                onClick={(e) => {
+                    onClick(language);
+                }}
+                color={isActive ? 'warning' : 'light'}
+                size="large"
+                type="button"
+                fill="solid"
+                expand="block"
+            >
+                <div className='padAILanguageButton-container'>
+                    <IonText> {language} </IonText>
+                    {isActive && <IonIcon icon={checkmark} />}
+                </div>
+            </PadaiButton>
+        </div>
     );
 };
 

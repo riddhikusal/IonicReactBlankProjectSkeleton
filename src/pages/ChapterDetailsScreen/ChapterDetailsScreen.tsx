@@ -1,0 +1,226 @@
+import { IonCol, IonContent, IonHeader, IonImg, IonPage, IonRow, IonIcon, IonText, IonAccordion, IonItem, IonLabel, IonAccordionGroup, useIonRouter, IonThumbnail } from "@ionic/react";
+import PadAIBackheader from "../../components/Common/Backheader/Backheader";
+import PadAIChapterContainer from "../../components/HomeScreen/ChapterContainer/ChapterContainer";
+import { useLocation, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { arrowBack, bookOutline } from "ionicons/icons";
+import './ChapterDetailsScreen.css';
+import { IChapterResources, IGetChapterResourcesRequest, IResourceItem } from "../../api/contentApi/contentApi.interface";
+import { GetChapterResources } from "../../services/homeService";
+import { useToaster } from "../../hooks/toasterHooks/useToaster";
+const chapter = {
+    chapterImage: '/assets/images/chapters/Ch01.jpeg',
+    chapterName: 'Chemical Reactions and Equations',
+    lastReadDateTime: 'Last Read: 10/09/2025',
+}
+
+
+
+const PadAIChapterDetailsScreen: React.FC = () => {
+
+    const { id } = useParams<{ id: string }>();
+    const navigate = useIonRouter();
+    const location = useLocation();
+
+    // Method 1: Get from route parameters (recommended for /chapter-details/:id)
+    const chapterIdFromRoute = id;
+
+    // Method 2: Get from query parameters (fallback for /chapter-details?id=123)
+    const searchParams = new URLSearchParams(location.search);
+    const chapterIdFromQuery = searchParams.get('id');
+
+    // Use route parameter first, then fallback to query parameter
+    const chapterId = chapterIdFromRoute || chapterIdFromQuery;
+
+
+    const [chapterResources, setChapterResources] = useState<IChapterResources | null>(null);
+    const [loading, setLoading] = useState(false);
+    const { dangerToaster } = useToaster();
+
+    const getChapterResouces = async () => {
+        try {
+            setLoading(true);
+            console.log('ChapterId from route:', chapterIdFromRoute);
+            console.log('ChapterId from query:', chapterIdFromQuery);
+            console.log('Final chapterId:', chapterId);
+            console.log('Current location:', location.pathname, location.search);
+
+            if (chapterId) {
+                let data: IGetChapterResourcesRequest = {
+                    chapterId: Number(chapterId),
+                    language: 'en'
+                }
+                const res = await GetChapterResources(data);
+                if (res.responseStatus === 'DATA_FOUND') {
+                    setChapterResources(res.data as IChapterResources);
+                } else {
+                    setChapterResources(null);
+                    dangerToaster(res.message);
+                    navigate.push('/home');
+                }
+            } else {
+                setChapterResources(null);
+                dangerToaster('Chapter ID not found. Please try again.');
+                console.error('ChapterId is null or undefined');
+                // Don't redirect immediately, let user see the error
+            }
+        } catch (error) {
+            console.error('Error fetching chapter resources:', error);
+            setChapterResources(null);
+            dangerToaster('Failed to load chapter resources');
+        } finally {
+            setLoading(false);
+        }
+    }
+    const getChapterImage = (resource: IResourceItem, key: string) => {
+     if(key === 'BOOK READER') return '/assets/images/chapterResources/pdf.png';
+        // else if(key === 'VIDEO EXPLAINERS') '/assets/images/chapterResources/youtube.png';
+        else if(key === 'VIDEO EXPLAINERS')return '/assets/images/chapterResources/video.png';
+        else if(key === 'QUESTION ANSWERS') return '/assets/images/chapterResources/question.png';
+        else if(key === 'QUIZ') return '/assets/images/chapterResources/speech-bubble.png';
+        else if(key === 'FLASHCARDS') return '/assets/images/chapterResources/flash-card.png';
+        else if(key === 'NOTES & REFERENCES') return '/assets/images/chapterResources/pen-and-paper.png';
+    }
+    useEffect(() => {
+        console.log('useEffect triggered with chapterId:', chapterId);
+        if (chapterId) {
+            getChapterResouces();
+        } else {
+            console.warn('ChapterId is null, not fetching resources');
+        }
+    }, [chapterId]);
+
+    return (
+        <IonPage>
+            <PadAIBackheader />
+            <IonImg src="/assets/images/dashboardScreen/topVectorOne.png" alt="headerBanner" className='padAIvectorTwoBg' />
+
+            <IonHeader>
+                <PadAIChapterContainer
+                    key={'ChapterDetails'}
+                    id={1}
+                    chapterImage={chapter.chapterImage}
+                    chapterName={chapter.chapterName}
+                    lastReadDateTime={chapter.lastReadDateTime}
+                    chapterSubject={'Science'}
+                    showStarIcon={true}
+                    showArrowIcon={false}
+                    index={1}
+                />
+            </IonHeader>
+            <IonContent className="padAIChapterDetailsScreenContent">
+                {loading && (
+                    <div style={{ textAlign: 'center', padding: '20px' }}>
+                        <IonText>Loading chapter resources...</IonText>
+                    </div>
+                )}
+
+                {!chapterId && !loading && (
+                    <div style={{ textAlign: 'center', padding: '20px' }}>
+                        <IonText color="danger">
+                            <h3>Chapter ID not found</h3>
+                            <p>Please navigate back and try again.</p>
+                        </IonText>
+                    </div>
+                )}
+
+                {chapterId && !loading && chapterResources && (
+                    <IonAccordionGroup className="padAIChapterDetailsScreenContentAccordionGroup">
+                        {Object.keys(chapterResources).map((resource, index) => (
+                            <IonAccordion value={resource} key={index} className="padAIChapterDetailsScreenContentAccordionBox">
+                                <IonItem slot="header" lines="none">
+                                    <IonThumbnail slot="start" className="padAIChapterDetailsScreenContentAccordionThumbnail">
+                                        <IonImg src={getChapterImage(chapterResources[resource as keyof IChapterResources][0], resource)} alt="chapterImage" className="resourceContainerimg" />
+                                    </IonThumbnail>
+                                    <IonLabel>{resource}</IonLabel>
+                                </IonItem>
+                                <div className="padAIChapterDetailsScreenContentAccordion" slot="content">
+                                    {chapterResources[resource as keyof IChapterResources].map((resourceItem, index) => (
+                                        <IonItem lines="none" color={'light'} className="padAIChapterDetailsScreenContentAccordionItem"><IonLabel key={index}>{resourceItem.name}</IonLabel></IonItem>
+                                    ))}
+                                </div>
+                            </IonAccordion>
+                        ))}
+                    </IonAccordionGroup>
+                )}
+
+                {chapterId && !loading && !chapterResources && (
+                    <div style={{ textAlign: 'center', padding: '20px' }}>
+                        <IonText color="warning">
+                            <h3>No resources found</h3>
+                            <p>This chapter doesn't have any resources available.</p>
+                        </IonText>
+                    </div>
+                )}
+                {/* <IonRow>
+                    <IonCol size="4" style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
+                       <div className="resourceContainer">
+                       <IonImg src={'/assets/images/chapterResources/pdf.png'} alt="chapterImage"  className="resourceContainerimg"/>
+                        <IonText>
+                            Text Book Link
+                        </IonText>
+                       </div>
+                    </IonCol>
+                    <IonCol size="4" style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
+                       <div className="resourceContainer">
+                       <IonImg src={'/assets/images/chapterResources/pdf.png'} alt="chapterImage"  className="resourceContainerimg"/>
+                        <IonText>
+                            Text Book Link - Hindi
+                        </IonText>
+                       </div>
+                    </IonCol>
+                    <IonCol size="4" style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
+                       <div className="resourceContainer">
+                       <IonImg src={'/assets/images/chapterResources/youtube.png'} alt="chapterImage"  className="resourceContainerimg"/>
+                        <IonText>
+                            Youtube
+                        </IonText>
+                       </div>
+                    </IonCol>
+                    <IonCol size="4" style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
+                       <div className="resourceContainer">
+                       <IonImg src={'/assets/images/chapterResources/video.png'} alt="chapterImage"  className="resourceContainerimg"/>
+                        <IonText>
+                            Text Book Link - Hindi
+                        </IonText>
+                       </div>
+                    </IonCol>
+                    <IonCol size="4" style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
+                       <div className="resourceContainer">
+                       <IonImg src={'/assets/images/chapterResources/question.png'} alt="chapterImage"  className="resourceContainerimg"/>
+                        <IonText>
+                            Text Book Link - Hindi
+                        </IonText>
+                       </div>
+                    </IonCol>
+                    <IonCol size="4" style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
+                       <div className="resourceContainer">
+                       <IonImg src={'/assets/images/chapterResources/speech-bubble.png'} alt="chapterImage"  className="resourceContainerimg"/>
+                        <IonText>
+                            Text Book Link - Hindi
+                        </IonText>
+                       </div>
+                    </IonCol>
+                    <IonCol size="4" style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
+                       <div className="resourceContainer">
+                       <IonImg src={'/assets/images/chapterResources/pencil.png'} alt="chapterImage"  className="resourceContainerimg"/>
+                        <IonText>
+                            Text Book Link - Hindi
+                        </IonText>
+                       </div>
+                    </IonCol>
+                    <IonCol size="4" style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
+                       <div className="resourceContainer">
+                       <IonImg src={'/assets/images/chapterResources/pen-and-paper.png'} alt="chapterImage"  className="resourceContainerimg"/>
+                        <IonText>
+                            Text Book Link - Hindi
+                        </IonText>
+                       </div>
+                    </IonCol>
+                </IonRow> */}
+            </IonContent>
+        </IonPage>
+    )
+}
+
+export default PadAIChapterDetailsScreen;

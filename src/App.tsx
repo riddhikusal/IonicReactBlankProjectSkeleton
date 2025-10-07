@@ -44,6 +44,8 @@ import PadAIHomeScreen from './pages/HomeScreen/HomeScreen';
 import PadAIVideoContentScreen from './pages/ContentViewScreens/VideoContentScreen/VideoContentScreen';
 import PadAIYoutubeContentScreen from './pages/ContentViewScreens/YoutubeContentScreen/YoutubeContentScreen';
 import PadAIHTMLContentScreen from './pages/ContentViewScreens/HtmlContentScreen/HtmlContentScreen';
+import PadAIChaptersScreen from './pages/ChaptersScreen/ChaptersScreen';
+import PadAIChapterDetailsScreen from './pages/ChapterDetailsScreen/ChapterDetailsScreen';
 
 
 setupIonicReact();
@@ -102,6 +104,21 @@ const App: React.FC = () => {
             <Route path="/home" exact={true}>
               <PadAIHomeScreen />
             </Route>
+            {/* Chapter Screen */}
+            <Route path="/chapters-list" exact={true}>
+              <PadAIChaptersScreen />
+            </Route>
+            {/* Chapter Screen with dynamic route parameter */}
+            <Route path="/chapters-list/:bookId" exact={true}>
+              <PadAIChaptersScreen />
+            </Route>
+            {/* Chapter Details Screen */}
+            <Route path="/chapter-details/" exact={true}>
+              <PadAIChapterDetailsScreen />
+            </Route>
+            <Route path="/chapter-details/:id" exact={true}>
+              <PadAIChapterDetailsScreen />
+            </Route>
             {/* Video Content Screen */}
             <Route path="/video-content" exact={true}>
               <PadAIVideoContentScreen />
@@ -114,6 +131,11 @@ const App: React.FC = () => {
             <Route path="/html-content" exact={true}>
               <PadAIHTMLContentScreen />
             </Route>
+            
+            {/* Catch-all route - redirect any invalid route to home */}
+            {/* <Route path="*">
+              <Redirect to="/home" />
+            </Route> */}
           </IonRouterOutlet>
         </IonSplitPane>
       </IonReactRouter>

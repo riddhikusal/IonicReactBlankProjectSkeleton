@@ -1,4 +1,4 @@
-import { IonContent, IonHeader, IonToolbar, IonTitle } from "@ionic/react";
+import { IonContent, IonHeader, IonToolbar, IonTitle, IonFooter } from "@ionic/react";
 
 import { IonPage } from "@ionic/react";
 import PadAIBackheader from "../../../components/Common/Backheader/Backheader";
@@ -6,6 +6,7 @@ import PadAIChapterHeader from "../../../components/ContentView/ChapterHeader/Ch
 import PadAIVideoPlayer from "../../../components/ContentView/VideoPlayer/VideoPlayer";
 import { VideoContentDummy } from "../dummyData";
 import PadAIContentAIPanel from "../../../components/ContentView/ContentAIPanel/ContentAIPanel";
+import PadAIHtmlContentViwer from "../../../components/ContentView/HtmlViewer/HtmlViewer";
 
 const PadAIVideoContentScreen: React.FC = () => {
     return (
@@ -16,8 +17,14 @@ const PadAIVideoContentScreen: React.FC = () => {
                 <PadAIVideoPlayer
                     video={VideoContentDummy}
                 />
-                <PadAIContentAIPanel />
+                <PadAIHtmlContentViwer
+                    url="https://d1rb72t9cnnyis.cloudfront.net/CBSE/X/Science/CH12/Chapter-Summary.html"
+                />
+                {/* <PadAIContentAIPanel /> */}
             </IonContent>
+            <IonFooter>
+                <PadAIContentAIPanel />
+            </IonFooter>
         </IonPage>
     );
 };
