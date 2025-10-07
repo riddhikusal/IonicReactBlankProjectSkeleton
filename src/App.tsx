@@ -42,6 +42,8 @@ import { useEffect, useState } from 'react';
 import { getPlatform } from './utils/platform';
 import PadAIHomeScreen from './pages/HomeScreen/HomeScreen';
 import PadAIVideoContentScreen from './pages/ContentViewScreens/VideoContentScreen/VideoContentScreen';
+import PadAIYoutubeContentScreen from './pages/ContentViewScreens/YoutubeContentScreen/YoutubeContentScreen';
+import PadAIHTMLContentScreen from './pages/ContentViewScreens/HtmlContentScreen/HtmlContentScreen';
 
 
 setupIonicReact();
@@ -103,6 +105,14 @@ const App: React.FC = () => {
             {/* Video Content Screen */}
             <Route path="/video-content" exact={true}>
               <PadAIVideoContentScreen />
+            </Route>
+            {/* Video Content Screen */}
+            <Route path="/youtube-content" exact={true}>
+              <PadAIYoutubeContentScreen />
+            </Route>
+            {/* Html Content Screen */}
+            <Route path="/html-content" exact={true}>
+              <PadAIHTMLContentScreen />
             </Route>
           </IonRouterOutlet>
         </IonSplitPane>

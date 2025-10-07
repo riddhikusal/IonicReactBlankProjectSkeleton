@@ -87,7 +87,7 @@ const PadAIHomeScreen: React.FC = () => {
                             <PadaiButton children="Get Start"
                                 onClick={(e: any) => {
                                     e.preventDefault();
-                                    navigate.push('/video-content', 'forward');
+                                    navigate.push('/youtube-content', 'forward');
                                 }}
                                 color="warning"
                                 size="default"

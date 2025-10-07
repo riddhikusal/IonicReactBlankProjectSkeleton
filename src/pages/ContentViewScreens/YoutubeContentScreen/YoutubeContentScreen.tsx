@@ -6,35 +6,43 @@ import PadaiYouTubePlayer from "../../../components/ContentView/YoutubePlayer/Yo
 const PadAIYoutubeContentScreen: React.FC = () => {
     return (
         <IonPage className='padAIYoutubeContentScreen-page'>
-            <YoutubeContent />
-            
+            <PadaiYouTubePlayer 
+              video={{
+                id: 'test',
+                title: 'test', 
+                url: 'https://www.youtube.com/embed/rtjGH0B-vVA',
+                thumbnail: "",
+                duration: "",
+                description: 'test',
+              }}
+            />            
         </IonPage>
     );
 };
    
 export default PadAIYoutubeContentScreen;
 
-const YoutubeContent = () => {
-    return (
-      <div
-        className="!border-0 !pb-0"
-        style={{
-          display: "flex",
-          justifyContent: "center",
-          padding: "12px",
-          flexShrink: 0,
-        }}
-      >
-        {/* <PadaiYouTubePlayer
-          video={{
-            id: video.id,
-            title: video.title,
-            url: video.url || "",
-            thumbnail: "",
-            duration: "",
-            description: video.description || "",
-          }}
-        /> */}
-      </div>
-    )
-  }
+// const YoutubeContent = () => {
+//     return (
+//       <div
+//         className="!border-0 !pb-0"
+//         style={{
+//           display: "flex",
+//           justifyContent: "center",
+//           padding: "12px",
+//           flexShrink: 0,
+//         }}
+//       >
+//             <PadaiYouTubePlayer
+//             video={{
+//                 id: 'test',
+//                 title: 'test',
+//                 url: 'https://www.youtube.com/embed/rtjGH0B-vVA',
+//                 thumbnail: "",
+//                 duration: "",
+//                 description: 'test',
+//             }}
+//             />
+//       </div>
+//     )
+//   }
