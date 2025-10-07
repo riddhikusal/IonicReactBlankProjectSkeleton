@@ -6,6 +6,7 @@ import PadAIChapterHeader from "../../../components/ContentView/ChapterHeader/Ch
 import PadAIVideoPlayer from "../../../components/ContentView/VideoPlayer/VideoPlayer";
 import { VideoContentDummy } from "../dummyData";
 import PadAIContentAIPanel from "../../../components/ContentView/ContentAIPanel/ContentAIPanel";
+import PadAIHtmlContentViwer from "../../../components/ContentView/HtmlViewer/HtmlViewer";
 
 const PadAIVideoContentScreen: React.FC = () => {
     return (
@@ -15,6 +16,9 @@ const PadAIVideoContentScreen: React.FC = () => {
                 <PadAIChapterHeader />
                 <PadAIVideoPlayer
                     video={VideoContentDummy}
+                />
+                <PadAIHtmlContentViwer
+                    url="https://d1rb72t9cnnyis.cloudfront.net/CBSE/X/Science/CH12/Chapter-Summary.html"
                 />
                 {/* <PadAIContentAIPanel /> */}
             </IonContent>

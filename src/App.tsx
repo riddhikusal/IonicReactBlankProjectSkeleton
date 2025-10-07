@@ -42,6 +42,8 @@ import { useEffect, useState } from 'react';
 import { getPlatform } from './utils/platform';
 import PadAIHomeScreen from './pages/HomeScreen/HomeScreen';
 import PadAIVideoContentScreen from './pages/ContentViewScreens/VideoContentScreen/VideoContentScreen';
+import PadAIYoutubeContentScreen from './pages/ContentViewScreens/YoutubeContentScreen/YoutubeContentScreen';
+import PadAIHTMLContentScreen from './pages/ContentViewScreens/HtmlContentScreen/HtmlContentScreen';
 import PadAIChaptersScreen from './pages/ChaptersScreen/ChaptersScreen';
 import PadAIChapterDetailsScreen from './pages/ChapterDetailsScreen/ChapterDetailsScreen';
 
@@ -120,6 +122,14 @@ const App: React.FC = () => {
             {/* Video Content Screen */}
             <Route path="/video-content" exact={true}>
               <PadAIVideoContentScreen />
+            </Route>
+            {/* Video Content Screen */}
+            <Route path="/youtube-content" exact={true}>
+              <PadAIYoutubeContentScreen />
+            </Route>
+            {/* Html Content Screen */}
+            <Route path="/html-content" exact={true}>
+              <PadAIHTMLContentScreen />
             </Route>
             
             {/* Catch-all route - redirect any invalid route to home */}
