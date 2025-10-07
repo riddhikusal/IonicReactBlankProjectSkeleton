@@ -18,6 +18,7 @@ export interface IResourceItem {
     script?: string;
     htmlView?: string;
     content?: string;
+    image?: string;
 }
 
 // Chapter Resources Interface - matches the exact structure from your object

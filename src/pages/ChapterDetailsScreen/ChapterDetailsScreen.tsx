@@ -1,11 +1,11 @@
-import { IonCol, IonContent, IonHeader, IonImg, IonPage, IonRow, IonIcon, IonText, IonAccordion, IonItem, IonLabel, IonAccordionGroup, useIonRouter } from "@ionic/react";
+import { IonCol, IonContent, IonHeader, IonImg, IonPage, IonRow, IonIcon, IonText, IonAccordion, IonItem, IonLabel, IonAccordionGroup, useIonRouter, IonThumbnail } from "@ionic/react";
 import PadAIBackheader from "../../components/Common/Backheader/Backheader";
 import PadAIChapterContainer from "../../components/HomeScreen/ChapterContainer/ChapterContainer";
 import { useLocation, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { arrowBack, bookOutline } from "ionicons/icons";
 import './ChapterDetailsScreen.css';
-import { IChapterResources, IGetChapterResourcesRequest } from "../../api/contentApi/contentApi.interface";
+import { IChapterResources, IGetChapterResourcesRequest, IResourceItem } from "../../api/contentApi/contentApi.interface";
 import { GetChapterResources } from "../../services/homeService";
 import { useToaster } from "../../hooks/toasterHooks/useToaster";
 const chapter = {
@@ -72,7 +72,15 @@ const PadAIChapterDetailsScreen: React.FC = () => {
             setLoading(false);
         }
     }
-
+    const getChapterImage = (resource: IResourceItem, key: string) => {
+     if(key === 'BOOK READER') return '/assets/images/chapterResources/pdf.png';
+        // else if(key === 'VIDEO EXPLAINERS') '/assets/images/chapterResources/youtube.png';
+        else if(key === 'VIDEO EXPLAINERS')return '/assets/images/chapterResources/video.png';
+        else if(key === 'QUESTION ANSWERS') return '/assets/images/chapterResources/question.png';
+        else if(key === 'QUIZ') return '/assets/images/chapterResources/speech-bubble.png';
+        else if(key === 'FLASHCARDS') return '/assets/images/chapterResources/flash-card.png';
+        else if(key === 'NOTES & REFERENCES') return '/assets/images/chapterResources/pen-and-paper.png';
+    }
     useEffect(() => {
         console.log('useEffect triggered with chapterId:', chapterId);
         if (chapterId) {
@@ -117,15 +125,18 @@ const PadAIChapterDetailsScreen: React.FC = () => {
                 )}
 
                 {chapterId && !loading && chapterResources && (
-                    <IonAccordionGroup>
+                    <IonAccordionGroup className="padAIChapterDetailsScreenContentAccordionGroup">
                         {Object.keys(chapterResources).map((resource, index) => (
-                            <IonAccordion value={resource} key={index}>
-                                <IonItem slot="header" color="light">
+                            <IonAccordion value={resource} key={index} className="padAIChapterDetailsScreenContentAccordionBox">
+                                <IonItem slot="header" lines="none">
+                                    <IonThumbnail slot="start" className="padAIChapterDetailsScreenContentAccordionThumbnail">
+                                        <IonImg src={getChapterImage(chapterResources[resource as keyof IChapterResources][0], resource)} alt="chapterImage" className="resourceContainerimg" />
+                                    </IonThumbnail>
                                     <IonLabel>{resource}</IonLabel>
                                 </IonItem>
                                 <div className="padAIChapterDetailsScreenContentAccordion" slot="content">
                                     {chapterResources[resource as keyof IChapterResources].map((resourceItem, index) => (
-                                        <IonItem lines="none" color={'light'} className={index+1 !==chapterResources[resource as keyof IChapterResources].length ? "ion-margin-bottom" : ""}><IonLabel key={index}>{resourceItem.name}</IonLabel></IonItem>
+                                        <IonItem lines="none" color={'light'} className="padAIChapterDetailsScreenContentAccordionItem"><IonLabel key={index}>{resourceItem.name}</IonLabel></IonItem>
                                     ))}
                                 </div>
                             </IonAccordion>
