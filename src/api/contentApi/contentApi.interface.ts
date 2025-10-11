@@ -75,3 +75,27 @@ export interface IGetChapterResponse{
     isActive:boolean;
     image:string;
 }
+
+
+export interface IGetChapterQuizRequest{
+    language:string;
+    chapterId:number;
+}
+
+export interface IQuizOption {
+    optionId: number;
+    questionId: number;
+    optionText: string;
+    optionIndex: number;
+}
+
+export interface IQuizQuestion {
+    questionId: number;
+    chapterId: number;
+    question: string;
+    description: string;
+    correctIndex: number;
+    options: IQuizOption[];
+}
+
+export type IGetChapterQuizResponse = IQuizQuestion[];

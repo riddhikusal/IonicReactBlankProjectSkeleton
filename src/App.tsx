@@ -47,6 +47,7 @@ import PadAIHTMLContentScreen from './pages/ContentViewScreens/HtmlContentScreen
 import PadAIChaptersScreen from './pages/ChaptersScreen/ChaptersScreen';
 import PadAIChapterDetailsScreen from './pages/ChapterDetailsScreen/ChapterDetailsScreen';
 import PadAIQuestionAnswerContentScreen from './pages/ContentViewScreens/QuestionAnswerContentScreen/QuestionAnswerContentScreen';
+import PadAIQuizContentScreen from './pages/ContentViewScreens/QuizContentScreen/QuizContentScreen';
 
 
 setupIonicReact();
@@ -135,6 +136,10 @@ const App: React.FC = () => {
             {/* Question Answer Content Screen */}
             <Route path="/question-answer-content" exact={true}>
               <PadAIQuestionAnswerContentScreen />
+            </Route>
+            {/* Quiz Content Screen */}
+            <Route path="/quiz-content" exact={true}>
+              <PadAIQuizContentScreen />
             </Route>
             {/* Catch-all route - redirect any invalid route to home */}
             {/* <Route path="*">

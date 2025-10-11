@@ -172,6 +172,7 @@ const PadAIChapterDetailsScreen: React.FC = () => {
                                                 <IonButton fill="clear" slot="icon-only" style={{fontSize:'18px'}}
                                                 onClick={() => {
                                                     setSelectedChapterResources?.(resourceItem);
+                                                    navigate.push(`/quiz-content`, 'forward');
                                                 }}
                                                 > <IonIcon icon={arrowRedoOutline} /></IonButton>
                                                 </IonButtons>

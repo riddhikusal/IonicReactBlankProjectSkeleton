@@ -44,10 +44,10 @@ export const getChapterResources = async (data: IGetChapterResourcesRequest) => 
         { skipAuth: true });
 };
 
-export const getSubjectChapters = async (data: any) => {
-    return apiClient.post(ContentApiEndpoints.getSubjectChapters, data,
-        { skipAuth: true });
-};
+// export const getSubjectChapters = async (data: any) => {
+//     return apiClient.post(ContentApiEndpoints.getSubjectChapters, data,
+//         { skipAuth: true });
+// };
 
 export const getLanguages = async (data: any) => {
     return apiClient.post(ContentApiEndpoints.getLanguages, data,
@@ -57,9 +57,11 @@ export const getLanguages = async (data: any) => {
 
 
 export const getQuestions = async (data: any) => {
-    return apiClient.post(ContentApiEndpoints.getQuestions, data,
+    return apiClient.get(ContentApiEndpoints.getQuestions, {
+        params: data
+    },
         { skipAuth: true });
-};
+}
 
 export const getFlashcards = async (data: any) => {
     return apiClient.post(ContentApiEndpoints.getFlashcards, data,
