@@ -42,7 +42,7 @@ const PadaiYouTubePlayer = ({ video }: YouTubePlayerProps) => {
 
     return (
         <div className="border border-gray-200 p-1">
-            <div data-vjs-player style={{ width: '355px', height: '200px' }}>
+            <div data-vjs-player style={{ height: '200px' }}>
                 <video
                     ref={videoRef}
                     className="video-js vjs-default-skin"

@@ -3,7 +3,7 @@ import PadAIBackheader from "../../components/Common/Backheader/Backheader";
 import PadAIChapterContainer from "../../components/HomeScreen/ChapterContainer/ChapterContainer";
 import { useLocation, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { arrowBack, arrowForward, arrowRedoOutline, bookOutline, cloudDownloadOutline, downloadOutline, playCircleOutline } from "ionicons/icons";
+import { arrowBack, arrowForward, arrowRedoOutline, bookOutline, cloudDownloadOutline, downloadOutline, logoYoutube, playCircleOutline } from "ionicons/icons";
 import './ChapterDetailsScreen.css';
 import { IChapterResources, IGetChapterResourcesRequest, IResourceItem } from "../../api/contentApi/contentApi.interface";
 import { GetChapterResources } from "../../services/homeService";
@@ -180,8 +180,13 @@ const PadAIChapterDetailsScreen: React.FC = () => {
                                                 <IonButton fill="clear" slot="icon-only" style={{fontSize:'18px'}}
                                                 onClick={() => {
                                                     setSelectedChapterResources?.(resourceItem);
+                                                    if(resourceItem.contentType === 'video') {
+                                                        navigate.push(`/video-content`, 'forward');
+                                                    } else if(resourceItem.contentType === 'youtube-video') {
+                                                        navigate.push(`/youtube-content`, 'forward');
+                                                    }
                                                 }}
-                                                > <IonIcon icon={playCircleOutline} /></IonButton>
+                                                > <IonIcon icon={ resourceItem.contentType === 'video' ? playCircleOutline : logoYoutube} /></IonButton>
                                                 </IonButtons>
                                              } 
                                             </IonItem>

@@ -7,18 +7,21 @@ import PadAIVideoPlayer from "../../../components/ContentView/VideoPlayer/VideoP
 import { VideoContentDummy } from "../dummyData";
 import PadAIContentAIPanel from "../../../components/ContentView/ContentAIPanel/ContentAIPanel";
 import PadAIHtmlContentViwer from "../../../components/ContentView/HtmlViewer/HtmlViewer";
+import { useChapterStore } from "../../../services/store/chapter.store";
 
 const PadAIVideoContentScreen: React.FC = () => {
+    const chapterInfo = useChapterStore((state)=>state.chapterInfo);
+    const selectedChapterResources = useChapterStore((state)=>state.selectedChapterResources);
     return (
         <IonPage className='padAIvideoContentScreen-page'>
             <PadAIBackheader />
             <IonContent>
                 <PadAIChapterHeader />
                 <PadAIVideoPlayer
-                    video={VideoContentDummy}
+                    video={{...VideoContentDummy, url: selectedChapterResources?.url || '', thumbnail: selectedChapterResources?.image || ''}}
                 />
                 <PadAIHtmlContentViwer
-                    url="https://d1rb72t9cnnyis.cloudfront.net/CBSE/X/Science/CH12/Chapter-Summary.html"
+                    url={selectedChapterResources?.htmlView || ''}
                 />
                 {/* <PadAIContentAIPanel /> */}
             </IonContent>
