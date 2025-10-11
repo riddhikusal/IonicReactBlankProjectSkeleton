@@ -2,6 +2,7 @@
 
 body {
     font-family: 'Inter', sans-serif !important;
+    margin: 0px !important;
 }
 
 .padAILoginTitle {
@@ -204,5 +205,21 @@ body {
   
     .btnGradient::after {
       border-radius: 45px;
+    }
+  }
+
+
+  .prose{
+    overflow: scroll;
+    font-size: 16px;
+    padding: 13px 14px;
+    width: 96%;
+    text-align: justify;
+    background: #fee6ff;
+    margin: 10px;
+    border-radius: 10px;
+    border: 1px solid #ababab;
+    ul{
+      margin-left: -14px !important;
     }
   }

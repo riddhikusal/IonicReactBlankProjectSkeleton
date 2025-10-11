@@ -31,7 +31,8 @@ const PadaiHtmlContentViwer = ({ url }: { url: string}) => {
                     overflow: 'auto',
                     fontSize: '14px',
                     padding: '9px 8px',
-                    paddingTop: '50px'
+                    paddingTop: '50px',
+                    marginBottom: '150px'
                 }}>
                     <div
                         ref={contentRef}

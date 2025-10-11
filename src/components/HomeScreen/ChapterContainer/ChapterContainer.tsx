@@ -1,6 +1,7 @@
 import { IonButton, IonButtons, IonCol, IonIcon, IonImg, IonRow, IonText, useIonRouter } from "@ionic/react";
 import './ChapterContainer.css';
 import { arrowForward, starOutline } from "ionicons/icons";
+import { useChapterStore } from "../../../services/store/chapter.store";
 export interface IChapterContainerProps {
     id: number;
     chapterImage: string;
@@ -14,8 +15,22 @@ export interface IChapterContainerProps {
 
 const PadAIChapterContainer: React.FC<IChapterContainerProps> = ({ id, chapterImage, chapterName, lastReadDateTime, chapterSubject, showStarIcon, showArrowIcon,index }) => {
     const navigate = useIonRouter();
+    const chapterInfo = useChapterStore((state)=>state.chapterInfo);
+    const setChapterInfo = useChapterStore((state)=>state.setChapterInfo);
+
 
     const goToContentView = () => {
+        setChapterInfo?.({
+            chapterId: id,
+            subjectId: 0, 
+            chapterNo: index + 1,
+            title: chapterName,
+            languageCode: 'en',
+            isActive: true,
+            image: chapterImage,
+            subjectName: chapterInfo.subjectName,
+            bookName: chapterInfo.bookName,
+        });
         // Use route parameters instead of query parameters to match the route definition
         navigate.push(`/chapter-details/${id}`, 'forward');
     }

@@ -46,6 +46,7 @@ import PadAIYoutubeContentScreen from './pages/ContentViewScreens/YoutubeContent
 import PadAIHTMLContentScreen from './pages/ContentViewScreens/HtmlContentScreen/HtmlContentScreen';
 import PadAIChaptersScreen from './pages/ChaptersScreen/ChaptersScreen';
 import PadAIChapterDetailsScreen from './pages/ChapterDetailsScreen/ChapterDetailsScreen';
+import PadAIQuestionAnswerContentScreen from './pages/ContentViewScreens/QuestionAnswerContentScreen/QuestionAnswerContentScreen';
 
 
 setupIonicReact();
@@ -131,7 +132,10 @@ const App: React.FC = () => {
             <Route path="/html-content" exact={true}>
               <PadAIHTMLContentScreen />
             </Route>
-            
+            {/* Question Answer Content Screen */}
+            <Route path="/question-answer-content" exact={true}>
+              <PadAIQuestionAnswerContentScreen />
+            </Route>
             {/* Catch-all route - redirect any invalid route to home */}
             {/* <Route path="*">
               <Redirect to="/home" />

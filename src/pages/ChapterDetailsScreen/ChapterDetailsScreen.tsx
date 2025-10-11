@@ -8,6 +8,7 @@ import './ChapterDetailsScreen.css';
 import { IChapterResources, IGetChapterResourcesRequest, IResourceItem } from "../../api/contentApi/contentApi.interface";
 import { GetChapterResources } from "../../services/homeService";
 import { useToaster } from "../../hooks/toasterHooks/useToaster";
+import { useChapterStore } from "../../services/store/chapter.store";
 const chapter = {
     chapterImage: '/assets/images/chapters/Ch01.jpeg',
     chapterName: 'Chemical Reactions and Equations',
@@ -17,6 +18,8 @@ const chapter = {
 
 
 const PadAIChapterDetailsScreen: React.FC = () => {
+    const chapterInfo = useChapterStore((state)=>state.chapterInfo);
+    const setSelectedChapterResources = useChapterStore((state)=>state.setSelectedChapterResources);
 
     const { id } = useParams<{ id: string }>();
     const navigate = useIonRouter();
@@ -99,9 +102,9 @@ const PadAIChapterDetailsScreen: React.FC = () => {
                 <PadAIChapterContainer
                     key={'ChapterDetails'}
                     id={1}
-                    chapterImage={chapter.chapterImage}
-                    chapterName={chapter.chapterName}
-                    lastReadDateTime={chapter.lastReadDateTime}
+                    chapterImage={chapterInfo.image}
+                    chapterName={chapterInfo.title}
+                    lastReadDateTime={''}
                     chapterSubject={'Science'}
                     showStarIcon={true}
                     showArrowIcon={false}
@@ -148,19 +151,37 @@ const PadAIChapterDetailsScreen: React.FC = () => {
                                                 </IonButtons>
                                              } 
                                              {resource == 'NOTES & REFERENCES' && <IonButtons>
-                                                <IonButton fill="clear" slot="icon-only" style={{fontSize:'18px'}}> <IonIcon icon={arrowRedoOutline} /></IonButton>
+                                                <IonButton fill="clear" slot="icon-only" style={{fontSize:'18px'}}
+                                                onClick={() => {
+                                                    setSelectedChapterResources?.(resourceItem);
+                                                    navigate.push(`/html-content`, 'forward');
+                                                }}
+                                                > <IonIcon icon={arrowRedoOutline} /></IonButton>
                                                 </IonButtons>
                                              } 
                                              {resource == 'QUESTION ANSWERS' && <IonButtons>
-                                                <IonButton fill="clear" slot="icon-only" style={{fontSize:'18px'}}> <IonIcon icon={arrowRedoOutline} /></IonButton>
+                                                <IonButton fill="clear" slot="icon-only" style={{fontSize:'18px'}}
+                                                onClick={() => {
+                                                    setSelectedChapterResources?.(resourceItem);
+                                                    navigate.push(`/question-answer-content`, 'forward');
+                                                }}
+                                                > <IonIcon icon={arrowRedoOutline} /></IonButton>
                                                 </IonButtons>
                                              } 
                                              {resource == 'QUIZ' && <IonButtons>
-                                                <IonButton fill="clear" slot="icon-only" style={{fontSize:'18px'}}> <IonIcon icon={arrowRedoOutline} /></IonButton>
+                                                <IonButton fill="clear" slot="icon-only" style={{fontSize:'18px'}}
+                                                onClick={() => {
+                                                    setSelectedChapterResources?.(resourceItem);
+                                                }}
+                                                > <IonIcon icon={arrowRedoOutline} /></IonButton>
                                                 </IonButtons>
                                              } 
                                              {resource == 'VIDEO EXPLAINERS' && <IonButtons>
-                                                <IonButton fill="clear" slot="icon-only" style={{fontSize:'18px'}}> <IonIcon icon={playCircleOutline} /></IonButton>
+                                                <IonButton fill="clear" slot="icon-only" style={{fontSize:'18px'}}
+                                                onClick={() => {
+                                                    setSelectedChapterResources?.(resourceItem);
+                                                }}
+                                                > <IonIcon icon={playCircleOutline} /></IonButton>
                                                 </IonButtons>
                                              } 
                                             </IonItem>
