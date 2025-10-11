@@ -15,10 +15,12 @@ const PadAIQuizContentScreen = () => {
     const navigate = useIonRouter();
     const [loading, setLoading] = useState<boolean>(false);
     const [quiz, setQuiz] = useState<IQuizQuestion[]>([]);
+    const [currentQuestion, setCurrentQuestion] = useState<IQuizQuestion | null>(null);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
     const [selectedOption, setSelectedOption] = useState<number | null>(null);
     const [isAnswerConfirmed, setIsAnswerConfirmed] = useState<boolean>(false);
     const [score, setScore] = useState<number>(0);
+    const [progress, setProgress] = useState<number>(0);
 
     useEffect(() => {
         let isMounted = true;
@@ -38,7 +40,10 @@ const PadAIQuizContentScreen = () => {
                     if (!isMounted) return;
                     
                     if (res.responseStatus === 'DATA_FOUND') {
-                        setQuiz(res.data as IQuizQuestion[]);
+                        const quizData = res.data as IQuizQuestion[];
+                        setQuiz(quizData);
+                        setCurrentQuestion(quizData[0]);
+                        setProgress(1 / quizData.length);
                     } else {
                         setQuiz([]);
                         dangerToaster(res.message);
@@ -79,11 +84,12 @@ const PadAIQuizContentScreen = () => {
             return;
         }
         
+        if (!currentQuestion) return;
+        
         setIsAnswerConfirmed(true);
-        const currentQuestion = quiz[currentQuestionIndex];
         
         if (selectedOption === currentQuestion.correctIndex) {
-            setScore(score + 1);
+            setScore(prevScore => prevScore + 1);
             successToaster('Correct Answer!');
         } else {
             dangerToaster('Wrong Answer!');
@@ -92,13 +98,19 @@ const PadAIQuizContentScreen = () => {
 
     const handleNext = () => {
         if (currentQuestionIndex < quiz.length - 1) {
-            setCurrentQuestionIndex(currentQuestionIndex + 1);
-            setSelectedOption(null);
-            setIsAnswerConfirmed(false);
+            const nextIndex = currentQuestionIndex + 1;
+            
+            // Use requestAnimationFrame to defer state updates
+            requestAnimationFrame(() => {
+                setCurrentQuestionIndex(nextIndex);
+                setCurrentQuestion(quiz[nextIndex]);
+                setProgress((nextIndex + 1) / quiz.length);
+                setSelectedOption(null);
+                setIsAnswerConfirmed(false);
+            });
         } else {
             // Quiz completed
-            const finalScore = score + (selectedOption === quiz[currentQuestionIndex].correctIndex ? 1 : 0);
-            successToaster(`Quiz Completed! Your Score: ${finalScore}/${quiz.length}`);
+            successToaster(`Quiz Completed! Your Score: ${score}/${quiz.length}`);
             
             // Delay navigation slightly to allow toast to show
             setTimeout(() => {
@@ -122,7 +134,7 @@ const PadAIQuizContentScreen = () => {
         );
     }
 
-    if (quiz.length === 0) {
+    if (quiz.length === 0 || !currentQuestion) {
         return (
             <IonPage className='padAIquizContentScreen-page'>
                 <PadAIBackheader />
@@ -135,9 +147,6 @@ const PadAIQuizContentScreen = () => {
             </IonPage>
         );
     }
-
-    const currentQuestion = quiz[currentQuestionIndex];
-    const progress = (currentQuestionIndex + 1) / quiz.length;
 
     return (
         <IonPage className='padAIquizContentScreen-page'>
@@ -162,7 +171,7 @@ const PadAIQuizContentScreen = () => {
                 </div>
 
                 {/* Question Section */}
-                <div className="quiz-content-container">
+                <div className="quiz-content-container" key={`quiz-container-${currentQuestion.questionId}`}>
                     <IonCard className="quiz-question-card">
                         <IonCardContent>
                             {/* <h2 className="quiz-question-number">
@@ -175,8 +184,9 @@ const PadAIQuizContentScreen = () => {
                     </IonCard>
 
                     {/* Options Section */}
-                    <div className="quiz-options-container">
+                    <div className="quiz-options-container" key={`question-${currentQuestion.questionId}`}>
                         <IonRadioGroup 
+                            key={currentQuestion.questionId}
                             value={selectedOption} 
                             onIonChange={(e) => !isAnswerConfirmed && setSelectedOption(e.detail.value)}
                         >
