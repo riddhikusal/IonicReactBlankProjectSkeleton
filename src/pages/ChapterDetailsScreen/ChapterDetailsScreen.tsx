@@ -20,7 +20,8 @@ const chapter = {
 const PadAIChapterDetailsScreen: React.FC = () => {
     const chapterInfo = useChapterStore((state)=>state.chapterInfo);
     const setSelectedChapterResources = useChapterStore((state)=>state.setSelectedChapterResources);
-
+    const setContentLoaded = useChapterStore((state)=>state.setContentLoaded);
+    const setAudioIsPlaying = useChapterStore((state)=>state.setAudioIsPlaying);
     const { id } = useParams<{ id: string }>();
     const navigate = useIonRouter();
     const location = useLocation();
@@ -85,6 +86,8 @@ const PadAIChapterDetailsScreen: React.FC = () => {
         else if(key === 'NOTES & REFERENCES') return '/assets/images/chapterResources/pen-and-paper.png';
     }
     useEffect(() => {
+        setContentLoaded?.(false);
+        setAudioIsPlaying?.(false);
         console.log('useEffect triggered with chapterId:', chapterId);
         if (chapterId) {
             getChapterResouces();

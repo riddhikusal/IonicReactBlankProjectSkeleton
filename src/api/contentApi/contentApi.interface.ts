@@ -1,11 +1,11 @@
 // Content API Interfaces
 
 // Content Types Enum
-export type ContentType = 
-    | "web-link" 
-    | "html" 
-    | "video" 
-    | "youtube-video" 
+export type ContentType =
+    | "web-link"
+    | "html"
+    | "video"
+    | "youtube-video"
     | "interactive";
 
 // Resource Item Interface
@@ -41,17 +41,17 @@ export interface IGetChapterResourcesResponse {
     "VIDEO EXPLAINERS"?: IResourceItem[];
 }
 
-export interface IGetChapterResourcesRequest{
-    language:string;
-    chapterId:number;
+export interface IGetChapterResourcesRequest {
+    language: string;
+    chapterId: number;
 }
 
 
 
 
 export interface IGetSubjectsRequest {
-    language:string;
-    classId:number;
+    language: string;
+    classId: number;
 }
 
 export interface IGetSubjectsResponse {
@@ -61,25 +61,25 @@ export interface IGetSubjectsResponse {
     isActive: boolean;
 }
 
-export interface IGetChapterRequest{
-    language:string;
-    subjectId:number;
+export interface IGetChapterRequest {
+    language: string;
+    subjectId: number;
 }
 
-export interface IGetChapterResponse{
-    chapterId:number;
-    subjectId:number;
-    chapterNo:number;
-    title:string;
-    languageCode:string;
-    isActive:boolean;
-    image:string;
+export interface IGetChapterResponse {
+    chapterId: number;
+    subjectId: number;
+    chapterNo: number;
+    title: string;
+    languageCode: string;
+    isActive: boolean;
+    image: string;
 }
 
 
-export interface IGetChapterQuizRequest{
-    language:string;
-    chapterId:number;
+export interface IGetChapterQuizRequest {
+    language: string;
+    chapterId: number;
 }
 
 export interface IQuizOption {
@@ -99,3 +99,20 @@ export interface IQuizQuestion {
 }
 
 export type IGetChapterQuizResponse = IQuizQuestion[];
+
+
+export interface ISynthesizeAudioRequest {
+    text: string;
+    language: string;
+}
+
+export interface IWordTimestamp {
+    word: string;
+    offset: number;
+}
+export interface ISynthesizeAudioResponse {
+    audio: string;
+    wordTimestamps: IWordTimestamp[];
+}
+
+

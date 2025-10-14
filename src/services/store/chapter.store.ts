@@ -5,10 +5,12 @@ import { persist, createJSONStorage, PersistOptions } from 'zustand/middleware'
 export interface IFullChapterInfo extends IGetChapterResponse {
     subjectName: string;
     bookName: string;
+    audioIsPlaying: boolean;
+    contentLoading: boolean;
+    contentLoaded: boolean;
 }
 export type IChapterStore = {
     chapterInfo: IFullChapterInfo;
-
     chapterResources: IChapterResources;
     selectedChapterResources: IResourceItem | null;
     resetChapterStore?: () => void;
@@ -16,6 +18,9 @@ export type IChapterStore = {
     setChapterInfo?: (chapterInfo: IFullChapterInfo) => void;
     setChapterResources?: (chapterResources: IChapterResources) => void;
     setSelectedChapterResources?: (selectedChapterResources: IResourceItem) => void;
+    setAudioIsPlaying?: (audioIsPlaying: boolean) => void;
+    setContentLoading?: (contentLoading: boolean) => void;
+    setContentLoaded?: (contentLoaded: boolean) => void;
 }
 
 const initialState: Omit<IChapterStore, 'setSubjectAndBookName' | 'setChapterInfo' | 'setChapterResources' | 'resetChapterStore' | 'setSelectedChapterResources'> = {
@@ -29,6 +34,9 @@ const initialState: Omit<IChapterStore, 'setSubjectAndBookName' | 'setChapterInf
         languageCode: '',
         isActive: false,
         image: '',
+        audioIsPlaying: false,
+        contentLoading: false,
+        contentLoaded: false,
     },
 
     chapterResources: {
@@ -51,6 +59,15 @@ export const useChapterStore = create<IChapterStore>()(
             ...initialState,
             setSubjectAndBookName: (subjectName: string, bookName: string) => set((state) => ({ 
                 chapterInfo: { ...state.chapterInfo, subjectName, bookName } 
+            })),
+            setAudioIsPlaying: (audioIsPlaying: boolean) => set((state) => ({ 
+                chapterInfo: { ...state.chapterInfo, audioIsPlaying } 
+            })),
+            setContentLoading: (contentLoading: boolean) => set((state) => ({ 
+                chapterInfo: { ...state.chapterInfo, contentLoading } 
+            })),
+            setContentLoaded: (contentLoaded: boolean) => set((state) => ({ 
+                chapterInfo: { ...state.chapterInfo, contentLoaded } 
             })),
             setChapterInfo: (chapterInfo: IFullChapterInfo) => set((state) => ({ 
                 chapterInfo: { ...state.chapterInfo, ...chapterInfo } 

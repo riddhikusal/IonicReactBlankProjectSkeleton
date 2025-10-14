@@ -1,6 +1,6 @@
 // src/api/contentApi/contentApi.ts
 import apiClient from '../axiosInstance';
-import { IChapter, IGetChapterRequest, IGetChapterResourcesRequest, IGetSubjectsRequest } from './contentApi.interface';
+import { IChapter, IGetChapterRequest, IGetChapterResourcesRequest, IGetSubjectsRequest, ISynthesizeAudioRequest } from './contentApi.interface';
 
 const ContentApiEndpoints = {
     getLanguages: '/api/AIContent/languages',
@@ -11,6 +11,7 @@ const ContentApiEndpoints = {
     getChapterResource: '/api/AIContent/chapterresource',
     getQuestions: '/api/AIContent/questions',
     getFlashcards: '/api/AIContent/flashcards',
+    synthesizeAudio: '/api/Audio/synthesizeaudio',
 }
 
 export const getBoards = async (data: any) => {
@@ -65,5 +66,10 @@ export const getQuestions = async (data: any) => {
 
 export const getFlashcards = async (data: any) => {
     return apiClient.post(ContentApiEndpoints.getFlashcards, data,
+        { skipAuth: true });
+};
+
+export const synthesizeAudio = async (data: ISynthesizeAudioRequest) => {
+    return apiClient.post(ContentApiEndpoints.synthesizeAudio, data,
         { skipAuth: true });
 };

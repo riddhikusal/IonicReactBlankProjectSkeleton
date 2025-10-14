@@ -1,5 +1,5 @@
-import { getChapterResources, getChapters, getQuestions, getSubjects } from "../api/contentApi/contentApi";
-import { IGetChapterQuizRequest, IGetChapterRequest, IGetChapterResourcesRequest, IGetChapterResourcesResponse, IGetChapterResponse, IGetSubjectsRequest, IGetSubjectsResponse, IQuizQuestion } from "../api/contentApi/contentApi.interface";
+import { getChapterResources, getChapters, getQuestions, getSubjects, synthesizeAudio } from "../api/contentApi/contentApi";
+import { IGetChapterQuizRequest, IGetChapterRequest, IGetChapterResourcesRequest, IGetChapterResourcesResponse, IGetChapterResponse, IGetSubjectsRequest, IGetSubjectsResponse, IQuizQuestion, ISynthesizeAudioRequest, ISynthesizeAudioResponse } from "../api/contentApi/contentApi.interface";
 export interface IApiResponseSuccessAndError<T> {
     status: number;
     data: T;
@@ -89,7 +89,7 @@ export const GetChapters = async (data: IGetChapterRequest): Promise<IApiRespons
 }
 
 
-export const GetChapterResources = async (data: IGetChapterResourcesRequest): Promise<IApiResponseSuccessAndError<IGetChapterResourcesResponse|null>> => {
+export const GetChapterResources = async (data: IGetChapterResourcesRequest): Promise<IApiResponseSuccessAndError<IGetChapterResourcesResponse | null>> => {
     try {
         const response = await getChapterResources(data);
         console.log(response);
@@ -166,3 +166,18 @@ export const GetQuiz = async (data: IGetChapterQuizRequest): Promise<IApiRespons
         };
     }
 }
+
+
+export const Synthesizeaudio = async (data: ISynthesizeAudioRequest): Promise<ISynthesizeAudioResponse> => {
+    const response = await synthesizeAudio(data);
+    if (response.status === 200) {
+        return {
+            audio: response.data.audio,
+            wordTimestamps: response.data.wordTimestamps,
+        };
+    }
+    return {
+        audio: '',
+        wordTimestamps: [],
+    };
+};

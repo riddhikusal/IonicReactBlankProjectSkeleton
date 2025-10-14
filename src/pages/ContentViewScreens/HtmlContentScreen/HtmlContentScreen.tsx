@@ -7,6 +7,7 @@ import PadAIChapterHeader from '../../../components/ContentView/ChapterHeader/Ch
 import PadAIContentAIPanel from '../../../components/ContentView/ContentAIPanel/ContentAIPanel';
 import PadaiHtmlContentViwer from '../../../components/ContentView/HtmlViewer/HtmlViewer';
 import { useChapterStore } from '../../../services/store/chapter.store';
+import AudioComponent from '../../../components/ContentView/Audio/Audio';
 
   const PadAIHTMLContentScreen: React.FC = () => {
     const chapterInfo = useChapterStore((state)=>state.chapterInfo);

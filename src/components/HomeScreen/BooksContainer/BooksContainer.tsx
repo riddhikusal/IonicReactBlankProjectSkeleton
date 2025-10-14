@@ -15,7 +15,7 @@ export interface IBooksContainerProps {
 const PadAIBooksContainer: React.FC<IBooksContainerProps> = ({ booksImage, booksName, booksAuthor, booksSubject, booksSubjectId }) => {
     const navigate = useIonRouter();
     const setSubjectName = useChapterStore((state)=>state.setSubjectAndBookName);
-
+    
     const goToChapter = () => {
         setSubjectName?.(booksSubject, booksName);
         // Method 1: Query Parameters (URL parameters)
