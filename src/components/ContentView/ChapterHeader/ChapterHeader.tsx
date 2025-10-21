@@ -1,8 +1,13 @@
-import { IonItem, IonLabel, IonText } from "@ionic/react";
+import { IonChip, IonItem, IonLabel, IonText, IonToggle } from "@ionic/react";
 import './ChapterHeader.css';
 import { useChapterStore } from "../../../services/store/chapter.store";
-
-const PadAIChapterHeader = () => {
+export interface IChapterHeaderProps {
+    readModeToggleSwitch?: boolean;
+    currentActiveMode?:'PDF'|'HTML';
+    backToModeChange?: 'PDF'|'HTML';
+    readModeToggleSwitchChange?: (value: boolean) => void;
+}
+const PadAIChapterHeader: React.FC<IChapterHeaderProps> = ({ readModeToggleSwitch, readModeToggleSwitchChange, currentActiveMode, backToModeChange }) => {
     const chapterInfo = useChapterStore((state) => state.chapterInfo);
     const selectedChapterResources = useChapterStore((state) => state.selectedChapterResources);
     return (
@@ -17,6 +22,8 @@ const PadAIChapterHeader = () => {
                     <p>{selectedChapterResources?.name}</p>
                 </IonText>
             </IonLabel>
+
+           {readModeToggleSwitch && <IonChip onClick={() => readModeToggleSwitchChange?.(true)} >Back to {backToModeChange || 'PDF'}</IonChip>}
         </IonItem>
     )
 }

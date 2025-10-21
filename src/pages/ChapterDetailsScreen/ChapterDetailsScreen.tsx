@@ -18,10 +18,10 @@ const chapter = {
 
 
 const PadAIChapterDetailsScreen: React.FC = () => {
-    const chapterInfo = useChapterStore((state)=>state.chapterInfo);
-    const setSelectedChapterResources = useChapterStore((state)=>state.setSelectedChapterResources);
-    const setContentLoaded = useChapterStore((state)=>state.setContentLoaded);
-    const setAudioIsPlaying = useChapterStore((state)=>state.setAudioIsPlaying);
+    const chapterInfo = useChapterStore((state) => state.chapterInfo);
+    const setSelectedChapterResources = useChapterStore((state) => state.setSelectedChapterResources);
+    const setContentLoaded = useChapterStore((state) => state.setContentLoaded);
+    const setAudioIsPlaying = useChapterStore((state) => state.setAudioIsPlaying);
     const { id } = useParams<{ id: string }>();
     const navigate = useIonRouter();
     const location = useLocation();
@@ -77,13 +77,13 @@ const PadAIChapterDetailsScreen: React.FC = () => {
         }
     }
     const getChapterImage = (resource: IResourceItem, key: string) => {
-     if(key === 'BOOK READER') return '/assets/images/chapterResources/pdf.png';
+        if (key === 'BOOK READER') return '/assets/images/chapterResources/pdf.png';
         // else if(key === 'VIDEO EXPLAINERS') '/assets/images/chapterResources/youtube.png';
-        else if(key === 'VIDEO EXPLAINERS')return '/assets/images/chapterResources/video.png';
-        else if(key === 'QUESTION ANSWERS') return '/assets/images/chapterResources/question.png';
-        else if(key === 'QUIZ') return '/assets/images/chapterResources/speech-bubble.png';
-        else if(key === 'FLASHCARDS') return '/assets/images/chapterResources/flash-card.png';
-        else if(key === 'NOTES & REFERENCES') return '/assets/images/chapterResources/pen-and-paper.png';
+        else if (key === 'VIDEO EXPLAINERS') return '/assets/images/chapterResources/video.png';
+        else if (key === 'QUESTION ANSWERS') return '/assets/images/chapterResources/question.png';
+        else if (key === 'QUIZ') return '/assets/images/chapterResources/speech-bubble.png';
+        else if (key === 'FLASHCARDS') return '/assets/images/chapterResources/flash-card.png';
+        else if (key === 'NOTES & REFERENCES') return '/assets/images/chapterResources/pen-and-paper.png';
     }
     useEffect(() => {
         setContentLoaded?.(false);
@@ -144,56 +144,67 @@ const PadAIChapterDetailsScreen: React.FC = () => {
                                     {chapterResources[resource as keyof IChapterResources].map((resourceItem, index) => (
                                         <IonItem lines="none" color={'light'} className="padAIChapterDetailsScreenContentAccordionItem">
                                             <IonLabel key={index}>{resourceItem.name}</IonLabel>
-                                             {resource == 'BOOK READER' && <IonButtons>
-                                                <IonButton fill="clear" slot="icon-only" style={{fontSize:'18px'}}> <IonIcon icon={cloudDownloadOutline} /></IonButton>
-                                                <IonButton fill="clear" slot="icon-only" style={{fontSize:'18px'}}> <IonIcon icon={arrowRedoOutline} /></IonButton>
-                                                </IonButtons>
-                                             } 
-                                             {resource == 'FLASHCARDS' && <IonButtons>
-                                                <IonButton fill="clear" slot="icon-only" style={{fontSize:'18px'}}> <IonIcon icon={arrowRedoOutline} /></IonButton>
-                                                </IonButtons>
-                                             } 
-                                             {resource == 'NOTES & REFERENCES' && <IonButtons>
-                                                <IonButton fill="clear" slot="icon-only" style={{fontSize:'18px'}}
-                                                onClick={() => {
-                                                    setSelectedChapterResources?.(resourceItem);
-                                                    navigate.push(`/html-content`, 'forward');
-                                                }}
+                                            {resource == 'BOOK READER' && <IonButtons>
+                                                <IonButton fill="clear" slot="icon-only" style={{ fontSize: '18px' }}
+
+                                                    onClick={() => {
+                                                        setSelectedChapterResources?.(resourceItem);
+                                                        navigate.push(`/pdf-content`, 'forward');
+                                                    }}
+                                                > <IonIcon icon={cloudDownloadOutline} /></IonButton>
+                                                <IonButton fill="clear" slot="icon-only" style={{ fontSize: '18px' }}
+                                                    onClick={() => {
+                                                        setSelectedChapterResources?.(resourceItem);
+                                                        navigate.push(`/pdf-content`, 'forward');
+                                                    }}
                                                 > <IonIcon icon={arrowRedoOutline} /></IonButton>
-                                                </IonButtons>
-                                             } 
-                                             {resource == 'QUESTION ANSWERS' && <IonButtons>
-                                                <IonButton fill="clear" slot="icon-only" style={{fontSize:'18px'}}
-                                                onClick={() => {
-                                                    setSelectedChapterResources?.(resourceItem);
-                                                    navigate.push(`/question-answer-content`, 'forward');
-                                                }}
+                                            </IonButtons>
+                                            }
+                                            {resource == 'FLASHCARDS' && <IonButtons>
+                                                <IonButton fill="clear" slot="icon-only" style={{ fontSize: '18px' }}> <IonIcon icon={arrowRedoOutline} /></IonButton>
+                                            </IonButtons>
+                                            }
+                                            {resource == 'NOTES & REFERENCES' && <IonButtons>
+                                                <IonButton fill="clear" slot="icon-only" style={{ fontSize: '18px' }}
+                                                    onClick={() => {
+                                                        setSelectedChapterResources?.(resourceItem);
+                                                        navigate.push(`/html-content`, 'forward');
+                                                    }}
                                                 > <IonIcon icon={arrowRedoOutline} /></IonButton>
-                                                </IonButtons>
-                                             } 
-                                             {resource == 'QUIZ' && <IonButtons>
-                                                <IonButton fill="clear" slot="icon-only" style={{fontSize:'18px'}}
-                                                onClick={() => {
-                                                    setSelectedChapterResources?.(resourceItem);
-                                                    navigate.push(`/quiz-content`, 'forward');
-                                                }}
+                                            </IonButtons>
+                                            }
+                                            {resource == 'QUESTION ANSWERS' && <IonButtons>
+                                                <IonButton fill="clear" slot="icon-only" style={{ fontSize: '18px' }}
+                                                    onClick={() => {
+                                                        setSelectedChapterResources?.(resourceItem);
+                                                        navigate.push(`/question-answer-content`, 'forward');
+                                                    }}
                                                 > <IonIcon icon={arrowRedoOutline} /></IonButton>
-                                                </IonButtons>
-                                             } 
-                                             {resource == 'VIDEO EXPLAINERS' && <IonButtons>
-                                                <IonButton fill="clear" slot="icon-only" style={{fontSize:'18px'}}
-                                                onClick={() => {
-                                                    setSelectedChapterResources?.(resourceItem);
-                                                    if(resourceItem.contentType === 'video') {
-                                                        navigate.push(`/video-content`, 'forward');
-                                                    } else if(resourceItem.contentType === 'youtube-video') {
-                                                        navigate.push(`/youtube-content`, 'forward');
-                                                    }
-                                                }}
-                                                > <IonIcon icon={ resourceItem.contentType === 'video' ? playCircleOutline : logoYoutube} /></IonButton>
-                                                </IonButtons>
-                                             } 
-                                            </IonItem>
+                                            </IonButtons>
+                                            }
+                                            {resource == 'QUIZ' && <IonButtons>
+                                                <IonButton fill="clear" slot="icon-only" style={{ fontSize: '18px' }}
+                                                    onClick={() => {
+                                                        setSelectedChapterResources?.(resourceItem);
+                                                        navigate.push(`/quiz-content`, 'forward');
+                                                    }}
+                                                > <IonIcon icon={arrowRedoOutline} /></IonButton>
+                                            </IonButtons>
+                                            }
+                                            {resource == 'VIDEO EXPLAINERS' && <IonButtons>
+                                                <IonButton fill="clear" slot="icon-only" style={{ fontSize: '18px' }}
+                                                    onClick={() => {
+                                                        setSelectedChapterResources?.(resourceItem);
+                                                        if (resourceItem.contentType === 'video') {
+                                                            navigate.push(`/video-content`, 'forward');
+                                                        } else if (resourceItem.contentType === 'youtube-video') {
+                                                            navigate.push(`/youtube-content`, 'forward');
+                                                        }
+                                                    }}
+                                                > <IonIcon icon={resourceItem.contentType === 'video' ? playCircleOutline : logoYoutube} /></IonButton>
+                                            </IonButtons>
+                                            }
+                                        </IonItem>
                                     ))}
                                 </div>
                             </IonAccordion>
