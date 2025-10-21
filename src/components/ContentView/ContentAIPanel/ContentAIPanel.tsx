@@ -1,12 +1,46 @@
-import { IonButton, IonButtons, IonChip, IonCol, IonContent, IonIcon, IonImg, IonModal, IonRow, IonText, IonTextarea } from '@ionic/react';
+import { IonButton, IonButtons, IonChip, IonCol, IonContent, IonFab, IonFabButton, IonFabList, IonIcon, IonImg, IonModal, IonRow, IonText, IonTextarea } from '@ionic/react';
 import './ContentAIPanel.css';
-import { ellipsisVertical, language, mic, pause, play, playForward, searchOutline } from 'ionicons/icons';
-import { useRef, useState } from 'react';
+import { banOutline, chevronUpCircle, colorPalette, documentOutline, ellipsisVertical, globe, language, mic, pause, play, playForward, searchOutline, sparkles, volumeHighOutline, volumeMuteOutline } from 'ionicons/icons';
+import { useEffect, useRef, useState } from 'react';
 import CustomSheetModal from '../../Common/CustomSheetModal/CustomSheetModal';
+import { useChapterStore } from '../../../services/store/chapter.store';
 const PadAIContentAIPanel = () => {
     const [showSelectedText, setShowSelectedText] = useState<boolean>(false);
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const modal = useRef<HTMLIonModalElement>(null);
+    const chapterInfo = useChapterStore((state) => state.chapterInfo);
+    const setAudioIsPlaying = useChapterStore((state) => state.setAudioIsPlaying);
+    const setContentLoaded = useChapterStore((state) => state.setContentLoaded);
+
+    const handlePlayAndPause = (clearContentLoadingFlag: boolean = false) => {
+        console.log('clearContentLoadingFlag', clearContentLoadingFlag);
+        if (clearContentLoadingFlag) {
+            setContentLoaded?.(!chapterInfo.contentLoaded);
+            setAudioIsPlaying?.(!chapterInfo.contentLoaded);
+            return;
+            // if((chapterInfo.contentLoaded && chapterInfo.audioIsPlaying)) {
+            //     setContentLoaded?.(false);
+            //     setAudioIsPlaying?.(false);
+            //     return;
+            // };
+            // if((!chapterInfo.contentLoaded && chapterInfo.audioIsPlaying)) {
+            //     setContentLoaded?.(false);
+            //     setAudioIsPlaying?.(true);
+            //     return;
+            // };
+            // setAudioIsPlaying?.(true);
+            // return;
+        }
+
+        chapterInfo.audioIsPlaying = !chapterInfo.audioIsPlaying;
+        console.log('chapterInfo.audioIsPlaying', chapterInfo.audioIsPlaying);
+        setAudioIsPlaying?.(chapterInfo.audioIsPlaying);
+    }
+
+    useEffect(() => {
+        console.log('chapterInfo.contentLoaded', chapterInfo.contentLoaded, chapterInfo.audioIsPlaying);
+    }, [chapterInfo.contentLoaded, chapterInfo.audioIsPlaying]);
+
     return (<>
         <div className='padAIcontentAIPanel-container-overlay'>
             {/* {showSelectedText && <div className='padAIcontentAIPanel-description-container'>
@@ -21,15 +55,34 @@ const PadAIContentAIPanel = () => {
                         fill='clear'
                         onClick={() => setIsModalOpen(true)}
                     >
-                        <IonImg src={'/assets/images/contentScreens/aiAsk.png'} alt='ask' />
-                        <IonText>Ask</IonText>
+                        {/* <IonImg src={'/assets/images/contentScreens/aiAsk.png'} alt='AI' /> */}
+                        <IonIcon icon={sparkles}></IonIcon>
+                        <IonText>AI</IonText>
                     </IonButton>
-                    <IonButton className='padAIFooterFlexBtn' fill='clear' > <IonIcon icon={play} className='footericons' ></IonIcon></IonButton>
-                    <IonButton className='padAIFooterFlexBtn' fill='clear' > <IonIcon icon={pause} className='footericons' ></IonIcon></IonButton>
-                    <IonButton className='padAIFooterFlexBtn' fill='clear' > <IonIcon icon={searchOutline} className='footericons' ></IonIcon></IonButton>
-                    <IonButton className='padAIFooterFlexBtn' fill='clear' > <IonIcon icon={language} className='footericons' ></IonIcon></IonButton>
-                    <IonButton className='padAIFooterFlexBtn' fill='clear' > <IonIcon icon={mic} className='footericons'></IonIcon></IonButton>
-                    {/* <IonButton className='padAIFooterFlexBtn'  fill='clear' > <IonIcon icon={ellipsisVertical} className='footericons'></IonIcon></IonButton> */}
+                    <div className={`padAIFooterFlexBtnContainer aiFooterIcons ${!chapterInfo.contentLoaded ? 'aiFooterIconsModify' : ''}`} id={!chapterInfo.contentLoaded ? 'aiFooterIconsModify' : ''}>
+                        <IonButton className='padAIFooterFlexBtn no-border-right-redius' fill='clear' onClick={() => handlePlayAndPause(true)} > <IonIcon icon={chapterInfo.contentLoaded ? banOutline : volumeHighOutline} className='footericons' ></IonIcon></IonButton>
+                        {chapterInfo.contentLoaded && <IonButton className='padAIFooterFlexBtn no-border-right-redius no-border-left-redius' fill='clear' onClick={() => handlePlayAndPause(false)} > <IonIcon icon={chapterInfo.audioIsPlaying ? pause : play} className='footericons' ></IonIcon></IonButton>}
+                        <IonButton className='padAIFooterFlexBtn no-border-right-redius no-border-left-redius' fill='clear' > <IonIcon icon={searchOutline} className='footericons' ></IonIcon></IonButton>
+                        <IonButton className='padAIFooterFlexBtn no-border-right-redius no-border-left-redius' fill='clear' > <IonIcon icon={language} className='footericons' ></IonIcon></IonButton>
+                        <IonButton className='padAIFooterFlexBtn no-border-right-redius no-border-left-redius' fill='clear' > <IonIcon icon={mic} className='footericons'></IonIcon></IonButton>
+                        {/* <IonButton className='padAIFooterFlexBtn no-border-left-redius'  fill='clear' > <IonIcon icon={ellipsisVertical} className='footericons'></IonIcon></IonButton> */}
+                        <IonFab style={{ position: 'relative' }}>
+                            <IonFabButton className='padAIFooterFlexBtn fbbtnmodify no-border-left-redius'>
+                                <IonIcon icon={ellipsisVertical}></IonIcon>
+                            </IonFabButton>
+                            <IonFabList side="top">
+                                <IonFabButton>
+                                    <IonIcon icon={documentOutline}></IonIcon>
+                                </IonFabButton>
+                                <IonFabButton>
+                                    <IonIcon icon={colorPalette}></IonIcon>
+                                </IonFabButton>
+                                <IonFabButton>
+                                    <IonIcon icon={globe}></IonIcon>
+                                </IonFabButton>
+                            </IonFabList>
+                        </IonFab>
+                    </div>
                 </div>
             </div>
         </div>

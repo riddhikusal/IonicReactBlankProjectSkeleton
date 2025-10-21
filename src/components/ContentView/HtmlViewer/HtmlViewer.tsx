@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
+import AudioComponent from '../Audio/Audio';
 
-const PadaiHtmlContentViwer = ({ url }: { url: string}) => {
+const PadaiHtmlContentViwer = ({ url }: { url: string }) => {
     const [htmlContent, setHtmlContent] = useState('');
     const containerRef = useRef<HTMLDivElement>(null);
     const contentRef = useRef<HTMLDivElement>(null);
+    const [isPlaying, setIsPlaying] = useState(false);
 
     useEffect(() => {
         console.log('url', url);
@@ -25,23 +27,31 @@ const PadaiHtmlContentViwer = ({ url }: { url: string}) => {
             });
         return () => { isCancelled = true; };
     }, [url]);
-        return (
-            <>
-                <div className="prose bg-slate-100" ref={containerRef} style={{
-                    overflow: 'auto',
-                    fontSize: '14px',
-                    padding: '9px 8px',
-                    paddingTop: '50px'
-                }}>
-                    <div
-                        ref={contentRef}
-                        className="html-div origin-top-left user-select"
-                        style={{ transform: `scale(${1})`, transformOrigin: 'center top' }}
-                        dangerouslySetInnerHTML={{ __html: htmlContent }}
-                    />
-                </div >
-            </>
-        );
+    return (
+        <>
+            <div className="prose bg-slate-100" ref={containerRef} style={{
+                overflow: 'auto',
+                fontSize: '14px',
+                padding: '1px 15px',
+                paddingTop: '7px',
+                marginBottom: '150px'
+            }}>
+                <div
+                    ref={contentRef}
+                    className="html-div origin-top-left user-select"
+                    style={{ transform: `scale(${1})`, transformOrigin: 'center top' }}
+                    dangerouslySetInnerHTML={{ __html: htmlContent }}
+                />
+            </div >
+
+            <AudioComponent
+                text={htmlContent || ''}
+                language={'en'}
+                clickToPlayAndPause={isPlaying}
+                contentRef={contentRef as React.RefObject<HTMLDivElement>}
+            />
+        </>
+    );
 };
 
 export default PadaiHtmlContentViwer;

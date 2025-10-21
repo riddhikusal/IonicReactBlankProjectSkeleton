@@ -1,5 +1,6 @@
 import { IonCol, IonImg, IonRow, IonText, useIonRouter } from "@ionic/react";
 import './BooksContainer.css';
+import { useChapterStore } from "../../../services/store/chapter.store";
 
 
 export interface IBooksContainerProps {
@@ -13,8 +14,10 @@ export interface IBooksContainerProps {
 
 const PadAIBooksContainer: React.FC<IBooksContainerProps> = ({ booksImage, booksName, booksAuthor, booksSubject, booksSubjectId }) => {
     const navigate = useIonRouter();
-
+    const setSubjectName = useChapterStore((state)=>state.setSubjectAndBookName);
+    
     const goToChapter = () => {
+        setSubjectName?.(booksSubject, booksName);
         // Method 1: Query Parameters (URL parameters)
         navigate.push(`/chapters-list?subjectId=${booksSubjectId}&subject=${encodeURIComponent(booksSubject)}&bookName=${encodeURIComponent(booksName)}`, 'forward');
         

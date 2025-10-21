@@ -2,6 +2,7 @@
 
 body {
     font-family: 'Inter', sans-serif !important;
+    margin: 0px !important;
 }
 
 .padAILoginTitle {
@@ -128,6 +129,13 @@ body {
     transition: all 0.3s ease;
     overflow: hidden;
     display: flex;
+
+    /* background: rgb(254 176 255 / 31%);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(6.1px);
+    -webkit-backdrop-filter: blur(6.1px);
+    border: 1px solid rgba(240, 99, 242, 0.68); */
   }
   
   .btnGradient::before {
@@ -204,5 +212,25 @@ body {
   
     .btnGradient::after {
       border-radius: 45px;
+    }
+  }
+
+
+  .prose{
+    overflow: scroll;
+    font-size: 16px;
+    padding: 13px 14px;
+    width: 100%;
+    text-align: justify;
+    background: #f9f9f9;
+    margin: 0px;
+    /* border-radius: 10px; */
+    /* border: 1px solid #e7e7e7; */
+    /* padding: 9px; */
+    /* border-radius: 10px; */
+    /* border: 1px solid #e7e7e7; */
+    /* padding: 9px; */
+    ul{
+      margin-left: -14px !important;
     }
   }

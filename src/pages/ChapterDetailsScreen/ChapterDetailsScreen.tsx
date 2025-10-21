@@ -1,13 +1,14 @@
-import { IonCol, IonContent, IonHeader, IonImg, IonPage, IonRow, IonIcon, IonText, IonAccordion, IonItem, IonLabel, IonAccordionGroup, useIonRouter, IonThumbnail } from "@ionic/react";
+import { IonCol, IonContent, IonHeader, IonImg, IonPage, IonRow, IonIcon, IonText, IonAccordion, IonItem, IonLabel, IonAccordionGroup, useIonRouter, IonThumbnail, IonButtons, IonButton } from "@ionic/react";
 import PadAIBackheader from "../../components/Common/Backheader/Backheader";
 import PadAIChapterContainer from "../../components/HomeScreen/ChapterContainer/ChapterContainer";
 import { useLocation, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { arrowBack, bookOutline } from "ionicons/icons";
+import { arrowBack, arrowForward, arrowRedoOutline, bookOutline, cloudDownloadOutline, downloadOutline, logoYoutube, playCircleOutline } from "ionicons/icons";
 import './ChapterDetailsScreen.css';
 import { IChapterResources, IGetChapterResourcesRequest, IResourceItem } from "../../api/contentApi/contentApi.interface";
 import { GetChapterResources } from "../../services/homeService";
 import { useToaster } from "../../hooks/toasterHooks/useToaster";
+import { useChapterStore } from "../../services/store/chapter.store";
 const chapter = {
     chapterImage: '/assets/images/chapters/Ch01.jpeg',
     chapterName: 'Chemical Reactions and Equations',
@@ -17,7 +18,10 @@ const chapter = {
 
 
 const PadAIChapterDetailsScreen: React.FC = () => {
-
+    const chapterInfo = useChapterStore((state) => state.chapterInfo);
+    const setSelectedChapterResources = useChapterStore((state) => state.setSelectedChapterResources);
+    const setContentLoaded = useChapterStore((state) => state.setContentLoaded);
+    const setAudioIsPlaying = useChapterStore((state) => state.setAudioIsPlaying);
     const { id } = useParams<{ id: string }>();
     const navigate = useIonRouter();
     const location = useLocation();
@@ -73,15 +77,17 @@ const PadAIChapterDetailsScreen: React.FC = () => {
         }
     }
     const getChapterImage = (resource: IResourceItem, key: string) => {
-     if(key === 'BOOK READER') return '/assets/images/chapterResources/pdf.png';
+        if (key === 'BOOK READER') return '/assets/images/chapterResources/pdf.png';
         // else if(key === 'VIDEO EXPLAINERS') '/assets/images/chapterResources/youtube.png';
-        else if(key === 'VIDEO EXPLAINERS')return '/assets/images/chapterResources/video.png';
-        else if(key === 'QUESTION ANSWERS') return '/assets/images/chapterResources/question.png';
-        else if(key === 'QUIZ') return '/assets/images/chapterResources/speech-bubble.png';
-        else if(key === 'FLASHCARDS') return '/assets/images/chapterResources/flash-card.png';
-        else if(key === 'NOTES & REFERENCES') return '/assets/images/chapterResources/pen-and-paper.png';
+        else if (key === 'VIDEO EXPLAINERS') return '/assets/images/chapterResources/video.png';
+        else if (key === 'QUESTION ANSWERS') return '/assets/images/chapterResources/question.png';
+        else if (key === 'QUIZ') return '/assets/images/chapterResources/speech-bubble.png';
+        else if (key === 'FLASHCARDS') return '/assets/images/chapterResources/flash-card.png';
+        else if (key === 'NOTES & REFERENCES') return '/assets/images/chapterResources/pen-and-paper.png';
     }
     useEffect(() => {
+        setContentLoaded?.(false);
+        setAudioIsPlaying?.(false);
         console.log('useEffect triggered with chapterId:', chapterId);
         if (chapterId) {
             getChapterResouces();
@@ -99,9 +105,9 @@ const PadAIChapterDetailsScreen: React.FC = () => {
                 <PadAIChapterContainer
                     key={'ChapterDetails'}
                     id={1}
-                    chapterImage={chapter.chapterImage}
-                    chapterName={chapter.chapterName}
-                    lastReadDateTime={chapter.lastReadDateTime}
+                    chapterImage={chapterInfo.image}
+                    chapterName={chapterInfo.title}
+                    lastReadDateTime={''}
                     chapterSubject={'Science'}
                     showStarIcon={true}
                     showArrowIcon={false}
@@ -136,7 +142,69 @@ const PadAIChapterDetailsScreen: React.FC = () => {
                                 </IonItem>
                                 <div className="padAIChapterDetailsScreenContentAccordion" slot="content">
                                     {chapterResources[resource as keyof IChapterResources].map((resourceItem, index) => (
-                                        <IonItem lines="none" color={'light'} className="padAIChapterDetailsScreenContentAccordionItem"><IonLabel key={index}>{resourceItem.name}</IonLabel></IonItem>
+                                        <IonItem lines="none" color={'light'} className="padAIChapterDetailsScreenContentAccordionItem">
+                                            <IonLabel key={index}>{resourceItem.name}</IonLabel>
+                                            {resource == 'BOOK READER' && <IonButtons>
+                                                <IonButton fill="clear" slot="icon-only" style={{ fontSize: '18px' }}
+
+                                                    onClick={() => {
+                                                        setSelectedChapterResources?.(resourceItem);
+                                                        navigate.push(`/pdf-content`, 'forward');
+                                                    }}
+                                                > <IonIcon icon={cloudDownloadOutline} /></IonButton>
+                                                <IonButton fill="clear" slot="icon-only" style={{ fontSize: '18px' }}
+                                                    onClick={() => {
+                                                        setSelectedChapterResources?.(resourceItem);
+                                                        navigate.push(`/pdf-content`, 'forward');
+                                                    }}
+                                                > <IonIcon icon={arrowRedoOutline} /></IonButton>
+                                            </IonButtons>
+                                            }
+                                            {resource == 'FLASHCARDS' && <IonButtons>
+                                                <IonButton fill="clear" slot="icon-only" style={{ fontSize: '18px' }}> <IonIcon icon={arrowRedoOutline} /></IonButton>
+                                            </IonButtons>
+                                            }
+                                            {resource == 'NOTES & REFERENCES' && <IonButtons>
+                                                <IonButton fill="clear" slot="icon-only" style={{ fontSize: '18px' }}
+                                                    onClick={() => {
+                                                        setSelectedChapterResources?.(resourceItem);
+                                                        navigate.push(`/html-content`, 'forward');
+                                                    }}
+                                                > <IonIcon icon={arrowRedoOutline} /></IonButton>
+                                            </IonButtons>
+                                            }
+                                            {resource == 'QUESTION ANSWERS' && <IonButtons>
+                                                <IonButton fill="clear" slot="icon-only" style={{ fontSize: '18px' }}
+                                                    onClick={() => {
+                                                        setSelectedChapterResources?.(resourceItem);
+                                                        navigate.push(`/question-answer-content`, 'forward');
+                                                    }}
+                                                > <IonIcon icon={arrowRedoOutline} /></IonButton>
+                                            </IonButtons>
+                                            }
+                                            {resource == 'QUIZ' && <IonButtons>
+                                                <IonButton fill="clear" slot="icon-only" style={{ fontSize: '18px' }}
+                                                    onClick={() => {
+                                                        setSelectedChapterResources?.(resourceItem);
+                                                        navigate.push(`/quiz-content`, 'forward');
+                                                    }}
+                                                > <IonIcon icon={arrowRedoOutline} /></IonButton>
+                                            </IonButtons>
+                                            }
+                                            {resource == 'VIDEO EXPLAINERS' && <IonButtons>
+                                                <IonButton fill="clear" slot="icon-only" style={{ fontSize: '18px' }}
+                                                    onClick={() => {
+                                                        setSelectedChapterResources?.(resourceItem);
+                                                        if (resourceItem.contentType === 'video') {
+                                                            navigate.push(`/video-content`, 'forward');
+                                                        } else if (resourceItem.contentType === 'youtube-video') {
+                                                            navigate.push(`/youtube-content`, 'forward');
+                                                        }
+                                                    }}
+                                                > <IonIcon icon={resourceItem.contentType === 'video' ? playCircleOutline : logoYoutube} /></IonButton>
+                                            </IonButtons>
+                                            }
+                                        </IonItem>
                                     ))}
                                 </div>
                             </IonAccordion>

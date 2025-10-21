@@ -1,4 +1,4 @@
-import { IonApp, IonRouterOutlet, IonSplitPane, setupIonicReact } from '@ionic/react';
+import { IonApp, IonLoading, IonRouterOutlet, IonSplitPane, setupIonicReact, useIonLoading } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
 import { Redirect, Route } from 'react-router-dom';
 
@@ -47,6 +47,10 @@ import PadAIHTMLContentScreen from './pages/ContentViewScreens/HtmlContentScreen
 import PadAIChaptersScreen from './pages/ChaptersScreen/ChaptersScreen';
 import PadAIChapterDetailsScreen from './pages/ChapterDetailsScreen/ChapterDetailsScreen';
 import PadAIFlashViewScreen from './pages/ContentViewScreens/FlashViewScreen/FlashViewScreen';
+import PadAIQuestionAnswerContentScreen from './pages/ContentViewScreens/QuestionAnswerContentScreen/QuestionAnswerContentScreen';
+import PadAIQuizContentScreen from './pages/ContentViewScreens/QuizContentScreen/QuizContentScreen';
+import { useChapterStore } from './services/store/chapter.store';
+import PadAIPDFViewerContentScreen from './pages/ContentViewScreens/PDFViewerContentScreen/PDFViewerContentScreen';
 
 
 setupIonicReact();
@@ -56,6 +60,17 @@ const App: React.FC = () => {
   const [showUpdatePopup, setShowUpdatePopup] = useState(false);
   const [isObsolete, setIsObsolete] = useState(false);
   const [message, setMessage] = useState('');
+  const chapterInfo = useChapterStore((state)=>state.chapterInfo);
+  const setContentLoading = useChapterStore((state)=>state.setContentLoading);
+  const [present, dismiss] = useIonLoading();
+
+  useEffect(() => {
+    if(chapterInfo.contentLoading) {
+      present({ message: 'Please wait...' });
+    } else {
+      dismiss();
+    }
+  }, [chapterInfo.contentLoading]);
 
   useEffect(() => {
     // const checkAppVersion = async () => {
@@ -135,6 +150,18 @@ const App: React.FC = () => {
             {/* Flash Content Screen */}
             <Route path="/flash-content" exact={true}>
               <PadAIFlashViewScreen />
+              </Route>
+            {/* Question Answer Content Screen */}
+            <Route path="/question-answer-content" exact={true}>
+              <PadAIQuestionAnswerContentScreen />
+            </Route>
+            {/* Quiz Content Screen */}
+            <Route path="/quiz-content" exact={true}>
+              <PadAIQuizContentScreen />
+            </Route>
+            {/* PDF Viewer Content Screen */}
+            <Route path="/pdf-content" exact={true}>
+              <PadAIPDFViewerContentScreen />
             </Route>
             {/* Catch-all route - redirect any invalid route to home */}
             {/* <Route path="*">
@@ -143,6 +170,8 @@ const App: React.FC = () => {
           </IonRouterOutlet>
         </IonSplitPane>
       </IonReactRouter>
+      {/* <IonLoading trigger="open-loading" message="Please wait..." duration={3000} isOpen={chapterInfo.contentLoading} /> */}
+
     </IonApp>
   );
 };
