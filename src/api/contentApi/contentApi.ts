@@ -65,7 +65,9 @@ export const getQuestions = async (data: any) => {
 }
 
 export const getFlashcards = async (data: any) => {
-    return apiClient.post(ContentApiEndpoints.getFlashcards, data,
+    return apiClient.get(ContentApiEndpoints.getFlashcards, {
+        params: data
+    },
         { skipAuth: true });
 };
 

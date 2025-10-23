@@ -51,6 +51,7 @@ import PadAIQuestionAnswerContentScreen from './pages/ContentViewScreens/Questio
 import PadAIQuizContentScreen from './pages/ContentViewScreens/QuizContentScreen/QuizContentScreen';
 import { useChapterStore } from './services/store/chapter.store';
 import PadAIPDFViewerContentScreen from './pages/ContentViewScreens/PDFViewerContentScreen/PDFViewerContentScreen';
+import PadAIFlashcardContentScreen from './pages/ContentViewScreens/FlashcardContentScreen/FlashcardContentScreen';
 
 
 setupIonicReact();
@@ -149,7 +150,8 @@ const App: React.FC = () => {
             </Route>
             {/* Flash Content Screen */}
             <Route path="/flash-content" exact={true}>
-              <PadAIFlashViewScreen />
+              {/* <PadAIFlashViewScreen /> */}
+              <PadAIFlashcardContentScreen />
               </Route>
             {/* Question Answer Content Screen */}
             <Route path="/question-answer-content" exact={true}>

@@ -1,5 +1,5 @@
-import { getChapterResources, getChapters, getQuestions, getSubjects, synthesizeAudio } from "../api/contentApi/contentApi";
-import { IGetChapterQuizRequest, IGetChapterRequest, IGetChapterResourcesRequest, IGetChapterResourcesResponse, IGetChapterResponse, IGetSubjectsRequest, IGetSubjectsResponse, IQuizQuestion, ISynthesizeAudioRequest, ISynthesizeAudioResponse } from "../api/contentApi/contentApi.interface";
+import { getChapterResources, getChapters, getFlashcards, getQuestions, getSubjects, synthesizeAudio } from "../api/contentApi/contentApi";
+import { IGetChapterFlashcardsRequest, IGetChapterQuizRequest, IGetChapterRequest, IGetChapterResourcesRequest, IGetChapterResourcesResponse, IGetChapterResponse, IGetSubjectsRequest, IGetSubjectsResponse, IQuizQuestion, ISynthesizeAudioRequest, ISynthesizeAudioResponse } from "../api/contentApi/contentApi.interface";
 export interface IApiResponseSuccessAndError<T> {
     status: number;
     data: T;
@@ -167,6 +167,44 @@ export const GetQuiz = async (data: IGetChapterQuizRequest): Promise<IApiRespons
     }
 }
 
+
+export const GetFlashcards = async (data: IGetChapterFlashcardsRequest): Promise<IApiResponseSuccessAndError<IQuizQuestion[]>> => {
+    try {
+        const response = await getFlashcards(data);
+        console.log(response);
+        if (response.status === 200) {
+            if (response.data) {
+                return {
+                    status: response.status,
+                    data: response.data,
+                    message: response.data.message,
+                    responseStatus: 'DATA_FOUND'
+                };
+            } else {
+                return {
+                    status: response.status,
+                    data: [],
+                    message: response.data.message,
+                    responseStatus: 'DATA_NOT_FOUND'
+                };
+            }
+        }
+        return {
+            status: response.status,
+            data: [],
+            message: response.data.message,
+            responseStatus: 'DATA_NOT_FOUND'
+        };
+    } catch (error: any) {
+        console.log(error);
+        return {
+            status: error.status,
+            data: [],
+            message: error.message || 'Internal Server Error',
+            responseStatus: 'ERROR'
+        };
+    }
+}
 
 export const Synthesizeaudio = async (data: ISynthesizeAudioRequest): Promise<ISynthesizeAudioResponse> => {
     const response = await synthesizeAudio(data);

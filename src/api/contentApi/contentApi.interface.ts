@@ -116,3 +116,10 @@ export interface ISynthesizeAudioResponse {
 }
 
 
+
+
+
+export interface IGetChapterFlashcardsRequest {
+    language: string;
+    chapterId: number;
+}

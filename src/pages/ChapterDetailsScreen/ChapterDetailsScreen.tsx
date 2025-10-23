@@ -161,7 +161,13 @@ const PadAIChapterDetailsScreen: React.FC = () => {
                                             </IonButtons>
                                             }
                                             {resource == 'FLASHCARDS' && <IonButtons>
-                                                <IonButton fill="clear" slot="icon-only" style={{ fontSize: '18px' }}> <IonIcon icon={arrowRedoOutline} /></IonButton>
+                                                <IonButton fill="clear" slot="icon-only" style={{ fontSize: '18px' }}
+                                                
+                                                onClick={() => {
+                                                        setSelectedChapterResources?.(resourceItem);
+                                                        navigate.push(`/flash-content`, 'forward');
+                                                    }}
+                                                > <IonIcon icon={arrowRedoOutline} /></IonButton>
                                             </IonButtons>
                                             }
                                             {resource == 'NOTES & REFERENCES' && <IonButtons>
