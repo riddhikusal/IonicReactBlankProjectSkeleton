@@ -6,6 +6,7 @@ import PadAIBooksContainer from '../../components/HomeScreen/BooksContainer/Book
 import { GetSubjects } from '../../services/homeService';
 import { useToaster } from '../../hooks/toasterHooks/useToaster';
 import { IGetSubjectsRequest, IGetSubjectsResponse } from '../../api/contentApi/contentApi.interface';
+import vectoreBgImage from '/assets/images/dashboardScreen/topVectorOne.png';
 const user = {
     name: 'John Doe'
 }
@@ -175,7 +176,7 @@ const PadAIHomeScreen: React.FC = () => {
     return (
         <IonPage>
             <Commonheader />
-            <IonImg src="/assets/images/dashboardScreen/topVectorOne.png" alt="headerBanner" className='padAIvectorTwoBg' />
+            <IonImg src={vectoreBgImage} alt="headerBanner" className='padAIvectorTwoBg' />
             <IonHeader>
                 <div className="padAIHomeScreenUserGreeting">
                     <IonText>

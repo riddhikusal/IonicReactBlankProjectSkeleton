@@ -9,6 +9,7 @@ import { IChapterResources, IGetChapterResourcesRequest, IResourceItem } from ".
 import { GetChapterResources } from "../../services/homeService";
 import { useToaster } from "../../hooks/toasterHooks/useToaster";
 import { useChapterStore } from "../../services/store/chapter.store";
+import vectoreBgImage from '/assets/images/dashboardScreen/topVectorOne.png';
 const chapter = {
     chapterImage: '/assets/images/chapters/Ch01.jpeg',
     chapterName: 'Chemical Reactions and Equations',
@@ -99,7 +100,7 @@ const PadAIChapterDetailsScreen: React.FC = () => {
     return (
         <IonPage>
             <PadAIBackheader />
-            <IonImg src="/assets/images/dashboardScreen/topVectorOne.png" alt="headerBanner" className='padAIvectorTwoBg' />
+            <IonImg src={vectoreBgImage} alt="headerBanner" className='padAIvectorTwoBg' />
 
             <IonHeader>
                 <PadAIChapterContainer

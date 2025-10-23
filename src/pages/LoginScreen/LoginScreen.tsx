@@ -15,7 +15,7 @@ const PadAILoginScreen = () => {
   const [loginForm, setLoginForm] = useState<LoginForm>(JSON.parse(JSON.stringify(defaultLoginForm)));
   return (
     <IonPage className='padAIlandingScreen-page'>
-      {step !== 'signup' && <IonImg src="/assets/images/landingScreens/vectorTwoBg.png" alt="headerBanner" className='padAIvectorTwoBg' />}
+      {step !== 'signup' && <IonImg src={`${import.meta.env.BASE_URL}/assets/images/landingScreens/vectorTwoBg.png`} alt="headerBanner" className='padAIvectorTwoBg' />}
       <PadaiHeader />
       <IonContent className='padAIlandingScreen-content'>
         {step !== 'signup' && <PadaiHeaderBanner />}

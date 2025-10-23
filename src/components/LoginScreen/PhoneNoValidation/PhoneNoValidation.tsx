@@ -5,8 +5,9 @@ import '../LoginScreen.css';
 import PadaiButton from '../../Common/Buttons/Button';
 import { useHistory } from 'react-router-dom';
 import { LoginForm } from '../../../pages/LoginScreen/LoginScreen.interface';
-import { getMobileValidation, validateLogin } from '../../../services/loginService';
-import { saveAccessToken, saveRefreshToken } from '../../../utils/tokenStorage';
+import { getForgotPassword, getMobileValidation, validateLogin, validateOtp } from '../../../services/loginService';
+import { useAlert } from '../../../hooks/alertHooks/useAlert';
+import { useToaster } from '../../../hooks/toasterHooks/useToaster';
 
 // const dummyPhoneNo = '9876543210';
 // const dummyEmail = 'test@test.com';
@@ -22,6 +23,8 @@ const PadAIPhoneNoValidation = ({ setStep, loginForm, setLoginForm }: PhoneNoVal
     const navigate = useIonRouter();
     const [segmentValue, setSegmentValue] = useState<'phone' | 'email'>('phone');
     const [phoneNo, setPhoneNo] = useState<string>('');
+    const { presentAlert, dismiss } = useAlert();
+    const { successToaster,dangerToaster } = useToaster();
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [isPhoneVerified, setisPhoneVerified] = useState<boolean>(false);
@@ -40,11 +43,7 @@ const PadAIPhoneNoValidation = ({ setStep, loginForm, setLoginForm }: PhoneNoVal
                 setisPhoneVerified(true);
                 setEvent('login');
                 setLoginForm({ ...loginForm, phone_no: phoneNo });
-            } else {
-                // setisPhoneVerified(false);
-                // setStep('signup');
-                setEvent('validate_otp');
-            }
+            } 
             setShowLoader(false);
         }
 
@@ -52,17 +51,20 @@ const PadAIPhoneNoValidation = ({ setStep, loginForm, setLoginForm }: PhoneNoVal
             setShowLoader(true);
             var loginRes:any;
             if (event === 'validate_otp') {
-             loginRes = await validateLogin(phoneNo, password);
+             loginRes = await validateOtp(phoneNo, password);
             } else {
              loginRes = await validateLogin(phoneNo, password);
             }
                 
               if (loginRes.status?.toLowerCase() === 'success') {
-                    alert(loginRes.msg);
+                    //alert(loginRes.msg);
+                    presentAlert({ message: loginRes.msg, header: 'Login', buttonsActions: [() => { }] });
+
                     // check if user profile is set or not
                     if (loginRes.name && loginRes.name.trim() !== '' && loginRes.board && loginRes.board.trim() !== ''&& loginRes.class && loginRes.class.trim() !== '') {
                         // redirect to home page
-                        //history.push('/home');
+                        navigate.push('/home', 'forward', 'replace');
+                        // setStep('signup');
                     } else {
                         // redirect to signup page
                         setStep('signup');
@@ -102,9 +104,13 @@ const PadAIPhoneNoValidation = ({ setStep, loginForm, setLoginForm }: PhoneNoVal
         return buttonText;
     };
 
-
-    const navigateToHomeScreen = () => {
-        navigate.push('/home', 'forward', 'replace');
+    async function handleForgetPassword() {
+        const resPassword:any = await getForgotPassword(phoneNo);
+        if(resPassword.status?.toLowerCase() === 'passwordsent') {
+            successToaster(resPassword.msg || 'Password sent to your registered mobile number');
+        }
+        else 
+            dangerToaster('Failed to send password. Please try again later');
     }
 
     return (
@@ -166,7 +172,8 @@ const PadAIPhoneNoValidation = ({ setStep, loginForm, setLoginForm }: PhoneNoVal
                         <PadaiButton
                             onClick={(e) => {
                                 e.preventDefault();
-                                !isPhoneVerified ? handleContinue() : navigateToHomeScreen();
+                                // !isPhoneVerified ? handleContinue() : navigateToHomeScreen();
+                                handleContinue();
                             }}
                             color='warning'
                             size='large'
@@ -181,6 +188,23 @@ const PadAIPhoneNoValidation = ({ setStep, loginForm, setLoginForm }: PhoneNoVal
                             {getButtonText(event)}
                             
                         </PadaiButton>
+                        {isPhoneVerified && (
+                            <PadaiButton
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    handleForgetPassword();
+                                }}
+                                color='light'
+                                size='large'
+                                type='button'
+                                fill='solid'
+                                expand='block'
+                            >
+                                Forget Password?
+
+                            </PadaiButton>
+                        )}
+
                     </div>
                 </IonCardContent>
             </IonCard>

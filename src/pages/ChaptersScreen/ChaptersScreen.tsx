@@ -9,6 +9,7 @@ import PadAIChapterContainer from "../../components/HomeScreen/ChapterContainer/
 import { GetChapters } from "../../services/homeService";
 import { IGetChapterRequest, IGetChapterResponse } from "../../api/contentApi/contentApi.interface";
 import { useToaster } from "../../hooks/toasterHooks/useToaster";
+import vectoreBgImage from '/assets/images/dashboardScreen/topVectorOne.png';
 
 
 
@@ -70,7 +71,7 @@ const PadAIChaptersScreen: React.FC = () => {
     return (
         <IonPage>
             <PadAIBackheader />
-            <IonImg src="/assets/images/dashboardScreen/topVectorOne.png" alt="headerBanner" className='padAIvectorTwoBg' />
+            <IonImg src={vectoreBgImage} alt="headerBanner" className='padAIvectorTwoBg' />
 
             <IonHeader>
                 <div className="padAIHomeScreenUserGreeting">

@@ -12,11 +12,16 @@ const LandingScreen: React.FC = () => {
   const navigate = useIonRouter();
   return (
     <IonPage className='padAIlandingScreen-page'>
-      <IonImg src="/assets/images/landingScreens/vectorTwoBg.png" alt="headerBanner" className='padAIvectorTwoBg' />
+      <IonImg src={`${import.meta.env.BASE_URL}assets/images/landingScreens/vectorTwoBg.png`} alt="headerBanner" className='padAIvectorTwoBg' />
       <PadaiHeader />
       <IonContent className='padAIlandingScreen-content'>
         <PadaiHeaderBanner />
-        <IonImg src="/assets/images/landingScreens/vectorOne.png" alt="headerBanner" className='padAIvectorOne' />
+        {/* <IonButton onClick={() => {
+          navigate.push('/language','forward');
+        }}>
+          <IonIcon icon="arrow-forward"></IonIcon>
+        </IonButton> */}
+        <IonImg src={`${import.meta.env.BASE_URL}assets/images/landingScreens/vectorOne.png`} alt="headerBanner" className='padAIvectorOne' />
         <div className='padAIbuttons-container'>
           <PadaiButton children="Get Started Free"
             onClick={(e: any) => {
@@ -49,3 +54,4 @@ const LandingScreen: React.FC = () => {
 };
 
 export default LandingScreen;
+  

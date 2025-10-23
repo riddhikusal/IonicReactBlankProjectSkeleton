@@ -3,6 +3,7 @@ import { IonButton, IonButtons, IonIcon, IonImg, IonMenuButton, IonTitle, useIon
 import { IonHeader, IonToolbar } from "@ionic/react"
 import './Commonheader.css';
 import { notificationsOutline } from "ionicons/icons";
+import logoImage from '/assets/logo/padai_logo.png';
 
 const Commonheader = () => {
     const navigate = useIonRouter();
@@ -12,7 +13,7 @@ const Commonheader = () => {
             <IonButtons slot="start">
               <IonMenuButton className="menuBtn" color={'dark'}></IonMenuButton>
             </IonButtons>
-            <IonImg src={'/assets/logo/padai_logo.png'} alt="logo" className='padAIlogoInnerScreen'>
+            <IonImg src={logoImage} alt="logo" className='padAIlogoInnerScreen'>
             </IonImg>
             <IonButtons slot="end">
               <IonButton className="padAI-commonheader-button" fill="clear" onClick={() => {
