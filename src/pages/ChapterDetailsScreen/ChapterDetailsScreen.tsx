@@ -10,6 +10,14 @@ import { GetChapterResources } from "../../services/homeService";
 import { useToaster } from "../../hooks/toasterHooks/useToaster";
 import { useChapterStore } from "../../services/store/chapter.store";
 import vectoreBgImage from '/assets/images/dashboardScreen/topVectorOne.png';
+import logoImage from '/assets/logo/padai_logo.png';
+import TextReaderImage from '/assets/images/chapterResources/pdf.png';
+import VideoExplainerImage from '/assets/images/chapterResources/video.png';
+import QuestionAnswerImage from '/assets/images/chapterResources/question.png';
+import QuizImage from '/assets/images/chapterResources/speech-bubble.png';
+import FlashcardImage from '/assets/images/chapterResources/flash-card.png';
+import NotesReferencesImage from '/assets/images/chapterResources/pen-and-paper.png';
+
 const chapter = {
     chapterImage: '/assets/images/chapters/Ch01.jpeg',
     chapterName: 'Chemical Reactions and Equations',
@@ -78,13 +86,13 @@ const PadAIChapterDetailsScreen: React.FC = () => {
         }
     }
     const getChapterImage = (resource: IResourceItem, key: string) => {
-        if (key === 'BOOK READER') return '/assets/images/chapterResources/pdf.png';
+        if (key === 'BOOK READER') return TextReaderImage;
         // else if(key === 'VIDEO EXPLAINERS') '/assets/images/chapterResources/youtube.png';
-        else if (key === 'VIDEO EXPLAINERS') return '/assets/images/chapterResources/video.png';
-        else if (key === 'QUESTION ANSWERS') return '/assets/images/chapterResources/question.png';
-        else if (key === 'QUIZ') return '/assets/images/chapterResources/speech-bubble.png';
-        else if (key === 'FLASHCARDS') return '/assets/images/chapterResources/flash-card.png';
-        else if (key === 'NOTES & REFERENCES') return '/assets/images/chapterResources/pen-and-paper.png';
+        else if (key === 'VIDEO EXPLAINERS') return VideoExplainerImage;
+        else if (key === 'QUESTION ANSWERS') return QuestionAnswerImage;
+        else if (key === 'QUIZ') return QuizImage;
+        else if (key === 'FLASHCARDS') return FlashcardImage;
+        else if (key === 'NOTES & REFERENCES') return NotesReferencesImage;
     }
     useEffect(() => {
         setContentLoaded?.(false);

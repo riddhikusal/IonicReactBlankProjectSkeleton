@@ -7,6 +7,7 @@ import { GetSubjects } from '../../services/homeService';
 import { useToaster } from '../../hooks/toasterHooks/useToaster';
 import { IGetSubjectsRequest, IGetSubjectsResponse } from '../../api/contentApi/contentApi.interface';
 import vectoreBgImage from '/assets/images/dashboardScreen/topVectorOne.png';
+import { getUserProfile, UserProfile } from '../../utils/profileStorage';
 const user = {
     name: 'John Doe'
 }
@@ -130,6 +131,7 @@ const PadAIHomeScreen: React.FC = () => {
     const [subjects, setSubjects] = useState<IGetSubjectsResponse[]>([]);
     const [filteredSubjects, setFilteredSubjects] = useState<IGetSubjectsResponse[]>([]);
     const [isubjectDataLoading, setIsubjectDataLoading] = useState<boolean>(false);
+    const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
     const getAllSubjects = async () => {
         try {
@@ -164,12 +166,18 @@ const PadAIHomeScreen: React.FC = () => {
         setFilteredSubjects(subjects.filter((subject) => subject.info === selectedSubject));
     }
 
+    const getUserProfileData = async () => {
+        const userProfile = await getUserProfile();
+        setUserProfile(userProfile);
+    }
+
     useEffect(() => {
         getAllSubjects();
+        getUserProfileData();
     }, []);
 
     useEffect(() => {
-        console.log("selectedSubject", selectedSubject);
+        // console.log("selectedSubject", selectedSubject);
         filterSubjects();
     }, [selectedSubject]);
 
@@ -180,7 +188,7 @@ const PadAIHomeScreen: React.FC = () => {
             <IonHeader>
                 <div className="padAIHomeScreenUserGreeting">
                     <IonText>
-                        <p className='padAIHomeScreenUserGreetingText'>Hello, {user?.name || 'Guest'} </p>
+                        <p className='padAIHomeScreenUserGreetingText'>Hello, {userProfile?.name || 'Guest'} </p>
                     </IonText>
                     <IonText className='padAIHomeScreenUserGreeting-text-subtitle'>
                         let's find your books here
