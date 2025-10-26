@@ -56,6 +56,7 @@ export interface IGetSubjectsRequest {
 
 export interface IGetSubjectsResponse {
     subjectId: number;
+    subjectGroup: string;
     info: string;
     image: string;
     isActive: boolean;
@@ -123,3 +124,15 @@ export interface IGetChapterFlashcardsRequest {
     language: string;
     chapterId: number;
 }
+
+
+
+export interface IAskOpenAIAssistantRequest {
+    prompt: string;
+    chapterId: number;
+}
+
+export interface IAskOpenAIAssistantResponse {
+    response: string;
+}
+

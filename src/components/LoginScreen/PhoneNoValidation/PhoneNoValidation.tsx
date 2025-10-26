@@ -161,7 +161,7 @@ const PadAIPhoneNoValidation = ({ setStep, loginForm, setLoginForm }: PhoneNoVal
                                 <p className='padAIInputLabel'>Enter Passcode</p>
                             </IonText>
                             <IonItem className='padAIInput' lines='none'>
-                                <IonInput type="password" placeholder='XXXXXXX' value={password} onIonInput={(e) => setPassword((e.target as HTMLInputElement).value || '')}>
+                                <IonInput maxlength={6} type="password" placeholder='XXXXXXX' value={password} onIonInput={(e) => setPassword((e.target as HTMLInputElement).value || '')}>
                                     <IonInputPasswordToggle slot="end"></IonInputPasswordToggle>
                                 </IonInput>
                             </IonItem>

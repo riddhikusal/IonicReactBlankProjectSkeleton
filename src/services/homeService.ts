@@ -1,5 +1,5 @@
-import { getChapterResources, getChapters, getFlashcards, getQuestions, getSubjects, synthesizeAudio } from "../api/contentApi/contentApi";
-import { IGetChapterFlashcardsRequest, IGetChapterQuizRequest, IGetChapterRequest, IGetChapterResourcesRequest, IGetChapterResourcesResponse, IGetChapterResponse, IGetSubjectsRequest, IGetSubjectsResponse, IQuizQuestion, ISynthesizeAudioRequest, ISynthesizeAudioResponse } from "../api/contentApi/contentApi.interface";
+import { askOpenAIAssistant, getChapterResources, getChapters, getFlashcards, getQuestions, getSubjects, synthesizeAudio } from "../api/contentApi/contentApi";
+import { IAskOpenAIAssistantRequest, IAskOpenAIAssistantResponse, IGetChapterFlashcardsRequest, IGetChapterQuizRequest, IGetChapterRequest, IGetChapterResourcesRequest, IGetChapterResourcesResponse, IGetChapterResponse, IGetSubjectsRequest, IGetSubjectsResponse, IQuizQuestion, ISynthesizeAudioRequest, ISynthesizeAudioResponse } from "../api/contentApi/contentApi.interface";
 export interface IApiResponseSuccessAndError<T> {
     status: number;
     data: T;
@@ -219,3 +219,38 @@ export const Synthesizeaudio = async (data: ISynthesizeAudioRequest): Promise<IS
         wordTimestamps: [],
     };
 };
+
+
+// api/OpenAIAssistant/ask
+
+export const AskOpenAIAssistant = async (data: IAskOpenAIAssistantRequest): Promise<IApiResponseSuccessAndError<IAskOpenAIAssistantResponse>> => {
+    try {
+        const response = await askOpenAIAssistant(data);
+        if (response.status === 200) {
+            return {
+                status: response.status,
+                data: response.data,
+                message: response.data.message,
+                responseStatus: 'DATA_FOUND'
+            };
+        }
+        return {
+            status: response.status,
+            data: {
+                response: ''
+            },
+            message: response.data.message,
+            responseStatus: 'DATA_NOT_FOUND'
+        };
+    } catch (error: any) {
+        console.log(error);
+        return {
+            status: error.status,
+            data: {
+                response: ''
+            },
+            message: error.message || 'Internal Server Error',
+            responseStatus: 'ERROR'
+        };
+    }
+}

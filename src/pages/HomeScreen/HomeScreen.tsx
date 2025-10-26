@@ -22,6 +22,7 @@ const PadAIHomeScreen: React.FC = () => {
     const navigate = useIonRouter();
     const [selectedSubject, setSelectedSubject] = useState<string>('All');
     const [subjects, setSubjects] = useState<IGetSubjectsResponse[]>([]);
+    const [copyAllBooks, setCopyAllBooks] = useState<IGetSubjectsResponse[]>([]);
     const [filteredSubjects, setFilteredSubjects] = useState<IGetSubjectsResponse[]>([]);
     const [isubjectDataLoading, setIsubjectDataLoading] = useState<boolean>(false);
     const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
@@ -36,7 +37,20 @@ const PadAIHomeScreen: React.FC = () => {
             const res = await GetSubjects(getData);
             console.log("Component", res);
             if (res.responseStatus === 'DATA_FOUND') {
-                setSubjects(res.data);
+                let subjects = res.data.reduce((acc: any, curr: IGetSubjectsResponse) => {
+                    if (acc.length === 0) {
+                        acc.push(curr);
+                    }
+                    else if (acc.find((subject: IGetSubjectsResponse) => subject.subjectGroup === curr.subjectGroup)) {
+                        return acc;
+                    }
+                    else {
+                        acc.push(curr);
+                    }
+                    return acc;
+                }, [] as IGetSubjectsResponse[]);
+                setSubjects(subjects);
+                setCopyAllBooks(res.data);
                 setFilteredSubjects(res.data);
             } else {
                 dangerToaster(res.message);
@@ -52,11 +66,12 @@ const PadAIHomeScreen: React.FC = () => {
     }
 
     const filterSubjects = () => {
+        console.log("copyAllBooks", copyAllBooks);
         if (selectedSubject === 'All') {
-            setFilteredSubjects(subjects);
+            setFilteredSubjects(copyAllBooks);
             return;
         }
-        setFilteredSubjects(subjects.filter((subject) => subject.info === selectedSubject));
+        setFilteredSubjects(copyAllBooks.filter((subject) => subject.subjectGroup === selectedSubject));
     }
 
     const getUserProfileData = async () => {
@@ -70,7 +85,7 @@ const PadAIHomeScreen: React.FC = () => {
     }, []);
 
     useEffect(() => {
-        // console.log("selectedSubject", selectedSubject);
+        console.log("selectedSubject", selectedSubject);
         filterSubjects();
     }, [selectedSubject]);
 
@@ -104,9 +119,9 @@ const PadAIHomeScreen: React.FC = () => {
                                     </IonText>
                                 </IonSegmentButton>
                                 {subjects.map((subject, index) => (
-                                    <IonSegmentButton key={index} value={subject.info} onClick={() => setSelectedSubject(subject.info)}>
+                                    <IonSegmentButton key={index} value={subject.subjectGroup} onClick={() => setSelectedSubject(subject.subjectGroup)}>
                                         <IonText key={index}>
-                                            <p className={`padAIHomeScreenUserBooksFilter-text`}>{subject.info}</p>
+                                            <p className={`padAIHomeScreenUserBooksFilter-text`}>{subject.subjectGroup}</p>
                                         </IonText>
                                     </IonSegmentButton>
                                 ))}

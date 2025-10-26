@@ -4,11 +4,13 @@ import { banOutline, chevronUpCircle, colorPalette, documentOutline, ellipsisVer
 import { useEffect, useRef, useState } from 'react';
 import CustomSheetModal from '../../Common/CustomSheetModal/CustomSheetModal';
 import { useChapterStore } from '../../../services/store/chapter.store';
+import { useChatsStore } from '../../../services/store/chats.store';
 const PadAIContentAIPanel = () => {
     const [showSelectedText, setShowSelectedText] = useState<boolean>(false);
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const modal = useRef<HTMLIonModalElement>(null);
     const chapterInfo = useChapterStore((state) => state.chapterInfo);
+    const setIsChatOpen = useChatsStore((state: any) => state.setIsChatOpen);
     const setAudioIsPlaying = useChapterStore((state) => state.setAudioIsPlaying);
     const setContentLoaded = useChapterStore((state) => state.setContentLoaded);
     const setContentLoading = useChapterStore((state) => state.setContentLoading);
@@ -57,7 +59,10 @@ const PadAIContentAIPanel = () => {
                     <IonButton
                         className="btnGradient"
                         fill='clear'
-                        onClick={() => setIsModalOpen(true)}
+                        onClick={() => {
+                            setIsModalOpen(true);
+                            setIsChatOpen?.(true);
+                        }}
                     >
                         {/* <IonImg src={'/assets/images/contentScreens/aiAsk.png'} alt='AI' /> */}
                         <IonIcon icon={sparkles}></IonIcon>
@@ -98,7 +103,10 @@ const PadAIContentAIPanel = () => {
         </div>
         <CustomSheetModal
             isOpen={isModalOpen}
-            onClose={() => setIsModalOpen(false)}
+            onClose={() => {
+                setIsModalOpen(false);
+                setIsChatOpen?.(false);
+            }}
             selectedText={'Lorem ipsum dolor sit amet consectetur adipisicing elit. In, nihil voluptas qui voluptatum laborum officiis quidem facere deleniti aliquid quia iusto modi nam reprehenderit animi sequi molestiae consectetur consequatur. Natus, sunt doloribus, aperiam vero molestiae mollitia tempora aut cupiditate est suscipit magni pariatur amet nam voluptatum error eos quisquam minima culpa repellendus. Nulla nihil optio assumenda eum excepturi omnis, earum quidem. Laborum corporis accusamus nobis reprehenderit? Ea reprehenderit at eaque. Nihil, iste facilis saepe impedit, vero quos repellat enim nostrum praesentium, dolore ipsa voluptates vel quo aspernatur ex ullam asperiores alias minus voluptas obcaecati rerum quaerat! Nihil iste quod error!'}
         />
     </>

@@ -1,6 +1,6 @@
 // src/api/contentApi/contentApi.ts
 import apiClient from '../axiosInstance';
-import { IChapter, IGetChapterRequest, IGetChapterResourcesRequest, IGetSubjectsRequest, ISynthesizeAudioRequest } from './contentApi.interface';
+import { IGetChapterRequest, IGetChapterResourcesRequest, IGetSubjectsRequest, ISynthesizeAudioRequest } from './contentApi.interface';
 
 const ContentApiEndpoints = {
     getLanguages: '/api/AIContent/languages',
@@ -12,6 +12,7 @@ const ContentApiEndpoints = {
     getQuestions: '/api/AIContent/questions',
     getFlashcards: '/api/AIContent/flashcards',
     synthesizeAudio: '/api/Audio/synthesizeaudio',
+    askOpenAIAssistant: '/api/OpenAIAssistant/ask',
 }
 
 export const getBoards = async (data: any) => {
@@ -73,5 +74,11 @@ export const getFlashcards = async (data: any) => {
 
 export const synthesizeAudio = async (data: ISynthesizeAudioRequest) => {
     return apiClient.post(ContentApiEndpoints.synthesizeAudio, data,
+        { skipAuth: true });
+};
+
+
+export const askOpenAIAssistant = async (data: any) => {
+    return apiClient.post(ContentApiEndpoints.askOpenAIAssistant, data,
         { skipAuth: true });
 };

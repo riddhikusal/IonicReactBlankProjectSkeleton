@@ -152,6 +152,7 @@
 
 .user-message {
   justify-content: flex-end;
+  width: 100%;
 }
 
 .ai-message {
@@ -159,7 +160,7 @@
 }
 
 .selected-text-message {
-  justify-content: flex-start;
+  justify-content: flex-end;
   width: 100%;
 }
 
@@ -365,4 +366,14 @@
 
 .messages-container::-webkit-scrollbar-thumb:hover {
   background: #a0a0a0;
+}
+
+.ai-message-loading {
+  justify-content: flex-start;
+  width: 100%;
+}
+.ai-message-loading .message-bubble {
+  background: #f1f3f4;
+  color: #333;
+  border-bottom-left-radius: 4px;
 }
