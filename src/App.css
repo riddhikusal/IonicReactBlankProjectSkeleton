@@ -235,11 +235,14 @@ ion-label {
 /* Mobile-specific adjustments */
 @media (max-width: 768px) {
   .btnGradient {
-    padding: 4px 4px;
-    font-size: 15px;
-    border-radius: 28px;
+    padding: 5px 1px;
+    font-size: 17px;
+    border-radius: 30px;
     text-transform: capitalize;
+    height: 50px;
+    border: 3px solid #f7d3ff;
   }
+
 
   .btnGradient::after {
     border-radius: 45px;
@@ -280,17 +283,20 @@ ion-label {
   -webkit-user-select: text;
   -moz-user-select: text;
   -ms-user-select: text;
-  padding: 16px;
-  background-color: #f0f8ff;
+  padding: 1px;
+  /* background-color: #f0f8ff; */
   border-radius: 8px;
   position: relative;
-  -webkit-touch-callout: none; /* Disable iOS callout */
-  -webkit-user-select: text; /* Allow text selection */
+  -webkit-touch-callout: none;
+  /* Disable iOS callout */
+  -webkit-user-select: text;
+  /* Allow text selection */
   -khtml-user-select: text;
   -moz-user-select: text;
   -ms-user-select: text;
   user-select: text;
-  touch-action: manipulation; /* Prevent default touch behaviors */
+  touch-action: manipulation;
+  /* Prevent default touch behaviors */
 }
 
 mark.custom-highlight {
