@@ -11,27 +11,31 @@ const PadAIContentAIPanel = () => {
     const chapterInfo = useChapterStore((state) => state.chapterInfo);
     const setAudioIsPlaying = useChapterStore((state) => state.setAudioIsPlaying);
     const setContentLoaded = useChapterStore((state) => state.setContentLoaded);
+    const setContentLoading = useChapterStore((state) => state.setContentLoading);
+
+
+    const handleClearContentLoadingFlag = () => {
+        setContentLoading?.(false);
+        setContentLoaded?.(false);
+        setAudioIsPlaying?.(false);
+    }
+
+    const handleLoadContent = () => {
+        setContentLoading?.(true);
+        setContentLoaded?.(false);
+        setAudioIsPlaying?.(false);
+    }
+
+    // const handlePlayAndPause = (clearContentLoadingFlag: boolean = false) => {
+    //     console.log('clearContentLoadingFlag', clearContentLoadingFlag);
+    //     if (clearContentLoadingFlag) {
+    //         setContentLoaded?.(false);
+    //         setAudioIsPlaying?.(false);
+    //         return;
+    //     }
+    // }
 
     const handlePlayAndPause = (clearContentLoadingFlag: boolean = false) => {
-        console.log('clearContentLoadingFlag', clearContentLoadingFlag);
-        if (clearContentLoadingFlag) {
-            setContentLoaded?.(!chapterInfo.contentLoaded);
-            setAudioIsPlaying?.(!chapterInfo.contentLoaded);
-            return;
-            // if((chapterInfo.contentLoaded && chapterInfo.audioIsPlaying)) {
-            //     setContentLoaded?.(false);
-            //     setAudioIsPlaying?.(false);
-            //     return;
-            // };
-            // if((!chapterInfo.contentLoaded && chapterInfo.audioIsPlaying)) {
-            //     setContentLoaded?.(false);
-            //     setAudioIsPlaying?.(true);
-            //     return;
-            // };
-            // setAudioIsPlaying?.(true);
-            // return;
-        }
-
         chapterInfo.audioIsPlaying = !chapterInfo.audioIsPlaying;
         console.log('chapterInfo.audioIsPlaying', chapterInfo.audioIsPlaying);
         setAudioIsPlaying?.(chapterInfo.audioIsPlaying);
@@ -60,8 +64,14 @@ const PadAIContentAIPanel = () => {
                         <IonText>AI</IonText>
                     </IonButton>
                     <div className={`padAIFooterFlexBtnContainer aiFooterIcons ${!chapterInfo.contentLoaded ? 'aiFooterIconsModify' : ''}`} id={!chapterInfo.contentLoaded ? 'aiFooterIconsModify' : ''}>
-                        <IonButton className='padAIFooterFlexBtn no-border-right-redius' fill='clear' onClick={() => handlePlayAndPause(true)} > <IonIcon icon={chapterInfo.contentLoaded ? banOutline : volumeHighOutline} className='footericons' ></IonIcon></IonButton>
-                        {chapterInfo.contentLoaded && <IonButton className='padAIFooterFlexBtn no-border-right-redius no-border-left-redius' fill='clear' onClick={() => handlePlayAndPause(false)} > <IonIcon icon={chapterInfo.audioIsPlaying ? pause : play} className='footericons' ></IonIcon></IonButton>}
+                        {!chapterInfo.contentLoaded && <IonButton className='padAIFooterFlexBtn no-border-right-redius' fill='clear' onClick={() => handleLoadContent()} > <IonIcon icon={volumeHighOutline} className='footericons' ></IonIcon></IonButton>}
+                        {chapterInfo.contentLoaded && <IonButton className='padAIFooterFlexBtn no-border-right-redius' fill='clear' onClick={() => handleClearContentLoadingFlag()} > <IonIcon icon={banOutline} className='footericons' ></IonIcon></IonButton>}
+                        {chapterInfo.contentLoaded && chapterInfo.audioIsPlaying && <IonButton className='padAIFooterFlexBtn no-border-right-redius no-border-left-redius' fill='clear' onClick={() => handlePlayAndPause(false)} >
+                            <IonIcon icon={pause} className='footericons' ></IonIcon>
+                        </IonButton>}
+                        {chapterInfo.contentLoaded && !chapterInfo.audioIsPlaying && <IonButton className='padAIFooterFlexBtn no-border-right-redius no-border-left-redius' fill='clear' onClick={() => handlePlayAndPause(false)} >
+                            <IonIcon icon={play} className='footericons' ></IonIcon>
+                        </IonButton>}
                         <IonButton className='padAIFooterFlexBtn no-border-right-redius no-border-left-redius' fill='clear' > <IonIcon icon={searchOutline} className='footericons' ></IonIcon></IonButton>
                         <IonButton className='padAIFooterFlexBtn no-border-right-redius no-border-left-redius' fill='clear' > <IonIcon icon={language} className='footericons' ></IonIcon></IonButton>
                         <IonButton className='padAIFooterFlexBtn no-border-right-redius no-border-left-redius' fill='clear' > <IonIcon icon={mic} className='footericons'></IonIcon></IonButton>

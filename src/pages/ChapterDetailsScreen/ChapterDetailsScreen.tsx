@@ -1,4 +1,4 @@
-import { IonCol, IonContent, IonHeader, IonImg, IonPage, IonRow, IonIcon, IonText, IonAccordion, IonItem, IonLabel, IonAccordionGroup, useIonRouter, IonThumbnail, IonButtons, IonButton } from "@ionic/react";
+import { IonCol, IonContent, IonHeader, IonImg, IonPage, IonRow, IonIcon, IonText, IonAccordion, IonItem, IonLabel, IonAccordionGroup, useIonRouter, IonThumbnail, IonButtons, IonButton, useIonViewWillEnter } from "@ionic/react";
 import PadAIBackheader from "../../components/Common/Backheader/Backheader";
 import PadAIChapterContainer from "../../components/HomeScreen/ChapterContainer/ChapterContainer";
 import { useLocation, useParams } from "react-router-dom";
@@ -17,6 +17,7 @@ import QuestionAnswerImage from '/assets/images/chapterResources/question.png';
 import QuizImage from '/assets/images/chapterResources/speech-bubble.png';
 import FlashcardImage from '/assets/images/chapterResources/flash-card.png';
 import NotesReferencesImage from '/assets/images/chapterResources/pen-and-paper.png';
+import React from "react";
 
 const chapter = {
     chapterImage: '/assets/images/chapters/Ch01.jpeg',
@@ -28,6 +29,7 @@ const chapter = {
 
 const PadAIChapterDetailsScreen: React.FC = () => {
     const chapterInfo = useChapterStore((state) => state.chapterInfo);
+    const setContentLoading = useChapterStore((state) => state.setContentLoading);
     const setSelectedChapterResources = useChapterStore((state) => state.setSelectedChapterResources);
     const setContentLoaded = useChapterStore((state) => state.setContentLoaded);
     const setAudioIsPlaying = useChapterStore((state) => state.setAudioIsPlaying);
@@ -105,6 +107,13 @@ const PadAIChapterDetailsScreen: React.FC = () => {
         }
     }, [chapterId]);
 
+
+    useIonViewWillEnter(()=>{
+        setContentLoading?.(false);
+        setContentLoaded?.(false);
+        setAudioIsPlaying?.(false);
+    });
+
     return (
         <IonPage>
             <PadAIBackheader />
@@ -171,8 +180,8 @@ const PadAIChapterDetailsScreen: React.FC = () => {
                                             }
                                             {resource == 'FLASHCARDS' && <IonButtons>
                                                 <IonButton fill="clear" slot="icon-only" style={{ fontSize: '18px' }}
-                                                
-                                                onClick={() => {
+
+                                                    onClick={() => {
                                                         setSelectedChapterResources?.(resourceItem);
                                                         navigate.push(`/flash-content`, 'forward');
                                                     }}
@@ -307,3 +316,7 @@ const PadAIChapterDetailsScreen: React.FC = () => {
 }
 
 export default PadAIChapterDetailsScreen;
+
+function useFocusEffect(arg0: () => void) {
+    throw new Error("Function not implemented.");
+}

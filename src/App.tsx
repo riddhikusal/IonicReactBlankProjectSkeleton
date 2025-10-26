@@ -29,9 +29,10 @@ import '@ionic/react/css/display.css';
  * https://ionicframework.com/docs/theming/dark-mode
  */
 
+/* Dark mode disabled - app only supports light theme */
 /* import '@ionic/react/css/palettes/dark.always.css'; */
 /* import '@ionic/react/css/palettes/dark.class.css'; */
-import '@ionic/react/css/palettes/dark.system.css';
+/* import '@ionic/react/css/palettes/dark.system.css'; */
 
 /* Theme variables */
 import './theme/variables.css';
@@ -63,11 +64,15 @@ const App: React.FC = () => {
   const [message, setMessage] = useState('');
   const chapterInfo = useChapterStore((state)=>state.chapterInfo);
   const setContentLoading = useChapterStore((state)=>state.setContentLoading);
+  const setContentLoaded = useChapterStore((state)=>state.setContentLoaded);
+  const setAudioIsPlaying = useChapterStore((state)=>state.setAudioIsPlaying);
   const [present, dismiss] = useIonLoading();
 
   useEffect(() => {
+    console.log('chapterInfo.contentLoading', chapterInfo.contentLoading, chapterInfo.contentLoaded, chapterInfo.audioIsPlaying);
     if(chapterInfo.contentLoading) {
-      present({ message: 'Please wait...' });
+      present({ message: 'Please wait...' 
+      });
     } else {
       dismiss();
     }
@@ -86,6 +91,9 @@ const App: React.FC = () => {
     // };
 
     // checkAppVersion();
+    setContentLoading?.(false);
+    setContentLoaded?.(false);
+    setAudioIsPlaying?.(false);
   }, []);
 
   const handleUpdate = () => {

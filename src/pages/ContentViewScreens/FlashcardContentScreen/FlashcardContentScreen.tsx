@@ -75,25 +75,28 @@ const PadAIFlashcardContentScreen = () => {
             <PadAIBackheader />
             <IonContent>
                 <PadAIChapterHeader />
-                <IonRow>
+                <IonRow style={{ display: 'flex', flexWrap: 'wrap' }}>
                     {loading && [1, 2, 3, 4, 5, 6, 7, 8, 9].map((index) =>
-                    (<IonCol size="6">
-                        <IonText className="ion-text-wrap padAIHomeScreenUserBooks-text-container" style={{ textOverflow: 'ellipsis' }}>
+                    (<IonCol size="6" key={index} style={{ display: 'flex', alignItems: 'stretch' }}>
+                        <IonText className="ion-text-wrap padAIHomeScreenUserBooks-text-container" style={{ textOverflow: 'ellipsis', width: '100%', display: 'flex' }}>
                             <IonSkeletonText animated={true} style={{ width: '120px', height: '180px' }}></IonSkeletonText>
                         </IonText>
                     </IonCol>)
                     )}
                     {!loading && flashcards && flashcards.length > 0 && flashcards.map((flashcard) => (
-                        <IonCol size="6">
-                            <FlashViewer
-                                key={flashcard.id}
-                                question={flashcard.question}
-                                answer={flashcard.answer}
-                                image={flashcard.image}
-                            />
+                        <IonCol size="6" key={flashcard.id} style={{ display: 'flex', alignItems: 'stretch' }}>
+                            <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
+                                <FlashViewer
+                                    key={flashcard.id}
+                                    question={flashcard.question}
+                                    answer={flashcard.answer}
+                                    image={flashcard.image}
+                                />
+                            </div>
                         </IonCol>
                     ))}
                 </IonRow>
+                <div className="mb-10" style={{height: '100px'}}></div>
             </IonContent>
             <IonFooter>
                 <PadAIContentAIPanel />

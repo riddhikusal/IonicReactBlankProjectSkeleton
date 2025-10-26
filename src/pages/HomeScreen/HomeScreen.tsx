@@ -1,4 +1,4 @@
-import { IonCol, IonContent, IonHeader, IonImg, IonPage, IonRow, IonSegment, IonSegmentButton, IonSkeletonText, IonText, useIonRouter } from '@ionic/react';
+import { IonCol, IonContent, IonHeader, IonImg, IonPage, IonRow, IonSegment, IonSegmentButton, IonSkeletonText, IonText, useIonRouter, useIonViewWillEnter } from '@ionic/react';
 import './HomeScreen.css';
 import Commonheader from '../../components/Common/Commonheader/Commonheader';
 import { useEffect, useState } from 'react';
@@ -8,123 +8,16 @@ import { useToaster } from '../../hooks/toasterHooks/useToaster';
 import { IGetSubjectsRequest, IGetSubjectsResponse } from '../../api/contentApi/contentApi.interface';
 import vectoreBgImage from '/assets/images/dashboardScreen/topVectorOne.png';
 import { getUserProfile, UserProfile } from '../../utils/profileStorage';
-const user = {
-    name: 'John Doe'
-}
-const subjects = [
-    {
-        name: 'Science',
-        author: 'Author 1'
-    },
-    {
-        name: 'English',
-        author: 'Author 2'
-    },
-    {
-        name: 'Mathematics',
-        author: 'Author 3'
-    },
-    {
-        name: 'Social Studies',
-        author: 'Author 4'
-    },
-    {
-        name: 'Hindi',
-        author: 'Author 5'
-    },
-    {
-        name: 'Computer Science',
-        author: 'Author 6'
-    },
-    {
-        name: 'Art',
-        author: 'Author 7'
-    },
-    {
-        name: 'Music',
-        author: 'Author 8'
-    },
-    {
-        name: 'Physical Education',
-        author: 'Author 9'
-    },
-    {
-        name: 'History',
-        author: 'Author 10'
-    },
-    {
-        name: 'Geography',
-        author: 'Author 11'
-    },
-    {
-        name: 'Economics',
-        author: 'Author 12'
-    },
+import React from 'react';
+import { useChapterStore } from '../../services/store/chapter.store';
 
-]
-const books = [
-    {
-        name: 'Book 1',
-        author: 'Author 1',
-        subject: 'Subject 1',
-        image: '/assets/images/books/1.png'
-    },
-    {
-        name: 'Book 2',
-        author: 'Author 2',
-        subject: 'Subject 2',
-        image: '/assets/images/books/2.png'
-    },
-    {
-        name: 'Book 3',
-        author: 'Author 3',
-        subject: 'Subject 3',
-        image: '/assets/images/books/3.png'
-    },
-    {
-        name: 'Book 4',
-        author: 'Author 4',
-        subject: 'Subject 4',
-        image: '/assets/images/books/4.png'
-    },
-    {
-        name: 'Book 5',
-        author: 'Author 5',
-        subject: 'Subject 5',
-        image: '/assets/images/books/5.png'
-    },
-    {
-        name: 'Book 6',
-        author: 'Author 6',
-        subject: 'Subject 6',
-        image: '/assets/images/books/6.png'
-    },
-    {
-        name: 'Book 7',
-        author: 'Author 7',
-        subject: 'Subject 7',
-        image: '/assets/images/books/7.png'
-    },
-    {
-        name: 'Book 8',
-        author: 'Author 8',
-        subject: 'Subject 8',
-        image: '/assets/images/books/8.png'
-    },
-    {
-        name: 'Book 9',
-        author: 'Author 9',
-        subject: 'Subject 9',
-        image: '/assets/images/books/9.png'
-    },
-    {
-        name: 'Book 10',
-        author: 'Author 10',
-        subject: 'Subject 10',
-        image: '/assets/images/books/10.png'
-    },
-]
 const PadAIHomeScreen: React.FC = () => {
+    // chapterInfo store
+    const chapterInfo = useChapterStore((state)=>state.chapterInfo);
+    const setContentLoading = useChapterStore((state)=>state.setContentLoading);
+    const setContentLoaded = useChapterStore((state)=>state.setContentLoaded);
+    const setAudioIsPlaying = useChapterStore((state)=>state.setAudioIsPlaying);
+
     const { dangerToaster } = useToaster();
     const navigate = useIonRouter();
     const [selectedSubject, setSelectedSubject] = useState<string>('All');
@@ -180,6 +73,12 @@ const PadAIHomeScreen: React.FC = () => {
         // console.log("selectedSubject", selectedSubject);
         filterSubjects();
     }, [selectedSubject]);
+
+    useIonViewWillEnter(()=>{
+        setContentLoading?.(false);
+        setContentLoaded?.(false);
+        setAudioIsPlaying?.(false);
+    });
 
     return (
         <IonPage>
@@ -246,3 +145,4 @@ const PadAIHomeScreen: React.FC = () => {
 </IonSegment>
 
 export default PadAIHomeScreen;
+

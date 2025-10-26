@@ -138,7 +138,7 @@ const PadAIPhoneNoValidation = ({ setStep, loginForm, setLoginForm }: PhoneNoVal
                                 <p className='padAIInputLabel'>Phone Number</p>
                             </IonText>
                             <IonItem className='padAIInput' lines='none'>
-                                <IonInput type="tel" placeholder="Enter your phone number" value={phoneNo} onIonInput={(e) => setPhoneNo((e.target as HTMLInputElement).value || '')}
+                                <IonInput maxlength={10} type="tel" placeholder="Enter your phone number" value={phoneNo} onIonInput={(e) => setPhoneNo((e.target as HTMLInputElement).value || '')}
  />
                             </IonItem>
                         </>

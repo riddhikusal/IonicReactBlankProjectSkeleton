@@ -46,13 +46,14 @@ const AudioComponent = ({ text, language, clickToPlayAndPause, contentRef }: Aud
     };
 
     const startSpeech = async (text: string, language: string) => {
+        console.log('[AUDIO COMPONENT] startSpeech');
         if (!text.trim()) {
             alert('Please enter text to generate audio.');
             return;
         }
 
         setLoadingAudio(true);
-        setContentLoading?.(true);
+        // setContentLoading?.(true);
 
         try {
 
@@ -68,13 +69,14 @@ const AudioComponent = ({ text, language, clickToPlayAndPause, contentRef }: Aud
 
             if (audioRef.current) {
                 audioRef.current.src = URL.createObjectURL(blob);
-                setIsPlaying(true);
-                setIsPaused(false);
-                setAudioIsPlaying?.(true);
+                // setIsPlaying(true);
+                // setIsPaused(false);
+                // setAudioIsPlaying?.(true);
                 setContentLoaded?.(true);
                 audioRef.current.play();
             }
         } catch (err) {
+            console.log('[AUDIO COMPONENT] error', err);
             alert('Error generating speech.');
         } finally {
             setLoadingAudio(false);
@@ -83,31 +85,95 @@ const AudioComponent = ({ text, language, clickToPlayAndPause, contentRef }: Aud
     };
 
     const toggleSpeech = () => {
+        console.log('[AUDIO COMPONENT] toggleSpeech');
         const audio = audioRef.current;
         if (!audio) return;
-        
-        if(!chapterInfo.contentLoaded) {
+
+        if (!chapterInfo.contentLoaded) {
             audio.pause();
             setIsPaused(true);
         }
         if (isPlaying && !isPaused) {
             audio.pause();
             setIsPaused(true);
-        } else if (isPlaying && isPaused) {
+        } else if ((isPlaying && isPaused) || chapterInfo.contentLoaded) {
             audio.play();
             setIsPaused(false);
         } else {
-            if (contentRef && contentRef.current && contentRef.current.innerText) {
-                const text = contentRef.current.innerText || '';
-                if (text && !chapterInfo.contentLoaded) startSpeech(text, language);
-            }
+            // if (contentRef && contentRef.current && contentRef.current.innerText) {
+            //     const text = contentRef.current.innerText || '';
+            //     if (text && chapterInfo.contentLoading) startSpeech(text, language);
+            // }
         }
     };
 
+
+    const textToSpeachApiCall = () => {
+        if (contentRef && contentRef.current && contentRef.current.innerText) {
+            const text = contentRef.current.innerText || '';
+            if (text && chapterInfo.contentLoading) startSpeech(text, language);
+        }
+    }
+
+    const audioPlayingStartOrClear = ()=>{
+        const audio = audioRef.current;
+        if (!audio) return;
+        if (chapterInfo.contentLoaded) {
+            setIsPaused(false);
+            setAudioIsPlaying?.(true);
+        } else {
+            setIsPaused(true);
+            setAudioIsPlaying?.(false);
+        }
+    }
+
+    const audioPlayOrPause = ()=>{
+        console.log('[AUDIO COMPONENT] audioPlayOrPause');
+        const audio = audioRef.current;
+        if (!audio) return;
+        function play(audio:any){
+            audio.play();
+         }
+         function pause(audio:any){
+            audio.pause();
+         }
+        if(!chapterInfo.audioIsPlaying){
+            pause(audio);
+            setIsPaused(true);
+            return;
+        }
+        if(chapterInfo.audioIsPlaying){
+            play(audio);
+            setIsPaused(false);
+            return;
+        }
+        // if (!isPaused) {
+        //     pause(audio);
+        //     setIsPaused(true);
+        // } else if (isPaused) {
+        //     play(audio);
+        //     setIsPaused(false);
+        // }else{
+           
+        // }
+    }
+
     useEffect(() => {
-        toggleSpeech();
-        
-    }, [chapterInfo.audioIsPlaying, chapterInfo.contentLoaded]);
+        console.log('[AUDIO COMPONENT] chapterInfo.contentLoading', chapterInfo.contentLoading);
+        if (chapterInfo.contentLoading) textToSpeachApiCall();
+    }, [chapterInfo.contentLoading]);
+    useEffect(() => {
+        audioPlayingStartOrClear();
+    }, [chapterInfo.contentLoaded]);
+    useEffect(() => {
+        audioPlayOrPause();
+    }, [chapterInfo.audioIsPlaying]);
+
+    useEffect(() => {
+        // toggleSpeech();
+        console.log('[AUDIO COMPONENT] chapterInfo.audioIsPlaying', chapterInfo.audioIsPlaying);
+        console.log('[AUDIO COMPONENT] chapterInfo.contentLoaded', chapterInfo.contentLoaded);
+    }, [chapterInfo.audioIsPlaying, chapterInfo.contentLoaded,]);
 
     return (<audio
         ref={audioRef}
