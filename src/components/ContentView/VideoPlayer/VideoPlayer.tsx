@@ -58,8 +58,7 @@ const PadAIVideoPlayer = forwardRef<Player | null, VideoPlayerProps>(({ video, a
               ref={videoRef}
               className="video-js vjs-default-skin"
               playsInline
-              poster={video.thumbnail} // fallback poster
-
+              poster={''} // fallback poster
             />
           </div>
         </div>

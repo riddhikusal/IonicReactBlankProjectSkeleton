@@ -1,4 +1,4 @@
-import { IonCol, IonContent, IonHeader, IonImg, IonPage, IonRow, IonSegment, IonSegmentButton, IonSkeletonText, IonText, useIonRouter, useIonViewWillEnter } from '@ionic/react';
+import { IonButton, IonCol, IonContent, IonFooter, IonHeader, IonIcon, IonImg, IonPage, IonRow, IonSegment, IonSegmentButton, IonSkeletonText, IonText, useIonRouter, useIonViewWillEnter } from '@ionic/react';
 import './HomeScreen.css';
 import Commonheader from '../../components/Common/Commonheader/Commonheader';
 import { useEffect, useState } from 'react';
@@ -10,13 +10,14 @@ import vectoreBgImage from '/assets/images/dashboardScreen/topVectorOne.png';
 import { getUserProfile, UserProfile } from '../../utils/profileStorage';
 import React from 'react';
 import { useChapterStore } from '../../services/store/chapter.store';
+import { chatbubbleOutline, homeOutline, personOutline, videocamOutline } from 'ionicons/icons';
 
 const PadAIHomeScreen: React.FC = () => {
     // chapterInfo store
-    const chapterInfo = useChapterStore((state)=>state.chapterInfo);
-    const setContentLoading = useChapterStore((state)=>state.setContentLoading);
-    const setContentLoaded = useChapterStore((state)=>state.setContentLoaded);
-    const setAudioIsPlaying = useChapterStore((state)=>state.setAudioIsPlaying);
+    const chapterInfo = useChapterStore((state) => state.chapterInfo);
+    const setContentLoading = useChapterStore((state) => state.setContentLoading);
+    const setContentLoaded = useChapterStore((state) => state.setContentLoaded);
+    const setAudioIsPlaying = useChapterStore((state) => state.setAudioIsPlaying);
 
     const { dangerToaster } = useToaster();
     const navigate = useIonRouter();
@@ -89,7 +90,7 @@ const PadAIHomeScreen: React.FC = () => {
         filterSubjects();
     }, [selectedSubject]);
 
-    useIonViewWillEnter(()=>{
+    useIonViewWillEnter(() => {
         setContentLoading?.(false);
         setContentLoaded?.(false);
         setAudioIsPlaying?.(false);
@@ -149,15 +150,32 @@ const PadAIHomeScreen: React.FC = () => {
                     </IonRow>
                 </div>
             </IonContent>
+            <IonFooter className='footer-container'>
+                <IonRow>
+                    <IonCol size="3" className='footer-icon-button' onClick={() => navigate.push('/home', 'forward')}>
+                        {/* <IonButton className='footer-icon-button' fill='clear' onClick={() => navigate.push('/home', 'forward')} color='dark'> */}
+                        <IonIcon icon={homeOutline} className='footer-icon' />
+                        <IonText className='footer-icon-text'>Home</IonText>
+                        {/* </IonButton> */}
+                    </IonCol>
+                    <IonCol size="3" className='footer-icon-button' onClick={() => navigate.push('/user-profile', 'forward')}>
+                        <IonIcon icon={personOutline} className='footer-icon' />
+                        <IonText className='footer-icon-text'>Profile</IonText>
+                    </IonCol>
+                    <IonCol size="3" className='footer-icon-button' onClick={() => navigate.push('/reels', 'forward')}>
+                        <IonIcon icon={videocamOutline} className='footer-icon' />
+                        <IonText className='footer-icon-text'>Reels</IonText>
+                    </IonCol>
+                    <IonCol size="3" className='footer-icon-button' onClick={() => navigate.push('/ask-ai', 'forward')}>
+                        <IonIcon icon={chatbubbleOutline} className='footer-icon' />
+                        <IonText className='footer-icon-text'>Ask AI</IonText>
+                    </IonCol>
+                </IonRow>
+            </IonFooter>
         </IonPage >
     );
 };
 
-<IonSegment scrollable={true} value="heart">
-    <IonSegmentButton value="home">
-
-    </IonSegmentButton>
-</IonSegment>
 
 export default PadAIHomeScreen;
 

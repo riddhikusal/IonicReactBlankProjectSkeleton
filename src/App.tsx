@@ -53,6 +53,9 @@ import PadAIQuizContentScreen from './pages/ContentViewScreens/QuizContentScreen
 import { useChapterStore } from './services/store/chapter.store';
 import PadAIPDFViewerContentScreen from './pages/ContentViewScreens/PDFViewerContentScreen/PDFViewerContentScreen';
 import PadAIFlashcardContentScreen from './pages/ContentViewScreens/FlashcardContentScreen/FlashcardContentScreen';
+import UserProfileScreen from './pages/UserProfileScreen/UserProfileScreen';
+import ReelScreen from './pages/ReelScreen/ReelScreen';
+import { SplashScreen } from '@capacitor/splash-screen';
 
 
 setupIonicReact();
@@ -62,16 +65,28 @@ const App: React.FC = () => {
   const [showUpdatePopup, setShowUpdatePopup] = useState(false);
   const [isObsolete, setIsObsolete] = useState(false);
   const [message, setMessage] = useState('');
-  const chapterInfo = useChapterStore((state)=>state.chapterInfo);
-  const setContentLoading = useChapterStore((state)=>state.setContentLoading);
-  const setContentLoaded = useChapterStore((state)=>state.setContentLoaded);
-  const setAudioIsPlaying = useChapterStore((state)=>state.setAudioIsPlaying);
+  const chapterInfo = useChapterStore((state) => state.chapterInfo);
+  const setContentLoading = useChapterStore((state) => state.setContentLoading);
+  const setContentLoaded = useChapterStore((state) => state.setContentLoaded);
+  const setAudioIsPlaying = useChapterStore((state) => state.setAudioIsPlaying);
   const [present, dismiss] = useIonLoading();
+  // ... inside your component or effect
 
   useEffect(() => {
+    // Show the splash for two seconds and then automatically hide it:
+    const showSplash = async () => {
+    SplashScreen.show({
+        showDuration: 2000,
+        autoHide: true,
+      });
+    }
+    showSplash();
+  }, []);
+  useEffect(() => {
     console.log('chapterInfo.contentLoading', chapterInfo.contentLoading, chapterInfo.contentLoaded, chapterInfo.audioIsPlaying);
-    if(chapterInfo.contentLoading) {
-      present({ message: 'Please wait...' 
+    if (chapterInfo.contentLoading) {
+      present({
+        message: 'Please wait...'
       });
     } else {
       dismiss();
@@ -104,7 +119,7 @@ const App: React.FC = () => {
   return (
     <IonApp>
       <IonReactRouter basename={import.meta.env.BASE_URL}>
-        <IonSplitPane contentId="main">
+        <IonSplitPane contentId="main" disabled={true}>
           <Menu />
           <IonRouterOutlet id="main">
             <Route path="/" exact={true}>
@@ -160,7 +175,7 @@ const App: React.FC = () => {
             <Route path="/flash-content" exact={true}>
               {/* <PadAIFlashViewScreen /> */}
               <PadAIFlashcardContentScreen />
-              </Route>
+            </Route>
             {/* Question Answer Content Screen */}
             <Route path="/question-answer-content" exact={true}>
               <PadAIQuestionAnswerContentScreen />
@@ -172,6 +187,14 @@ const App: React.FC = () => {
             {/* PDF Viewer Content Screen */}
             <Route path="/pdf-content" exact={true}>
               <PadAIPDFViewerContentScreen />
+            </Route>
+            {/* User Profile Screen */}
+            <Route path="/user-profile" exact={true}>
+              <UserProfileScreen />
+            </Route>
+            {/* Reel Screen */}
+            <Route path="/reels" exact={true}>
+              <ReelScreen />
             </Route>
             {/* Catch-all route - redirect any invalid route to home */}
             {/* <Route path="*">
