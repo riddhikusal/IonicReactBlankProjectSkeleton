@@ -1,0 +1,17 @@
+.padAIchapterHeader-item {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 0px;
+}
+.padAIchapterHeader-item-title {
+    font-size: 18px;
+    font-weight: 600;
+    font-family: 'Inter', sans-serif;
+}
+.padAIchapterHeader-item-subtitle {
+    font-size: 14px;
+    font-weight: 400;
+    font-family: 'Inter', sans-serif;
+}
