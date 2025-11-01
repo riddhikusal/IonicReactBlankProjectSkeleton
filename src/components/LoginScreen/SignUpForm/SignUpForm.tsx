@@ -249,7 +249,7 @@ const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm }) 
                         <PadaiButton
                             onClick={(e) => {
                                 e.preventDefault();
-                                setStep('login');
+                                setStep('phone');
                             }}
                             color='warning'
                             size='large'

@@ -1,43 +1,324 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
 body {
-    font-family: 'Inter', sans-serif !important;
+  font-family: 'Inter', sans-serif !important;
+  margin: 0px !important;
+  background-color: #ffffff !important;
+  color: #000000 !important;
+  color-scheme: light !important;
+}
+
+/* Force light theme on all Ion components */
+ion-app {
+  color-scheme: light !important;
+}
+
+ion-content,
+ion-page,
+.ion-page {
+  background-color: #ffffff !important;
+  color: #000000 !important;
+}
+
+/* Ensure all text is black in light mode */
+ion-header,
+ion-footer,
+ion-toolbar,
+ion-title,
+ion-button,
+ion-label {
+  color: #000000 !important;
 }
 
 .padAILoginTitle {
-    font-size: 24px !important;
-    font-weight: 600 !important;
-    font-family: 'Inter', sans-serif !important;
-    color: #000000 !important;
+  font-size: 24px !important;
+  font-weight: 600 !important;
+  font-family: 'Inter', sans-serif !important;
+  color: #000000 !important;
 }
+
 .padAILoginSubTitle,
 .padAIInputLabel {
-    font-size: 16px !important;
-    font-weight: 400 !important;
-    font-family: 'Inter', sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  font-family: 'Inter', sans-serif !important;
 }
-.padAIInputLabel{
-    font-weight: 600 !important;
-    color: #000000 !important;
-    margin-top: 10px !important;
-    margin-bottom: 5px !important;
+
+.padAIInputLabel {
+  font-weight: 600 !important;
+  color: #000000 !important;
+  margin-top: 10px !important;
+  margin-bottom: 5px !important;
 }
-.padAIInput{
-    border-radius: 16px !important;
-    border: 1px solid #E0E0E0 !important;
-    margin-bottom: 10px !important;
-    width: 100% !important;
-    font-size: 16px !important;
-    font-weight: 400 !important;
-    font-family: 'Inter', sans-serif !important;
+
+.padAIInput {
+  border-radius: 16px !important;
+  border: 1px solid #E0E0E0 !important;
+  margin-bottom: 10px !important;
+  width: 100% !important;
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  font-family: 'Inter', sans-serif !important;
 }
-.padAISegment{
-    margin-top: 10px !important;
-    padding: 3px !important;
+
+.padAISegment {
+  margin-top: 10px !important;
+  padding: 3px !important;
 }
-.padAISegmentButton{
-    font-size: 16px !important;
-    font-weight: 400 !important;
-    font-family: 'Inter', sans-serif !important;
-    padding: 8px !important;
+
+.padAISegmentButton {
+  font-size: 16px !important;
+  font-weight: 400 !important;
+  font-family: 'Inter', sans-serif !important;
+  padding: 8px !important;
 }
+
+.padAIvectorTwoBg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: -1;
+}
+
+
+
+.reel {
+  height: 100%;
+  width: 100%;
+}
+
+.reel div[data-vjs-player],
+.aspect-video {
+  height: 100%;
+  width: 100%;
+}
+
+
+.video-js {
+  display: inline-block;
+  vertical-align: top;
+  box-sizing: border-box;
+  color: #fff;
+  background-color: #000;
+  position: relative;
+  padding: 0;
+  font-size: 10px;
+  line-height: 1;
+  font-weight: 400;
+  font-style: normal;
+  font-family: Arial, Helvetica, sans-serif;
+  word-break: initial;
+  width: 100%;
+  height: 100%;
+}
+
+.video-js .vjs-tech {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.its-video .vjs-poster {
+  display: none;
+}
+
+.video-js {
+  display: inline-block;
+  vertical-align: top;
+  box-sizing: border-box;
+  color: #fff;
+  background-color: #ffffff !important;
+  position: relative;
+  padding: 0;
+  font-size: 10px;
+  line-height: 1;
+  font-weight: normal;
+  font-style: normal;
+  font-family: Arial, Helvetica, sans-serif;
+  word-break: initial;
+}
+
+.vjs-poster {
+  display: none !important;
+  vertical-align: middle;
+  cursor: pointer;
+  margin: 0;
+  padding: 0;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 100%;
+}
+
+
+/**Video Player CSS */
+
+.btnGradient {
+  margin: 0;
+  padding: 12px 36px;
+  border: none;
+  outline: none;
+  color: #ffffff !important;
+  cursor: pointer;
+  position: relative;
+  z-index: 0;
+  border-radius: 24px;
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  background: linear-gradient(135deg, #2C07BE 0%, #8A68F9 50%, #FF28F4 100%);
+  box-shadow: 0 4px 15px rgba(44, 7, 190, 0.4);
+  transition: all 0.3s ease;
+  overflow: hidden;
+  display: flex;
+
+  /* background: rgb(254 176 255 / 31%);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(6.1px);
+    -webkit-backdrop-filter: blur(6.1px);
+    border: 1px solid rgba(240, 99, 242, 0.68); */
+}
+
+.btnGradient::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: left 0.5s;
+  z-index: 1;
+}
+
+.btnGradient::after {
+  content: "";
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  /* background: linear-gradient(45deg, #2a6720, #02044d, #1e4d2b, #0a1f5c, #3a7d2a, #030b6b); */
+  background: linear-gradient(45deg, #2C07BE, #8A68F9, #FF28F4, #2C07BE, #8A68F9, #FF28F4);
+  background-size: 400% 400%;
+  z-index: -1;
+  border-radius: 26px;
+  filter: blur(8px);
+  opacity: 1;
+  animation: glowingBorder 3s ease-in-out infinite;
+  transition: opacity 0.3s ease;
+}
+
+@keyframes glowingBorder {
+  0% {
+    background-position: 0% 50%;
+  }
+
+  50% {
+    background-position: 100% 50%;
+  }
+
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.btnGradient:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(44, 7, 190, 0.6);
+}
+
+.btnGradient:hover::before {
+  left: 100%;
+}
+
+.btnGradient:hover::after {
+  opacity: 1;
+  filter: blur(12px);
+}
+
+.btnGradient:active {
+  transform: translateY(0);
+  box-shadow: 0 4px 15px rgba(44, 7, 190, 0.4);
+}
+
+/* Mobile-specific adjustments */
+@media (max-width: 768px) {
+  .btnGradient {
+    padding: 5px 1px;
+    font-size: 17px !important;
+    border-radius: 30px;
+    text-transform: capitalize;
+    height: 50px;
+    border: 3px solid #f7d3ff;
+  }
+
+
+  .btnGradient::after {
+    border-radius: 45px;
+  }
+}
+
+
+.prose {
+  overflow: scroll;
+  font-size: 16px;
+  padding: 13px 14px;
+  width: 100%;
+  text-align: justify;
+  background: #f9f9f9;
+  margin: 0px;
+
+  /* border-radius: 10px; */
+  /* border: 1px solid #e7e7e7; */
+  /* padding: 9px; */
+  /* border-radius: 10px; */
+  /* border: 1px solid #e7e7e7; */
+  /* padding: 9px; */
+  ul {
+    margin-left: -14px !important;
+  }
+
+  mark.custom-highlight {
+    background-color: rgba(255, 230, 120, 0.8);
+    border-radius: 2px;
+    padding: 0 1px;
+  }
+
+}
+
+
+.selectable-text {
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  padding: 1px;
+  /* background-color: #f0f8ff; */
+  border-radius: 8px;
+  position: relative;
+  -webkit-touch-callout: none;
+  /* Disable iOS callout */
+  -webkit-user-select: text;
+  /* Allow text selection */
+  -khtml-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
+  touch-action: manipulation;
+  /* Prevent default touch behaviors */
+}
+
+mark.custom-highlight {
+  background-color: rgba(255, 230, 120, 0.8);
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+

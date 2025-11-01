@@ -12,5 +12,7 @@
     position: relative;
     --background-color: transparent !important;
     --background: transparent !important;
+    background-color: transparent !important;
+
     z-index: 1;
 }

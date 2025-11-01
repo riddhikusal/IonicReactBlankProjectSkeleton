@@ -1,0 +1,29 @@
+.padAIHomeScreenUserBooks-text{
+    margin:0px;
+    text-align: left;
+
+    margin: 0px;
+    font-size: 13px;
+    width: 104px;
+    overflow: hidden;
+    position: relative;
+    display: inline-block;
+    /* margin: 0 5px 0 5px; */
+    text-decoration: none;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+.padAIHomeScreenUserBooksImage{
+    margin: 10px;
+    margin-top: 0px;
+}
+.author-text{
+    font-size: 13px;
+    font-weight: 400;
+    font-family: 'Inter', sans-serif;
+    text-align: left;
+    color: #a1a1a1;
+}
+.padAIHomeScreenUserBooks-text-container{
+    padding: 1px 10px;
+}

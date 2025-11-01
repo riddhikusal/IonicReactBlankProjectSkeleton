@@ -1,4 +1,4 @@
-import { IonButton } from "@ionic/react";
+import { IonButton, IonSpinner } from "@ionic/react";
 import './Button.css';
 export interface IPadaiButtonProps {
     children: React.ReactNode;
@@ -11,12 +11,13 @@ export interface IPadaiButtonProps {
     shape?: 'round';
     fill?: 'solid' | 'outline' | 'clear';
     expand?: 'block' | 'full';
+    showLoader?: boolean;
 }
-const PadaiButton: React.FC<IPadaiButtonProps> = ({ children, onClick, disabled, className, color, size, type, shape, fill, expand }) => {
+const PadaiButton: React.FC<IPadaiButtonProps> = ({ children, onClick, disabled, className, color, size, type, shape, fill, expand,showLoader }) => {
     return (
-        <IonButton
+        <IonButton 
             onClick={onClick}
-            disabled={disabled}
+            disabled={disabled || showLoader}
             className={`${className} ${size === "large" ? "padAIbuttonLarge" : ""} padAIdefaultButtonDesign`}
             color={color}
             size={size}
@@ -24,8 +25,9 @@ const PadaiButton: React.FC<IPadaiButtonProps> = ({ children, onClick, disabled,
             shape={shape}
             fill={fill}
             expand={expand}
+            
         >
-            {children}
+            {showLoader ? <IonSpinner name="crescent" /> : children}
         </IonButton>
     );
 };

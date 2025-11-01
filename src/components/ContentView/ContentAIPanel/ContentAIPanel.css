@@ -1,0 +1,170 @@
+.padAIcontentAIPanel-container-overlay{
+    position: fixed;
+    left: 0px;
+    right: 0px;
+    bottom: 2px !important;
+    background: rgb(204 171 255);
+    width: fit-content;
+    margin: 0px auto;
+    z-index: 1000;
+    /* background: #f1f1f1; */
+    /* border-radius: 30px; */
+    padding: 0px;
+    /* border: 1px solid #cbcbcb; */
+}
+
+
+.padAIcontentAIPanel-container {
+    /* position: absolute;
+    bottom: 7px;
+    left: 0px;
+    right: 0px;
+    width: 98%;
+    margin: 0px auto;
+    background: #f1f1f1;
+    border-radius: 30px;
+    border: 1px solid #cbcbcb;
+    padding: 1px 10px; */
+}
+ion-col{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 1px !important;
+}
+.footericons{
+    font-size: 25px;
+    color: #7f3181;
+}
+
+IonTextarea,
+ion-textarea {
+    padding: 4px;
+    border-top: none;
+    border-right: none;
+    border-left: none;
+    border-image: initial;
+    border-bottom: 0px !important;
+    --border-style: solid;
+    --highlight-color-focused: transparent;
+}
+
+.padAIcontentAIPanel-description-text{
+    text-transform: inherit;
+    font-size: 13px;
+    text-justify: auto;
+    text-align: justify;
+    /* italic */
+    font-style: italic;
+    font-weight: 400;
+    font-family: 'Inter', sans-serif;
+    color: #000000;
+    margin: 0px;
+    padding: 0px;
+
+}
+
+/* Ensure modal appears below the content panel */
+ion-modal {
+    --z-index: 999 !important;
+    z-index: 999 !important;
+}
+
+/* Target the modal backdrop and content specifically */
+ion-modal ion-backdrop {
+    z-index: 998 !important;
+}
+
+ion-modal .modal-wrapper {
+    z-index: 999 !important;
+}
+
+/* Ensure the content panel stays fixed at bottom and on top */
+.padAIcontentAIPanel-container-overlay {
+    /* position: fixed !important;
+    bottom: 25px !important;
+    z-index: 1000 !important;
+    isolation: isolate; */
+    position: fixed !important;
+    /* bottom: 25px !important; */
+    z-index: 1000 !important;
+    isolation: isolate;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    background: none !important;
+}
+.padAIcontentAIPanel-container {
+    width: inherit;
+    padding: 0px 12px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(7px);
+    -webkit-backdrop-filter: blur(7px);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+.padAIFooterFlexBtnContainer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+    gap: 6px;
+    width: 100%;
+    height: 100%;
+}
+.padAIFooterFlexBtnContainer .padAIFooterFlexBtn{
+    margin: 0px;
+    border:none !important;
+    /* border:none !important; // 1px solid #e1e1e1; */
+    /* background: #f1f1f1; */
+    --padding-start: 11px !important;
+    --padding-end: 7px !important;
+    border-radius: 10px;
+}
+
+.btnGradient ion-img{
+    padding: 0px !important;
+    margin: 0px !important;
+    height: 21px;
+}
+@media (max-width: 768px) {
+    .btnGradient {
+        padding: 5px 6px;
+        font-size: 20px;
+        border-radius: 30px;
+        text-transform: capitalize;
+        height: 51px;
+        border: 3px solid #f7d3ff;
+    }
+}
+.aiFooterIcons{
+    width: 71%;
+    background: transparent !important;
+    border: 1px solid #000000;
+    border-radius: 25px;
+    gap: 0px;
+}
+.no-border-right-redius{
+    border-top-right-radius: 0px !important;
+    border-bottom-right-radius: 0px !important;
+}
+.no-border-left-redius{
+    border-top-left-radius: 0px !important;
+    border-bottom-left-radius: 0px !important;
+}
+.fbbtnmodify{
+    width: 45px;
+    height: 45px;
+    --border-radius: 0px !important;
+    border: 1px solid #e1e1e1;
+    /* background: #f1f1f1; */
+    --background:none !important;
+    --color:none !important;
+    font-size: 25px;
+    color: #7f3181;
+    --box-shadow:none !important;
+}
+.aiFooterIconsModify{
+    width: 61% !important;
+}
