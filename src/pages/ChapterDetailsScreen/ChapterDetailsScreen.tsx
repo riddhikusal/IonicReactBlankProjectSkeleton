@@ -4,6 +4,31 @@ import PadAIChapterContainer from "../../components/HomeScreen/ChapterContainer/
 import { useLocation, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { arrowBack, arrowForward, arrowRedoOutline, bookOutline, cloudDownloadOutline, downloadOutline, logoYoutube, playCircleOutline } from "ionicons/icons";
+
+// Mock videos data (same as ReelScreen)
+interface Video {
+    id: number;
+    title: string;
+    url: string;
+}
+
+const videos: Video[] = [
+    {
+        id: 1,
+        title: "Short 1",
+        url: "https://media.istockphoto.com/id/2089020832/video/young-female-university-student-reading-a-book-at-campus.mp4?s=mp4-640x640-is&k=20&c=0uEpKNZCuvj4s7y9fx-TXrBYoakN8RgTcARJlHuipH8=",
+    },
+    {
+        id: 2,
+        title: "Short 2",
+        url: "https://media.istockphoto.com/id/2216008266/video/spinning-magnets-in-motion.mp4?s=mp4-640x640-is&k=20&c=ZI7tbcxBknUIAobzR0mFT2XbqDVdFW-WVOzJElmI5MM=",
+    },
+    {
+        id: 3,
+        title: "Short 3",
+        url: "https://media.istockphoto.com/id/2173244346/video/vertical-video-a-patient-undergoes-an-mri-or-ct-scan-as-doctors-review-images-in-a-modern.mp4?s=mp4-640x640-is&k=20&c=Tp1EsiDjsJRpBygP9nx3mP5_JLnetm1jy9DWAd73Kd8=",
+    },
+];
 import './ChapterDetailsScreen.css';
 import { IChapterResources, IGetChapterResourcesRequest, IResourceItem } from "../../api/contentApi/contentApi.interface";
 import { GetChapterResources } from "../../services/homeService";
@@ -108,7 +133,7 @@ const PadAIChapterDetailsScreen: React.FC = () => {
     }, [chapterId]);
 
 
-    useIonViewWillEnter(()=>{
+    useIonViewWillEnter(() => {
         setContentLoading?.(false);
         setContentLoaded?.(false);
         setAudioIsPlaying?.(false);
@@ -133,6 +158,44 @@ const PadAIChapterDetailsScreen: React.FC = () => {
                 />
             </IonHeader>
             <IonContent className="padAIChapterDetailsScreenContent">
+                {/* reels section */}
+                <div className="reels-preview-section">
+                    <IonText className="reels-section-title">
+                        <h3 style={{ margin: '15px 0 10px 15px', fontWeight: '600' }}>Educational Reels</h3>
+                    </IonText>
+                    <div className="reels-preview-container">
+                        {videos.slice(0, 3).map((video, index) => (
+                            <div
+                                key={video.id}
+                                className="reel-preview-card"
+                                onClick={() => navigate.push('/reels', 'forward')}
+                            >
+                                <div className="reel-preview-thumbnail">
+                                    <video
+                                        src={video.url}
+                                        muted
+                                        playsInline
+                                        className="reel-preview-video"
+                                    />
+                                    <div className="reel-preview-overlay">
+                                        <IonIcon icon={playCircleOutline} className="reel-play-icon" />
+                                    </div>
+                                </div>
+                                <IonText className="reel-preview-title">{video.title}</IonText>
+                            </div>
+                        ))}
+                        <div
+                            className="reel-preview-card reel-view-more-card"
+                            onClick={() => navigate.push('/reels', 'forward')}
+                        >
+                            <div className="reel-view-more-content">
+                                <IonIcon icon={arrowForward} className="reel-view-more-icon" />
+                                <IonText className="reel-view-more-text">View More</IonText>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 {loading && (
                     <div style={{ textAlign: 'center', padding: '20px' }}>
                         <IonText>Loading chapter resources...</IonText>
@@ -233,17 +296,34 @@ const PadAIChapterDetailsScreen: React.FC = () => {
                                 </div>
                             </IonAccordion>
                         ))}
+
+                        {/* Test For AudioR */}
+                        {/* {chapterResources['BOOK READER'] && chapterResources['BOOK READER'].length > 0 && ( */}
+                        <IonAccordion value="AUDIO READER" key="AUDIO READER" className="padAIChapterDetailsScreenContentAccordionBox">
+                            <IonItem slot="header" lines="none">
+                                <IonThumbnail slot="start" className="padAIChapterDetailsScreenContentAccordionThumbnail">
+                                    <IonImg src={'/assets/images/chapterResources/pdf.png'} alt="chapterImage" className="resourceContainerimg" />
+                                </IonThumbnail>
+                                <IonLabel>Audio Reader HTML Content</IonLabel>
+                            </IonItem>
+                            <div className="padAIChapterDetailsScreenContentAccordion" slot="content">
+                                <IonItem lines="none" color={'light'} className="padAIChapterDetailsScreenContentAccordionItem">
+                                    <IonLabel slot="start">Audio Reader HTML Content</IonLabel>
+                                    <IonButtons slot="end">
+                                        <IonButton fill="clear" slot="icon-only" style={{ fontSize: '18px' }}
+                                            onClick={() => {
+                                                navigate.push(`/audio-reader-html-content`, 'forward');
+                                            }}
+                                        > <IonIcon icon={arrowRedoOutline} /></IonButton>
+                                    </IonButtons>
+                                </IonItem>
+                            </div>
+
+                        </IonAccordion>
+                        {/* // )} */}
                     </IonAccordionGroup>
                 )}
 
-                {chapterId && !loading && !chapterResources && (
-                    <div style={{ textAlign: 'center', padding: '20px' }}>
-                        <IonText color="warning">
-                            <h3>No resources found</h3>
-                            <p>This chapter doesn't have any resources available.</p>
-                        </IonText>
-                    </div>
-                )}
                 {/* <IonRow>
                     <IonCol size="4" style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
                        <div className="resourceContainer">

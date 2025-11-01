@@ -252,7 +252,7 @@ ion-label {
 @media (max-width: 768px) {
   .btnGradient {
     padding: 5px 1px;
-    font-size: 17px;
+    font-size: 17px !important;
     border-radius: 30px;
     text-transform: capitalize;
     height: 50px;

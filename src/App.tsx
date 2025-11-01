@@ -56,6 +56,7 @@ import PadAIFlashcardContentScreen from './pages/ContentViewScreens/FlashcardCon
 import UserProfileScreen from './pages/UserProfileScreen/UserProfileScreen';
 import ReelScreen from './pages/ReelScreen/ReelScreen';
 import { SplashScreen } from '@capacitor/splash-screen';
+import PadAIAudioReaderHTMLContentScreen from './pages/ContentViewScreens/AudioReadoutScreen/AudioReadoutScreen';
 
 
 setupIonicReact();
@@ -187,6 +188,10 @@ const App: React.FC = () => {
             {/* PDF Viewer Content Screen */}
             <Route path="/pdf-content" exact={true}>
               <PadAIPDFViewerContentScreen />
+            </Route>
+            {/* Audio Reader HTML Content Screen */}
+            <Route path="/audio-reader-html-content" exact={true}>
+              <PadAIAudioReaderHTMLContentScreen />
             </Route>
             {/* User Profile Screen */}
             <Route path="/user-profile" exact={true}>

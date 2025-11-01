@@ -9,29 +9,24 @@ import PadaiHtmlContentViwer from '../../../components/ContentView/HtmlViewer/Ht
 import { useChapterStore } from '../../../services/store/chapter.store';
 import AudioComponent from '../../../components/ContentView/Audio/Audio';
 import PadaiHtmlContentViwerNew from '../../../components/ContentView/HtmlViewerNew/HtmlViewerNew';
+import TestHtmlViewer from './TestHtmlViewer';
 
-  const PadAIHTMLContentScreen: React.FC = () => {
-    const chapterInfo = useChapterStore((state)=>state.chapterInfo);
-    const selectedChapterResources = useChapterStore((state)=>state.selectedChapterResources);
+const PadAIAudioReaderHTMLContentScreen: React.FC = () => {
+    const chapterInfo = useChapterStore((state) => state.chapterInfo);
+    const selectedChapterResources = useChapterStore((state) => state.selectedChapterResources);
     return (
-      <IonPage className='padAIvideoContentScreen-page'>
-      <PadAIBackheader />
-      <IonContent>
-          <PadAIChapterHeader />
-          {/* <PadaiHtmlContentViwer
-              url={selectedChapterResources?.url || ''}
-          /> */}
-          <PadaiHtmlContentViwerNew
-              url={selectedChapterResources?.url || ''}
-          />
-          {/* <PadAIContentAIPanel /> */}
-      </IonContent>
-      <IonFooter>
-          <PadAIContentAIPanel />
-      </IonFooter>
-  </IonPage>
+        <IonPage className='padAIvideoContentScreen-page'>
+            <PadAIBackheader />
+            <IonContent>
+                <PadAIChapterHeader />
+                <TestHtmlViewer />
+            </IonContent>
+            <IonFooter>
+                <PadAIContentAIPanel />
+            </IonFooter>
+        </IonPage>
     );
 };
-   
-export default PadAIHTMLContentScreen;
+
+export default PadAIAudioReaderHTMLContentScreen;
 
