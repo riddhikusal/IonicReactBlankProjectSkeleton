@@ -13,28 +13,30 @@ const LandingScreen: React.FC = () => {
   const history = useHistory();
   const navigate = useIonRouter();
   const [imageUrl, setImageUrl] = useState('');
-  useEffect(() => {
-    const platformInfo = getPlatform();
-    const platform = platformInfo.code;
-    const imageUrl = platform === 'android' || platform === 'ios' ? `assets/images/landingScreens/vectorTwoBg.png` : `${import.meta.env.BASE_URL}/assets/images/landingScreens/vectorTwoBg.png`;
-     setImageUrl(imageUrl);
+  // useEffect(() => {
+  //   const platformInfo = getPlatform();
+  //   const platform = platformInfo.code;
+  //   const imageUrl = platform === 'android' || platform === 'ios' ? `assets/images/landingScreens/vectorTwoBg.png` : `${import.meta.env.BASE_URL}/assets/images/landingScreens/vectorTwoBg.png`;
+  //    setImageUrl(imageUrl);
 
-     const getUserProfileData = async () => {
-      try {
-        const userProfile = await getUserProfile();
-        if(userProfile){
-          navigate.push('/home','forward');
-        }
-      }
-      catch(error){
-        console.error('Error getting user profile:', error);
-      }
-      finally{
-        // setIsLoading(false);
-      }
-     }
-     getUserProfileData();
-  }, []);
+  //    const getUserProfileData = async () => {
+  //     try {
+  //       const userProfile = await getUserProfile();
+  //       if(userProfile.mobileNo && userProfile.name){
+  //         navigate.push('/home','forward');
+  //       }else{
+  //         // N/a
+  //       }
+  //     }
+  //     catch(error){
+  //       console.error('Error getting user profile:', error);
+  //     }
+  //     finally{
+  //       // setIsLoading(false);
+  //     }
+  //    }
+  //    getUserProfileData();
+  // }, []);
 
 
   return (
