@@ -6,8 +6,8 @@ import { defineConfig } from 'vite'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base: '/IonicReactBlankProjectSkeleton/',
-  //  base: '',
+  // base: '/IonicReactBlankProjectSkeleton/',
+  base: '',
 
   plugins: [
     react(),

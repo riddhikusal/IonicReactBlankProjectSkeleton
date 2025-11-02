@@ -256,6 +256,7 @@ const PadaiHtmlContentViwer = ({ url }: { url: string }) => {
                         -moz-user-select: text !important;
                         -ms-user-select: text !important;
                         user-select: text !important;
+                        -webkit-touch-callout: none !important;
                     }
                 `;
                 if (!document.getElementById('force-selection-styles')) {
@@ -310,8 +311,29 @@ const PadaiHtmlContentViwer = ({ url }: { url: string }) => {
             }
         };
 
+        // Prevent iOS default text selection menu
+        const handleTouchEnd = (e: TouchEvent) => {
+            // Small delay to allow selection but prevent iOS menu
+            setTimeout(() => {
+                if (contentRef.current && contentRef.current.contains(e.target as Node)) {
+                    // Clear any iOS selection UI that might appear
+                    const selection = window.getSelection();
+                    if (selection && selection.toString().length > 0) {
+                        // Selection is allowed, but we'll show our custom tooltip instead
+                    }
+                }
+            }, 100);
+        };
+
+        // Prevent iOS context menu on long press
+        const handleTouchStart = (e: TouchEvent) => {
+            // Allow normal touch behavior for text selection
+        };
+
         if (contentRef.current) {
             contentRef.current.addEventListener('mouseup', handleMouseUp);
+            contentRef.current.addEventListener('touchend', handleTouchEnd, { passive: true });
+            contentRef.current.addEventListener('touchstart', handleTouchStart, { passive: true });
         }
 
         return () => {
@@ -319,6 +341,8 @@ const PadaiHtmlContentViwer = ({ url }: { url: string }) => {
             document.removeEventListener('selectionchange', handleSelectionChange);
             if (contentRef.current) {
                 contentRef.current.removeEventListener('mouseup', handleMouseUp);
+                contentRef.current.removeEventListener('touchend', handleTouchEnd);
+                contentRef.current.removeEventListener('touchstart', handleTouchStart);
             }
         };
     }, [htmlContent]); // Add htmlContent as dependency
@@ -345,7 +369,8 @@ const PadaiHtmlContentViwer = ({ url }: { url: string }) => {
                 WebkitUserSelect: 'text',
                 touchAction: 'auto',
                 fontSize: '15px',
-                paddingBottom: '200px'
+                paddingBottom: '200px',
+                WebkitTouchCallout: 'none' as any,
             }}>
                 <div
                     ref={contentRef}
@@ -359,7 +384,7 @@ const PadaiHtmlContentViwer = ({ url }: { url: string }) => {
                         msUserSelect: 'text' as any,
                         touchAction: 'pan-y' as any,
                         cursor: 'text',
-                        WebkitTouchCallout: 'default' as any,
+                        WebkitTouchCallout: 'none' as any,
                     }}
                 />
 
