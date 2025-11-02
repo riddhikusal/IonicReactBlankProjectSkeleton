@@ -130,8 +130,8 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
 
       setAiResponseLoading(true);
       const response = await AskOpenAIAssistant({
-        prompt: 'magnet', // newMessage.text,
-        chapterId: 12 // chapterInfo.chapterId
+        prompt: newMessage.text, // 'magnet', // newMessage.text,
+        chapterId:  12 // chapterInfo.chapterId
       }).then((response) => {
         setAiResponseLoading(false);
         if (response.responseStatus === 'DATA_FOUND') {

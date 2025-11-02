@@ -183,6 +183,16 @@ ion-label {
     backdrop-filter: blur(6.1px);
     -webkit-backdrop-filter: blur(6.1px);
     border: 1px solid rgba(240, 99, 242, 0.68); */
+
+  ::ng-deep .button-naive {
+    padding-inline-start: 7px !important;
+    padding-inline-end: 7px !important;
+  }
+
+  .button-native {
+    padding-inline-start: 7px !important;
+    padding-inline-end: 7px !important;
+  }
 }
 
 .btnGradient::before {
@@ -320,5 +330,3 @@ mark.custom-highlight {
   border-radius: 2px;
   padding: 0 1px;
 }
-
-
