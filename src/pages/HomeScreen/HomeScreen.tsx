@@ -110,7 +110,7 @@ const PadAIHomeScreen: React.FC = () => {
                     </IonText>
                 </div>
                 <div className='padAIHomeScreenUserBooksFilter'>
-                    <IonSegment scrollable={true} value={selectedSubject}>
+                    <IonSegment scrollable={true} value={selectedSubject} mode='md'>
                         {isubjectDataLoading && [1, 2, 3, 4].map((index) => <IonSegmentButton><IonSkeletonText key={index} animated={true} style={{ width: '80px' }}></IonSkeletonText></IonSegmentButton>)}
                         {!isubjectDataLoading && (
                             <>
