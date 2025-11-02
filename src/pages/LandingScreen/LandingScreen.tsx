@@ -1,4 +1,4 @@
-import { IonButton, IonContent, IonIcon, IonImg, IonPage,useIonRouter } from '@ionic/react';
+import { IonButton, IonContent, IonIcon, IonImg, IonPage, useIonRouter } from '@ionic/react';
 import React, { useEffect, useState } from 'react';
 import PadaiHeader from '../../components/LandingScreen/Header/Header';
 import PadaiHeaderBanner from '../../components/LandingScreen/HeaderBanner/HeaderBanner';
@@ -13,30 +13,32 @@ const LandingScreen: React.FC = () => {
   const history = useHistory();
   const navigate = useIonRouter();
   const [imageUrl, setImageUrl] = useState('');
-  // useEffect(() => {
-  //   const platformInfo = getPlatform();
-  //   const platform = platformInfo.code;
-  //   const imageUrl = platform === 'android' || platform === 'ios' ? `assets/images/landingScreens/vectorTwoBg.png` : `${import.meta.env.BASE_URL}/assets/images/landingScreens/vectorTwoBg.png`;
-  //    setImageUrl(imageUrl);
+  const [imageUrlOne, setImageUrlOne] = useState('');
+  useEffect(() => {
+    const platformInfo = getPlatform();
+    const platform = platformInfo.code;
+    const imageUrl = platform === 'android' || platform === 'ios' ? `assets/images/landingScreens/vectorTwoBg.png` : `${import.meta.env.BASE_URL}/assets/images/landingScreens/vectorTwoBg.png`;
+    setImageUrl(imageUrl);
+    console.log("PLATFORM TAG", platform);
 
-  //    const getUserProfileData = async () => {
-  //     try {
-  //       const userProfile = await getUserProfile();
-  //       if(userProfile.mobileNo && userProfile.name){
-  //         navigate.push('/home','forward');
-  //       }else{
-  //         // N/a
-  //       }
-  //     }
-  //     catch(error){
-  //       console.error('Error getting user profile:', error);
-  //     }
-  //     finally{
-  //       // setIsLoading(false);
-  //     }
-  //    }
-  //    getUserProfileData();
-  // }, []);
+    //  const getUserProfileData = async () => {
+    //   try {
+    //     const userProfile = await getUserProfile();
+    //     if(userProfile.mobileNo && userProfile.name){
+    //       navigate.push('/home','forward');
+    //     }else{
+    //       // N/a
+    //     }
+    //   }
+    //   catch(error){
+    //     console.error('Error getting user profile:', error);
+    //   }
+    //   finally{
+    //     // setIsLoading(false);
+    //   }
+    //  }
+    //  getUserProfileData();
+  }, []);
 
 
   return (
@@ -55,7 +57,7 @@ const LandingScreen: React.FC = () => {
           <PadaiButton children="Get Started Free"
             onClick={(e: any) => {
               e.preventDefault();
-              navigate.push('/language','forward');
+              navigate.push('/language', 'forward');
 
             }}
             color="warning"
@@ -67,7 +69,7 @@ const LandingScreen: React.FC = () => {
 
           <PadaiButton children="Sign In"
             onClick={() => {
-              navigate.push('/login','forward');
+              navigate.push('/login', 'forward');
             }}
             color="medium"
             size="large"
@@ -83,4 +85,3 @@ const LandingScreen: React.FC = () => {
 };
 
 export default LandingScreen;
-  
