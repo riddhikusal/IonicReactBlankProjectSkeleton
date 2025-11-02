@@ -27,6 +27,12 @@ const config: CapacitorConfig = {
       overlaysWebView: false,
     },
   },
+  ios: {
+    contentInset: 'always',
+  },
+  server: {
+    cleartext: true,
+  }
 };
 
 export default config;

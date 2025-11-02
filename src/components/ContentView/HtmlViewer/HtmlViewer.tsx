@@ -159,6 +159,7 @@ const PadaiHtmlContentViwer = ({ url }: { url: string }) => {
         const handleTouchStart = (e: TouchEvent) => {
             // Reset saved range
             savedRange = null;
+            e.preventDefault();
         };
 
         // Additional handler to prevent iOS menu on contextmenu (iOS Safari)
