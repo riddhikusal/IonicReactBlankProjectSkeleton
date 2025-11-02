@@ -9,7 +9,7 @@ const PadaiHeaderBanner: React.FC = () => {
     const [imageUrl, setImageUrl] = useState('');
     useEffect(() => {
         const platform = getPlatform();
-        const imageUrl = platform.code === 'android' || platform.code === 'ios' ? `assets/images/landingScreens/heading.png` : `${import.meta.env.BASE_URL}/assets/images/landingScreens/heading.png`;
+        const imageUrl = platform.code === 'android' || platform.code === 'ios' ?  `${import.meta.env.BASE_URL}/assets/images/landingScreens/heading.png`:`assets/images/landingScreens/heading.png` ;
         setImageUrl(imageUrl);
     }, []);
     return (
