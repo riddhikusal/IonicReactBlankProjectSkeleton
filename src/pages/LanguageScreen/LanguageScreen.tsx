@@ -14,7 +14,7 @@ const PadAILanguageScreen: React.FC = () => {
   useEffect(() => {
     const platformInfo = getPlatform();
     const platform = platformInfo.code;
-    const imageUrl = platform === 'android' || platform === 'ios' ? `assets/images/landingScreens/vectorTwoBg.png` : `${import.meta.env.BASE_URL}/assets/images/landingScreens/vectorTwoBg.png`;
+    const imageUrl = platform === 'android' || platform === 'ios' ?  `${import.meta.env.BASE_URL}/assets/images/landingScreens/vectorTwoBg.png`:`assets/images/landingScreens/vectorTwoBg.png`;
     setImageUrl(imageUrl);
   }, []);
   // check platform if not  mobile then image url will add ${import.meta.env.BASE_URL}
