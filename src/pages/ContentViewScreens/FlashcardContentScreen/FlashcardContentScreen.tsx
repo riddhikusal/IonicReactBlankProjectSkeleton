@@ -84,13 +84,13 @@ const PadAIFlashcardContentScreen = () => {
                     </IonCol>)
                     )}
                     {!loading && flashcards && flashcards.length > 0 && flashcards.map((flashcard) => (
-                        <IonCol size="6" key={flashcard.id} style={{ display: 'flex', alignItems: 'stretch' }}>
+                        <IonCol size="12" key={flashcard.id} style={{ display: 'flex', alignItems: 'stretch' }}>
                             <div style={{ width: '100%', display: 'flex', flexDirection: 'column' }}>
                                 <FlashViewer
                                     key={flashcard.id}
                                     question={flashcard.question}
                                     answer={flashcard.answer}
-                                    image={flashcard.image}
+                                    image={flashcard.imageUrl}
                                 />
                             </div>
                         </IonCol>
