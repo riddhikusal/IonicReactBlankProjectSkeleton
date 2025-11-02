@@ -1,4 +1,4 @@
-import { IonButton, IonContent, IonIcon, IonImg, IonPage,useIonRouter } from '@ionic/react';
+import { IonButton, IonContent, IonIcon, IonImg, IonPage, useIonRouter } from '@ionic/react';
 import React, { useEffect, useState } from 'react';
 import PadaiHeader from '../../components/LandingScreen/Header/Header';
 import PadaiHeaderBanner from '../../components/LandingScreen/HeaderBanner/HeaderBanner';
@@ -55,7 +55,7 @@ const LandingScreen: React.FC = () => {
           <PadaiButton children="Get Started Free"
             onClick={(e: any) => {
               e.preventDefault();
-              navigate.push('/language','forward');
+              navigate.push('/language', 'forward');
 
             }}
             color="warning"
@@ -67,7 +67,7 @@ const LandingScreen: React.FC = () => {
 
           <PadaiButton children="Sign In"
             onClick={() => {
-              navigate.push('/login','forward');
+              navigate.push('/login', 'forward');
             }}
             color="medium"
             size="large"

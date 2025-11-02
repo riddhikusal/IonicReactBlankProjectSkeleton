@@ -264,7 +264,7 @@
 }
 
 /* Dark Mode Support */
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
     .padAIquizContentScreen-page {
         --background: #1a1a1a;
     }
@@ -302,5 +302,5 @@
     .quiz-empty p {
         color: #999;
     }
-}
+} */
 
