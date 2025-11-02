@@ -16,5 +16,11 @@
         "layoutName": "launch_screen",
         "useDialog": true
       }
+    },
+    "ios": {
+      "contentInset": "always"
+    },
+    "server": {
+      "cleartext": true
     }
   }
