@@ -150,13 +150,11 @@ const PadAIHomeScreen: React.FC = () => {
                     </IonRow>
                 </div>
             </IonContent>
-            <IonFooter className='footer-container'>
+            {/* <IonFooter className='footer-container'>
                 <IonRow>
                     <IonCol size="3" className='footer-icon-button' onClick={() => navigate.push('/home', 'forward')}>
-                        {/* <IonButton className='footer-icon-button' fill='clear' onClick={() => navigate.push('/home', 'forward')} color='dark'> */}
                         <IonIcon icon={homeOutline} className='footer-icon' />
                         <IonText className='footer-icon-text'>Home</IonText>
-                        {/* </IonButton> */}
                     </IonCol>
                     <IonCol size="3" className='footer-icon-button' onClick={() => navigate.push('/user-profile', 'forward')}>
                         <IonIcon icon={personOutline} className='footer-icon' />
@@ -171,7 +169,7 @@ const PadAIHomeScreen: React.FC = () => {
                         <IonText className='footer-icon-text'>Ask AI</IonText>
                     </IonCol>
                 </IonRow>
-            </IonFooter>
+            </IonFooter> */}
         </IonPage >
     );
 };

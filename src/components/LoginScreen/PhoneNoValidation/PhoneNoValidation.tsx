@@ -58,8 +58,8 @@ const PadAIPhoneNoValidation = ({ setStep, loginForm, setLoginForm }: PhoneNoVal
                 
               if (loginRes.status?.toLowerCase() === 'success') {
                     //alert(loginRes.msg);
-                    presentAlert({ message: loginRes.msg, header: 'Login', buttonsActions: [() => { }] });
-
+                    // presentAlert({ message: loginRes.msg, header: 'Login', buttonsActions: [() => { }] });
+                    successToaster(loginRes.msg || 'Login successful');
                     // check if user profile is set or not
                     if (loginRes.name && loginRes.name.trim() !== '' && loginRes.board && loginRes.board.trim() !== ''&& loginRes.class && loginRes.class.trim() !== '') {
                         // redirect to home page
@@ -102,6 +102,19 @@ const PadAIPhoneNoValidation = ({ setStep, loginForm, setLoginForm }: PhoneNoVal
         }
         
         return buttonText;
+    };
+
+    const getButtonDisabled = (evnt:any) => {
+        if(evnt === 'validate_mobile') {
+            return showLoader || !phoneNo || phoneNo.length !== 10;
+        }
+        if(evnt === 'login') {
+            return showLoader || !phoneNo || phoneNo.length !== 10 || !password || password.length !== 6;
+        }
+        if(evnt === 'validate_otp') {
+            return showLoader || !phoneNo || phoneNo.length !== 10 || !password || password.length !== 6;
+        }
+        return false;
     };
 
     async function handleForgetPassword() {
@@ -161,7 +174,7 @@ const PadAIPhoneNoValidation = ({ setStep, loginForm, setLoginForm }: PhoneNoVal
                                 <p className='padAIInputLabel'>Enter Passcode</p>
                             </IonText>
                             <IonItem className='padAIInput' lines='none'>
-                                <IonInput maxlength={6} type="password" placeholder='XXXXXXX' value={password} onIonInput={(e) => setPassword((e.target as HTMLInputElement).value || '')}>
+                                <IonInput maxlength={6} type="password" placeholder='- - - - - -' value={password} onIonInput={(e) => setPassword((e.target as HTMLInputElement).value || '')}>
                                     <IonInputPasswordToggle slot="end"></IonInputPasswordToggle>
                                 </IonInput>
                             </IonItem>
@@ -181,6 +194,7 @@ const PadAIPhoneNoValidation = ({ setStep, loginForm, setLoginForm }: PhoneNoVal
                             fill='solid'
                             expand='block'
                             showLoader={showLoader}
+                            disabled={getButtonDisabled(event)}
                         >
                             {/* {!isPhoneVerified ? 'Validate & Continue' : 'Continue'} */}
                             {/* {event === 'validate_mobile' ? 'Validate & Continue' : event === 'send_otp' ? 'Send OTP' : 'Login'} */}

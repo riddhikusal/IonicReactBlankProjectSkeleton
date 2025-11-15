@@ -52,33 +52,50 @@ const PadaiHtmlContentViwer = ({ url }: { url: string }) => {
 
         // Force text selection on innerHTML content and prevent iOS menu
         const forceSelectionStyles = () => {
-            if (contentRef.current) {
-                const style = document.createElement('style');
-                style.id = 'force-selection-styles';
-                style.textContent = `
-                    .html-div * {
-                        -webkit-user-select: text !important;
-                        -moz-user-select: text !important;
-                        -ms-user-select: text !important;
-                        user-select: text !important;
-                        -webkit-touch-callout: none !important;
-                        touch-callout: none !important;
-                        -webkit-user-callout: none !important;
-                    }
-                    .html-div, .html-div * {
-                        -webkit-touch-callout: none !important;
-                        -webkit-user-select: text !important;
-                    }
-                `;
-                if (!document.getElementById('force-selection-styles')) {
-                    document.head.appendChild(style);
-                }
+            const styleId = 'force-selection-styles';
+            let style = document.getElementById(styleId) as HTMLStyleElement;
+            
+            if (!style) {
+                style = document.createElement('style');
+                style.id = styleId;
+                document.head.appendChild(style);
             }
+            
+            // Apply globally to prevent iOS menu
+            style.textContent = `
+                body, html, #root {
+                    -webkit-touch-callout: none !important;
+                }
+                .html-div, .html-div *, 
+                [class*="selectable"], 
+                [class*="html-div"] {
+                    -webkit-user-select: text !important;
+                    -moz-user-select: text !important;
+                    -ms-user-select: text !important;
+                    user-select: text !important;
+                    -webkit-touch-callout: none !important;
+                    touch-callout: none !important;
+                }
+                /* Apply to all elements within content area */
+                .prose.bg-slate-100.selectable-text,
+                .prose.bg-slate-100.selectable-text * {
+                    -webkit-touch-callout: none !important;
+                }
+                /* Hide iOS selection handles/menu */
+                ::selection,
+                ::-moz-selection {
+                    -webkit-touch-callout: none !important;
+                }
+            `;
         };
 
         forceSelectionStyles();
 
+        let isHandlingSelection = false;
+
         const handleSelectionChange = () => {
+            if (isHandlingSelection) return; // Prevent recursive calls
+            
             const selection: any = window.getSelection();
             const text = selection?.toString();
 
@@ -95,13 +112,48 @@ const PadaiHtmlContentViwer = ({ url }: { url: string }) => {
                     rect.right <= (containerRect.right + 20);
                 
                 if (isWithinContent) {
-                    setTooltipPos({
-                        top: rect.top + window.scrollY - 40,
-                        left: rect.left + window.scrollX,
-                    });
+                    isHandlingSelection = true;
+                    
+                    // Save selection data
+                    const savedRange = range.cloneRange();
+                    const savedText = text;
+                    const savedRect = { ...rect };
+                    
+                    // IMMEDIATELY clear selection to prevent iOS menu from appearing
+                    selection.removeAllRanges();
+                    
+                    // Restore selection using multiple microtasks to beat iOS menu timing
+                    Promise.resolve().then(() => {
+                        return Promise.resolve();
+                    }).then(() => {
+                        try {
+                            selection.removeAllRanges();
+                            selection.addRange(savedRange);
+                            
+                            // Show custom tooltip
+                            setTooltipPos({
+                                top: savedRect.top + window.scrollY - 40,
+                                left: savedRect.left + window.scrollX,
+                            });
 
-                    setSelectedText(text);
-                    setShowTooltip(true);
+                            setSelectedText(savedText);
+                            setShowTooltip(true);
+                            
+                            isHandlingSelection = false;
+                        } catch (e) {
+                            // If range is invalid, try again
+                            setTimeout(() => {
+                                try {
+                                    if (selection.rangeCount === 0 && savedRange) {
+                                        selection.addRange(savedRange);
+                                    }
+                                    isHandlingSelection = false;
+                                } catch (e2) {
+                                    isHandlingSelection = false;
+                                }
+                            }, 10);
+                        }
+                    });
                 } else {
                     setShowTooltip(false);
                 }
@@ -122,44 +174,21 @@ const PadaiHtmlContentViwer = ({ url }: { url: string }) => {
             }
         };
 
-        // Prevent iOS default text selection menu - aggressive approach
-        let selectionTimeout: NodeJS.Timeout | null = null;
-        let savedRange: Range | null = null;
-
+        // Prevent iOS default text selection menu - intercept immediately on touchend
         const handleTouchEnd = (e: TouchEvent) => {
-            // Clear any existing timeout
-            if (selectionTimeout) {
-                clearTimeout(selectionTimeout);
-            }
-
-            // Immediately intercept and prevent iOS menu
-            selectionTimeout = setTimeout(() => {
-                const selection = window.getSelection();
-                if (selection && selection.rangeCount > 0 && selection.toString().length > 0) {
-                    if (contentRef.current && contentRef.current.contains(e.target as Node)) {
-                        // Save the selection range
-                        savedRange = selection.getRangeAt(0).cloneRange();
-                        
-                        // Temporarily clear selection to prevent iOS menu
-                        selection.removeAllRanges();
-                        
-                        // Restore selection immediately (this prevents iOS menu popup)
-                        requestAnimationFrame(() => {
-                            if (savedRange && selection) {
-                                selection.removeAllRanges();
-                                selection.addRange(savedRange);
-                            }
-                        });
-                    }
-                }
-            }, 50); // Very short delay to intercept before iOS menu appears
+            // Don't prevent default - allow selection to happen naturally
+            // The selectionchange handler will intercept it immediately
         };
 
-        // Prevent iOS context menu on long press
+        // Prevent iOS context menu on long press but allow text selection
         const handleTouchStart = (e: TouchEvent) => {
-            // Reset saved range
-            savedRange = null;
-            e.preventDefault();
+            // Don't prevent default - we need to allow text selection to work
+            // Only prevent if it's a very long press (context menu trigger)
+        };
+        
+        // Intercept touchmove to prevent default behavior that might trigger iOS menu
+        const handleTouchMove = (e: TouchEvent) => {
+            // Allow normal scrolling and selection
         };
 
         // Additional handler to prevent iOS menu on contextmenu (iOS Safari)
@@ -171,10 +200,36 @@ const PadaiHtmlContentViwer = ({ url }: { url: string }) => {
             }
         };
 
+        // Critical: Prevent iOS menu by clearing and restoring selection immediately
+        const preventIOSMenu = (e: TouchEvent) => {
+            // Use requestAnimationFrame for immediate execution
+            requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    const selection = window.getSelection();
+                    if (selection && selection.toString().length > 0 && contentRef.current?.contains(e.target as Node)) {
+                        // Force clear and restore to prevent iOS menu
+                        const range = selection.rangeCount > 0 ? selection.getRangeAt(0).cloneRange() : null;
+                        if (range) {
+                            selection.removeAllRanges();
+                            requestAnimationFrame(() => {
+                                try {
+                                    selection.addRange(range);
+                                } catch (e) {
+                                    // Range might be invalid, ignore
+                                }
+                            });
+                        }
+                    }
+                });
+            });
+        };
+
         if (contentRef.current) {
             contentRef.current.addEventListener('mouseup', handleMouseUp);
-            contentRef.current.addEventListener('touchend', handleTouchEnd, { passive: false });
+            contentRef.current.addEventListener('touchend', handleTouchEnd, { passive: true });
+            contentRef.current.addEventListener('touchend', preventIOSMenu, { passive: true });
             contentRef.current.addEventListener('touchstart', handleTouchStart, { passive: true });
+            contentRef.current.addEventListener('touchmove', handleTouchMove, { passive: true });
             contentRef.current.addEventListener('contextmenu', handleContextMenu, { capture: true });
             // Also add to document to catch iOS menu attempts
             document.addEventListener('contextmenu', handleContextMenu, { capture: true });
@@ -184,13 +239,12 @@ const PadaiHtmlContentViwer = ({ url }: { url: string }) => {
             document.removeEventListener('contextmenu', preventContextMenu);
             document.removeEventListener('contextmenu', handleContextMenu, { capture: true });
             document.removeEventListener('selectionchange', handleSelectionChange);
-            if (selectionTimeout) {
-                clearTimeout(selectionTimeout);
-            }
             if (contentRef.current) {
                 contentRef.current.removeEventListener('mouseup', handleMouseUp);
                 contentRef.current.removeEventListener('touchend', handleTouchEnd);
+                contentRef.current.removeEventListener('touchend', preventIOSMenu);
                 contentRef.current.removeEventListener('touchstart', handleTouchStart);
+                contentRef.current.removeEventListener('touchmove', handleTouchMove);
                 contentRef.current.removeEventListener('contextmenu', handleContextMenu, { capture: true });
             }
         };
@@ -234,6 +288,24 @@ const PadaiHtmlContentViwer = ({ url }: { url: string }) => {
                         touchAction: 'pan-y' as any,
                         cursor: 'text',
                         WebkitTouchCallout: 'none' as any,
+                        touchCallout: 'none' as any,
+                    } as React.CSSProperties}
+                    onTouchEnd={(e) => {
+                        // Immediate prevention
+                        const selection = window.getSelection();
+                        if (selection && selection.toString().length > 0) {
+                            const range = selection.rangeCount > 0 ? selection.getRangeAt(0).cloneRange() : null;
+                            if (range) {
+                                selection.removeAllRanges();
+                                setTimeout(() => {
+                                    try {
+                                        selection.addRange(range);
+                                    } catch (err) {
+                                        // Ignore
+                                    }
+                                }, 0);
+                            }
+                        }
                     }}
                 />
 

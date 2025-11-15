@@ -10,12 +10,12 @@
 
 .reel {
   height: 245px;
-  width: 96%;
+  width: 100%;
   border: 1px solid rgb(243, 243, 243);
-  padding: 0px;
-  border-radius: 18px;
+  padding: 3px !important;
+  /* border-radius: 18px; */
   overflow: hidden;
-  margin: 10px auto;
+  margin: 0px auto;
 }
 
 .reel div[data-vjs-player],
@@ -68,4 +68,8 @@
   bottom: 0;
   left: 0;
   height: 100%;
+}
+
+.video-container{
+  background: #000000 !important;
 }
