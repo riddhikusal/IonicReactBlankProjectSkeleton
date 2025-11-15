@@ -173,7 +173,7 @@ const ReelScreen: React.FC = () => {
                                 loop
                                 muted
                                 playsInline
-                                controls
+                                
                             />
                             <div className="reelOverlay">
                                 <div className="reelTitle">{video.title}</div>
