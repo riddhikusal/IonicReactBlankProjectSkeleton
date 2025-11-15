@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react';
 import CustomSheetModal from '../../Common/CustomSheetModal/CustomSheetModal';
 import { useChapterStore } from '../../../services/store/chapter.store';
 import { useChatsStore } from '../../../services/store/chats.store';
+import { getPlatform } from '../../../utils/platform';
 const PadAIContentAIPanel = () => {
     const [showSelectedText, setShowSelectedText] = useState<boolean>(false);
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
@@ -37,6 +38,15 @@ const PadAIContentAIPanel = () => {
     //     }
     // }
 
+    const checkIosOrAndroid = () => {
+        console.log('getPlatform().code', getPlatform().code);
+        if (getPlatform().code == 'ios') {
+            return 'btnGradientIos';
+        } else {
+            return '';
+        }
+    }
+
     const handlePlayAndPause = (clearContentLoadingFlag: boolean = false) => {
         chapterInfo.audioIsPlaying = !chapterInfo.audioIsPlaying;
         console.log('chapterInfo.audioIsPlaying', chapterInfo.audioIsPlaying);
@@ -57,7 +67,7 @@ const PadAIContentAIPanel = () => {
             <div className="padAIcontentAIPanel-container">
                 <div className="padAIFooterFlexBtnContainer">
                     <IonButton
-                        className="btnGradient"
+                        className={`btnGradient ${checkIosOrAndroid()}`}
                         fill='clear'
                         onClick={() => {
                             setIsModalOpen(true);

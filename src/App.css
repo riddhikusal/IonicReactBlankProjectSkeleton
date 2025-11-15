@@ -343,3 +343,18 @@ mark.custom-highlight {
   --background-color: #00000000 !important;
   background: #00000000 !important;
 }
+
+.btnGradientIos{
+  ::ng-deep .button-naive {
+    margin-top: -10px;
+  }
+  .button-native {
+    margin-top: -10px;
+  }
+  ion-text{
+    margin-top: -10px;
+  }
+  ion-icon{
+    margin-top: -10px;
+  }
+}
