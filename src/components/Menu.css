@@ -201,9 +201,56 @@ ion-item.selected {
       font-size: 20px;
     }
 
-    .userProfile-contact {
-      font-size: 13px;
-    }
+  .userProfile-contact {
+    font-size: 13px;
   }
+}
+
+/* Menu Footer Styles */
+.menu-footer {
+  border-top: 1px solid #e0e0e0;
+  background: #ffffff;
+  padding: 0;
+}
+
+.menu-footer ion-item {
+  --padding-start: 16px;
+  --padding-end: 16px;
+  --min-height: 50px;
+  --background: transparent;
+}
+
+.menu-footer .logout-item {
+  --color: #eb445a;
+  cursor: pointer;
+}
+
+.menu-footer .logout-item:hover {
+  --background: rgba(235, 68, 90, 0.1);
+}
+
+.menu-footer .logout-item ion-icon {
+  color: #eb445a;
+  font-size: 24px;
+}
+
+.menu-footer .logout-item ion-label {
+  font-weight: 600;
+  color: #eb445a;
+}
+
+/* iOS specific footer styles */
+ion-menu.ios .menu-footer ion-item {
+  --padding-start: 16px;
+  --padding-end: 16px;
+}
+
+/* Material Design specific footer styles */
+ion-menu.md .menu-footer ion-item {
+  --padding-start: 10px;
+  --padding-end: 10px;
+  border-radius: 4px;
+  margin: 8px;
+}
 
 }

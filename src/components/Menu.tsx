@@ -10,13 +10,15 @@ import {
   IonNote,
   IonText,
   IonAvatar,
+  IonFooter,
 } from '@ionic/react';
 
 import { useLocation } from 'react-router-dom';
-import { archiveOutline, archiveSharp, bookmarkOutline, heartOutline, heartSharp, informationCircleOutline, informationCircleSharp, languageSharp, languageOutline, mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, trashOutline, trashSharp, warningOutline, warningSharp, videocamOutline, personOutline, helpCircleOutline, chatbubbleOutline } from 'ionicons/icons';
+import { archiveOutline, archiveSharp, bookmarkOutline, heartOutline, heartSharp, informationCircleOutline, informationCircleSharp, languageSharp, languageOutline, mailOutline, mailSharp, paperPlaneOutline, paperPlaneSharp, trashOutline, trashSharp, warningOutline, warningSharp, videocamOutline, personOutline, helpCircleOutline, chatbubbleOutline, logOutOutline } from 'ionicons/icons';
 import './Menu.css';
-import { getUserProfile, UserProfile } from '../utils/profileStorage';
+import { getUserProfile, UserProfile, clearUserProfile } from '../utils/profileStorage';
 import { useEffect, useState } from 'react';
+import { useIonRouter } from '@ionic/react';
 
 interface AppPage {
   url: string;
@@ -99,6 +101,7 @@ const labels: string[] = ['Favourites', 'Recent Read', 'History', 'Settings'];
 
 const Menu: React.FC = () => {
   const location = useLocation();
+  const navigate = useIonRouter();
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
 
@@ -111,12 +114,17 @@ const Menu: React.FC = () => {
     getUserProfileData();
   }, []);
 
+  const handleLogout = () => {
+    clearUserProfile();
+    navigate.push('/login', 'root');
+  };
+
   return (
     <IonMenu contentId="main" type="overlay" swipeGesture={false}>
       <IonContent className='p-0 sideNav_ion_content' style={{padding: '0px !important'}}>
         <IonList id="inbox-list" className='p-0' style={{padding: '0px !important'}}>
           <IonListHeader className='p-3 bg-light' style={{ textTransform: 'capitalize' }}>
-            <div className="profileImage-container">
+            <div className="profileImage-container" style={{marginBottom:'0px'}}>
               <IonAvatar className="profile-avatar">
                 <div className="profileImage-placeholder">
                   <IonText>{userProfile?.name?.split(' ')[0]?.charAt(0) + '' + (userProfile?.name && userProfile?.name?.split(' ')?.length > 1 ? userProfile?.name?.split(' ')[userProfile?.name?.split(' ')?.length - 1]?.charAt(0) : '')}</IonText>
@@ -143,7 +151,7 @@ const Menu: React.FC = () => {
           })}
         </IonList>
 
-        <IonList id="labels-list" className='p-3'>
+        {/* <IonList id="labels-list" className='p-3'>
           <IonListHeader>Labels</IonListHeader>
           {labels.map((label, index) => (
             <IonItem lines="none" key={index}>
@@ -151,8 +159,22 @@ const Menu: React.FC = () => {
               <IonLabel>{label}</IonLabel>
             </IonItem>
           ))}
-        </IonList>
+        </IonList> */}
       </IonContent>
+      
+      <IonFooter className="menu-footer">
+        <IonMenuToggle autoHide={false}>
+          <IonItem 
+            button 
+            onClick={handleLogout}
+            lines="none"
+            className="logout-item"
+          >
+            <IonIcon aria-hidden="true" slot="start" icon={logOutOutline} />
+            <IonLabel>Logout</IonLabel>
+          </IonItem>
+        </IonMenuToggle>
+      </IonFooter>
     </IonMenu>
   );
 };
