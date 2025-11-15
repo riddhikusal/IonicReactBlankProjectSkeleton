@@ -66,7 +66,7 @@ const PadAIContentAIPanel = () => {
                     >
                         {/* <IonImg src={'/assets/images/contentScreens/aiAsk.png'} alt='AI' /> */}
                         <IonIcon icon={sparkles}></IonIcon>
-                        <IonText>Ask AI</IonText>
+                        {!chapterInfo.contentLoaded && <IonText>Ask AI</IonText>}
                     </IonButton>
                     <div className={`padAIFooterFlexBtnContainer aiFooterIcons ${!chapterInfo.contentLoaded ? 'aiFooterIconsModify' : ''}`} id={!chapterInfo.contentLoaded ? 'aiFooterIconsModify' : ''}>
                         {!chapterInfo.contentLoaded && <IonButton className='padAIFooterFlexBtn no-border-right-redius' fill='clear' onClick={() => handleLoadContent()} > <IonIcon icon={volumeHighOutline} className='footericons' ></IonIcon></IonButton>}

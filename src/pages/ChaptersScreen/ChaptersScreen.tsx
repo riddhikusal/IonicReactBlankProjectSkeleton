@@ -73,18 +73,19 @@ const PadAIChaptersScreen: React.FC = () => {
             <PadAIBackheader />
             <IonImg src={vectoreBgImage} alt="headerBanner" className='padAIvectorTwoBg' />
 
-            <IonHeader>
-                <div className="padAIHomeScreenUserGreeting">
-                    <IonText>
-                        <p className='padAIHomeScreenUserGreetingText'>{subject || 'SCIENCE (NCERT)'}</p>
-                    </IonText>
-                    <IonText className='padAIHomeScreenUserGreeting-text-subtitle'>
-                        Total Chapters : {chapters.length}
-                    </IonText>
-                </div>
-            </IonHeader>
 
-            <IonContent>
+
+            <IonContent className='padAIContentScreen-content'>
+                <IonHeader>
+                    <div className="padAIHomeScreenUserGreeting">
+                        <IonText>
+                            <p className='padAIHomeScreenUserGreetingText'>{subject || 'SCIENCE (NCERT)'}</p>
+                        </IonText>
+                        <IonText className='padAIHomeScreenUserGreeting-text-subtitle'>
+                            Total Chapters : {chapters.length}
+                        </IonText>
+                    </div>
+                </IonHeader>
                 <IonRow className="padAIHomeScreenUserChapterRow">
                     {isChaptersLoading && [1, 2, 3, 4, 5, 6, 7].map((item) => (<IonCol size='12' key={item}>
                         <IonList style={{ width: '100%' }}>

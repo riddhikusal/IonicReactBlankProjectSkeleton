@@ -1,5 +1,5 @@
-import { IonContent, IonHeader, IonToolbar, IonTitle, IonFooter } from "@ionic/react";
-
+import { IonContent, IonHeader, IonToolbar, IonTitle, IonFooter, IonImg } from "@ionic/react";
+import vectoreBgImage from '/assets/images/dashboardScreen/topVectorOne.png';
 import { IonPage } from "@ionic/react";
 import PadAIBackheader from "../../../components/Common/Backheader/Backheader";
 import PadAIChapterHeader from "../../../components/ContentView/ChapterHeader/ChapterHeader";
@@ -14,8 +14,9 @@ const PadAIVideoContentScreen: React.FC = () => {
     const selectedChapterResources = useChapterStore((state)=>state.selectedChapterResources);
     return (
         <IonPage className='padAIvideoContentScreen-page'>
+             <IonImg src={vectoreBgImage} alt="headerBanner" className='padAIvectorTwoBg' />
             <PadAIBackheader />
-            <IonContent>
+            <IonContent className='padAIContentScreen-content'>
                 <PadAIChapterHeader />
                 <PadAIVideoPlayer
                     video={{...VideoContentDummy, url: selectedChapterResources?.url || '', thumbnail: selectedChapterResources?.image || ''}}
