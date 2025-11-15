@@ -49,7 +49,7 @@ const PadAIVideoPlayer = forwardRef<Player | null, VideoPlayerProps>(({ video, a
   useImperativeHandle(ref, () => playerRef.current!);
 
   return (
-    <div>
+    <div className='bg-dark video-container'>
       <div className="ion-padding reel">
         {/* Video container with required class and data attribute */}
         <div data-vjs-player>

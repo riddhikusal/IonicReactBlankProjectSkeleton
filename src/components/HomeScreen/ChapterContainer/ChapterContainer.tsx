@@ -30,6 +30,9 @@ const PadAIChapterContainer: React.FC<IChapterContainerProps> = ({ id, chapterIm
             image: chapterImage,
             subjectName: chapterInfo.subjectName,
             bookName: chapterInfo.bookName,
+            audioIsPlaying: false,
+            contentLoading: false,
+            contentLoaded: false,
         });
         // Use route parameters instead of query parameters to match the route definition
         navigate.push(`/chapter-details/${id}`, 'forward');

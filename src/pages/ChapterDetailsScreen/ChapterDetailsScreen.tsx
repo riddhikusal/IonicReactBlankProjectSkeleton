@@ -5,6 +5,39 @@ import { useLocation, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { arrowBack, arrowForward, arrowRedoOutline, bookOutline, cloudDownloadOutline, downloadOutline, logoYoutube, playCircleOutline } from "ionicons/icons";
 
+const dummyImageAddress = [
+    ['https://www.shutterstock.com/image-vector/cute-boy-girl-sitting-on-600nw-2486052883.jpg',
+        'https://img.freepik.com/premium-vector/female-teacher-explains-tutorial-using-book-while-students-listen-engage-classroom-female-teacher-explaining-tutorial-with-book_538213-156343.jpg',],
+    ['https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkWmM0SUliqLTbAu2NpmBR9NUSq2hz2KD1xg&s',
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSp4azd32CMO3IK4stlvIU4EjNZ4666aXMeHw&s',
+        'https://classroomclipart.com/image/static2/preview2/child-reading-book-on-floor-clipart-11057.jpg',],
+    ['https://static.vecteezy.com/system/resources/previews/004/219/741/non_2x/video-tutorials-background-illustration-watching-and-streaming-online-on-computer-about-education-knowledge-for-web-banner-brochures-poster-or-book-cover-vector.jpg',
+        'https://static.vecteezy.com/system/resources/previews/004/217/309/non_2x/video-tutorials-background-illustration-watching-and-streaming-online-on-computer-about-education-knowledge-for-web-banner-brochures-poster-or-book-cover-vector.jpg',
+        'https://img.freepik.com/premium-vector/woman-reads-book-online-audiobook-computer-internet-video-tutorial-a-a-a-a-oncept-distance-learning-digital-classroom-teacher-with-textbook_499739-792.jpg',],
+
+    //
+    ['https://www.shutterstock.com/image-vector/quiz-word-pop-art-comic-260nw-2420110745.jpg',
+        'https://www.shutterstock.com/shutterstock/photos/1346231579/display_1500/stock-vector-illustration-of-stickman-kids-reading-a-book-with-a-question-mark-shaped-book-shelf-1346231579.jpg',
+        'https://d1e4pidl3fu268.cloudfront.net/e5d7d87d-c3d6-4fff-8743-d659a8827273/Capture.crop_435x326_0,5.preview.PNG',
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBtudbWgTsF2rIfj2YHZmBsM18hoUho_H4TgubDQEgVfN0nMbPxYFCrzOAA-VeNTxsAc4&usqp=CAU'
+    ],
+    ['https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkWmM0SUliqLTbAu2NpmBR9NUSq2hz2KD1xg&s',
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSp4azd32CMO3IK4stlvIU4EjNZ4666aXMeHw&s',
+        'https://classroomclipart.com/image/static2/preview2/child-reading-book-on-floor-clipart-11057.jpg',],
+    ['https://static.vecteezy.com/system/resources/previews/004/219/741/non_2x/video-tutorials-background-illustration-watching-and-streaming-online-on-computer-about-education-knowledge-for-web-banner-brochures-poster-or-book-cover-vector.jpg',
+        'https://static.vecteezy.com/system/resources/previews/004/217/309/non_2x/video-tutorials-background-illustration-watching-and-streaming-online-on-computer-about-education-knowledge-for-web-banner-brochures-poster-or-book-cover-vector.jpg',
+        'https://img.freepik.com/premium-vector/woman-reads-book-online-audiobook-computer-internet-video-tutorial-a-a-a-a-oncept-distance-learning-digital-classroom-teacher-with-textbook_499739-792.jpg',],
+    //
+    ['https://www.shutterstock.com/image-vector/cute-boy-girl-sitting-on-600nw-2486052883.jpg',
+        'https://www.shutterstock.com/image-vector/cute-boy-girl-sitting-on-600nw-2486052883.jpg',],
+    ['https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkWmM0SUliqLTbAu2NpmBR9NUSq2hz2KD1xg&s',
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSp4azd32CMO3IK4stlvIU4EjNZ4666aXMeHw&s',
+        'https://classroomclipart.com/image/static2/preview2/child-reading-book-on-floor-clipart-11057.jpg',],
+    ['https://static.vecteezy.com/system/resources/previews/004/219/741/non_2x/video-tutorials-background-illustration-watching-and-streaming-online-on-computer-about-education-knowledge-for-web-banner-brochures-poster-or-book-cover-vector.jpg',
+        'https://static.vecteezy.com/system/resources/previews/004/217/309/non_2x/video-tutorials-background-illustration-watching-and-streaming-online-on-computer-about-education-knowledge-for-web-banner-brochures-poster-or-book-cover-vector.jpg',
+        'https://img.freepik.com/premium-vector/woman-reads-book-online-audiobook-computer-internet-video-tutorial-a-a-a-a-oncept-distance-learning-digital-classroom-teacher-with-textbook_499739-792.jpg',],
+
+]
 // Mock videos data (same as ReelScreen)
 interface Video {
     id: number;
@@ -43,6 +76,8 @@ import QuizImage from '/assets/images/chapterResources/speech-bubble.png';
 import FlashcardImage from '/assets/images/chapterResources/flash-card.png';
 import NotesReferencesImage from '/assets/images/chapterResources/pen-and-paper.png';
 import React from "react";
+import PadAIChapterHeader from "../../components/ContentView/ChapterHeader/ChapterHeader";
+import audioReaderImage from '/assets/images/chapterResources/speech-bubble.png';
 
 const chapter = {
     chapterImage: '/assets/images/chapters/Ch01.jpeg',
@@ -112,8 +147,9 @@ const PadAIChapterDetailsScreen: React.FC = () => {
             setLoading(false);
         }
     }
-    const getChapterImage = (resource: IResourceItem, key: string) => {
+    const getChapterImage = (resource: IResourceItem | null, key: string) => {
         if (key === 'BOOK READER') return TextReaderImage;
+        else if (key === 'AUDIO READER') return audioReaderImage;
         // else if(key === 'VIDEO EXPLAINERS') '/assets/images/chapterResources/youtube.png';
         else if (key === 'VIDEO EXPLAINERS') return VideoExplainerImage;
         else if (key === 'QUESTION ANSWERS') return QuestionAnswerImage;
@@ -143,58 +179,14 @@ const PadAIChapterDetailsScreen: React.FC = () => {
         <IonPage>
             <PadAIBackheader />
             <IonImg src={vectoreBgImage} alt="headerBanner" className='padAIvectorTwoBg' />
+            {/* <PadAIChapterHeader formCapterDetailsScreen={true} /> */}
 
-            <IonHeader>
-                <PadAIChapterContainer
-                    key={'ChapterDetails'}
-                    id={1}
-                    chapterImage={chapterInfo.image}
-                    chapterName={chapterInfo.title}
-                    lastReadDateTime={''}
-                    chapterSubject={'Science'}
-                    showStarIcon={true}
-                    showArrowIcon={false}
-                    index={1}
-                />
-            </IonHeader>
-            <IonContent className="padAIChapterDetailsScreenContent">
-                {/* reels section */}
-                <div className="reels-preview-section">
-                    <IonText className="reels-section-title">
-                        <h3 style={{ margin: '15px 0 10px 15px', fontWeight: '600' }}>Educational Reels</h3>
-                    </IonText>
-                    <div className="reels-preview-container">
-                        {videos.slice(0, 3).map((video, index) => (
-                            <div
-                                key={video.id}
-                                className="reel-preview-card"
-                                onClick={() => navigate.push('/reels', 'forward')}
-                            >
-                                <div className="reel-preview-thumbnail">
-                                    <video
-                                        src={video.url}
-                                        muted
-                                        playsInline
-                                        className="reel-preview-video"
-                                    />
-                                    <div className="reel-preview-overlay">
-                                        <IonIcon icon={playCircleOutline} className="reel-play-icon" />
-                                    </div>
-                                </div>
-                                <IonText className="reel-preview-title">{video.title}</IonText>
-                            </div>
-                        ))}
-                        <div
-                            className="reel-preview-card reel-view-more-card"
-                            onClick={() => navigate.push('/reels', 'forward')}
-                        >
-                            <div className="reel-view-more-content">
-                                <IonIcon icon={arrowForward} className="reel-view-more-icon" />
-                                <IonText className="reel-view-more-text">View More</IonText>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <IonContent className="padAIChapterDetailsScreenContent padAIContentScreen-content">
+
+                <IonText className="ion-text-wrap padAIHomeScreenUserChapter-text-container" style={{ textOverflow: 'ellipsis' }}>
+                    <p className='padAIHomeScreenUserChapter-text chapter-text' style={{ paddingBottom: '0px' }}>Chapter {chapterInfo.chapterNo}</p>
+                    <p className='padAIHomeScreenUserChapter-text chapter-name'>{chapterInfo.title}</p>
+                </IonText>
 
                 {loading && (
                     <div style={{ textAlign: 'center', padding: '20px' }}>
@@ -210,11 +202,69 @@ const PadAIChapterDetailsScreen: React.FC = () => {
                         </IonText>
                     </div>
                 )}
+                {chapterId && !loading && chapterResources &&
+                    (
+                        Object.keys(chapterResources).map((resource, index) => (
+                            <React.Fragment key={resource}>
+                                <IonItem lines="none" className="padAIChapterDetailsScreenContentAccordionItemNew" style={{marginTop: '7px',marginBottom: '7px'}}>
+                                    <IonText slot="start" className="ion-text-wrap padAIHomeScreenUserChapter-text-container" style={{ textOverflow: 'ellipsis',fontWeight: '600' }}>
+                                        {resource === 'BOOK READER' ? 'Book Reader' : resource === 'AUDIO READER' ? 'Audio Reader' : resource === 'VIDEO EXPLAINERS' ? 'Video Explainers' : resource === 'QUESTION ANSWERS' ? 'Question Answers' : resource === 'QUIZ' ? 'Quiz' : resource === 'FLASHCARDS' ? 'Flashcards' : resource === 'NOTES & REFERENCES' ? 'Notes & References' : ''}
+                                    </IonText>
+                                    {/* <IonButtons slot="end">
+                                        <IonButton fill="clear" slot="icon-only" style={{ fontSize: '18px' }}>
+                                            <IonIcon icon={arrowRedoOutline} />
+                                        </IonButton>
+                                    </IonButtons> */}
+                                </IonItem>
+                                <div className="padAIChapterDetailsScreenContentAccordionnnEW resource-cards-container">
+                                    {chapterResources[resource as keyof IChapterResources].map((resourceItem, indexnEW) => (
+                                        <div
+                                            key={`${resource}-${resourceItem.id || indexnEW}`}
+                                            className="resource-card"
+                                            onClick={() => {
+                                                setSelectedChapterResources?.(resourceItem);
+                                                if (resource === 'BOOK READER') {
+                                                    navigate.push(`/pdf-content`, 'forward');
+                                                } else if (resource === 'FLASHCARDS') {
+                                                    navigate.push(`/flash-content`, 'forward');
+                                                } else if (resource === 'NOTES & REFERENCES') {
+                                                    navigate.push(`/html-content`, 'forward');
+                                                } else if (resource === 'QUESTION ANSWERS') {
+                                                    navigate.push(`/question-answer-content`, 'forward');
+                                                } else if (resource === 'QUIZ') {
+                                                    navigate.push(`/quiz-content`, 'forward');
+                                                } else if (resource === 'VIDEO EXPLAINERS') {
+                                                    if (resourceItem.contentType === 'video') {
+                                                        navigate.push(`/video-content`, 'forward');
+                                                    } else if (resourceItem.contentType === 'youtube-video') {
+                                                        navigate.push(`/youtube-content`, 'forward');
+                                                    }
+                                                }
+                                            }}
+                                        >
+                                            <div className="resource-card-image">
+                                                <IonImg
+                                                    // src={getChapterImage(resourceItem, resource)}
+                                                    src={dummyImageAddress[index][indexnEW]}
+                                                    alt={resourceItem.name}
+                                                    className="resource-card-img"
+                                                />
+                                            </div>
+                                            <div className="resource-card-title">
+                                                <IonText className="resource-card-name">{resourceItem.name}</IonText>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </React.Fragment>
+                        ))
+                    )}
 
-                {chapterId && !loading && chapterResources && (
+
+                {/* {chapterId && !loading && chapterResources && (
                     <IonAccordionGroup className="padAIChapterDetailsScreenContentAccordionGroup">
                         {Object.keys(chapterResources).map((resource, index) => (
-                            <IonAccordion value={resource} key={index} className="padAIChapterDetailsScreenContentAccordionBox">
+                            <IonAccordion value={resource} key={resource} className="padAIChapterDetailsScreenContentAccordionBox">
                                 <IonItem slot="header" lines="none">
                                     <IonThumbnail slot="start" className="padAIChapterDetailsScreenContentAccordionThumbnail">
                                         <IonImg src={getChapterImage(chapterResources[resource as keyof IChapterResources][0], resource)} alt="chapterImage" className="resourceContainerimg" />
@@ -223,8 +273,8 @@ const PadAIChapterDetailsScreen: React.FC = () => {
                                 </IonItem>
                                 <div className="padAIChapterDetailsScreenContentAccordion" slot="content">
                                     {chapterResources[resource as keyof IChapterResources].map((resourceItem, index) => (
-                                        <IonItem lines="none" color={'light'} className="padAIChapterDetailsScreenContentAccordionItem">
-                                            <IonLabel key={index}>{resourceItem.name}</IonLabel>
+                                        <IonItem lines="none" color={'light'} className="padAIChapterDetailsScreenContentAccordionItem" key={index}>
+                                            <IonLabel>{resourceItem.name}</IonLabel>
                                             {resource == 'BOOK READER' && <IonButtons>
                                                 <IonButton fill="clear" slot="icon-only" style={{ fontSize: '18px' }}
 
@@ -297,12 +347,10 @@ const PadAIChapterDetailsScreen: React.FC = () => {
                             </IonAccordion>
                         ))}
 
-                        {/* Test For AudioR */}
-                        {/* {chapterResources['BOOK READER'] && chapterResources['BOOK READER'].length > 0 && ( */}
                         <IonAccordion value="AUDIO READER" key="AUDIO READER" className="padAIChapterDetailsScreenContentAccordionBox">
                             <IonItem slot="header" lines="none">
                                 <IonThumbnail slot="start" className="padAIChapterDetailsScreenContentAccordionThumbnail">
-                                    <IonImg src={'/assets/images/chapterResources/pdf.png'} alt="chapterImage" className="resourceContainerimg" />
+                                    <IonImg src={getChapterImage(null, 'AUDIO READER')} alt="chapterImage" className="resourceContainerimg" />
                                 </IonThumbnail>
                                 <IonLabel>Audio Reader HTML Content</IonLabel>
                             </IonItem>
@@ -320,76 +368,45 @@ const PadAIChapterDetailsScreen: React.FC = () => {
                             </div>
 
                         </IonAccordion>
-                        {/* // )} */}
                     </IonAccordionGroup>
-                )}
-
-                {/* <IonRow>
-                    <IonCol size="4" style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
-                       <div className="resourceContainer">
-                       <IonImg src={'/assets/images/chapterResources/pdf.png'} alt="chapterImage"  className="resourceContainerimg"/>
-                        <IonText>
-                            Text Book Link
-                        </IonText>
-                       </div>
-                    </IonCol>
-                    <IonCol size="4" style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
-                       <div className="resourceContainer">
-                       <IonImg src={'/assets/images/chapterResources/pdf.png'} alt="chapterImage"  className="resourceContainerimg"/>
-                        <IonText>
-                            Text Book Link - Hindi
-                        </IonText>
-                       </div>
-                    </IonCol>
-                    <IonCol size="4" style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
-                       <div className="resourceContainer">
-                       <IonImg src={'/assets/images/chapterResources/youtube.png'} alt="chapterImage"  className="resourceContainerimg"/>
-                        <IonText>
-                            Youtube
-                        </IonText>
-                       </div>
-                    </IonCol>
-                    <IonCol size="4" style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
-                       <div className="resourceContainer">
-                       <IonImg src={'/assets/images/chapterResources/video.png'} alt="chapterImage"  className="resourceContainerimg"/>
-                        <IonText>
-                            Text Book Link - Hindi
-                        </IonText>
-                       </div>
-                    </IonCol>
-                    <IonCol size="4" style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
-                       <div className="resourceContainer">
-                       <IonImg src={'/assets/images/chapterResources/question.png'} alt="chapterImage"  className="resourceContainerimg"/>
-                        <IonText>
-                            Text Book Link - Hindi
-                        </IonText>
-                       </div>
-                    </IonCol>
-                    <IonCol size="4" style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
-                       <div className="resourceContainer">
-                       <IonImg src={'/assets/images/chapterResources/speech-bubble.png'} alt="chapterImage"  className="resourceContainerimg"/>
-                        <IonText>
-                            Text Book Link - Hindi
-                        </IonText>
-                       </div>
-                    </IonCol>
-                    <IonCol size="4" style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
-                       <div className="resourceContainer">
-                       <IonImg src={'/assets/images/chapterResources/pencil.png'} alt="chapterImage"  className="resourceContainerimg"/>
-                        <IonText>
-                            Text Book Link - Hindi
-                        </IonText>
-                       </div>
-                    </IonCol>
-                    <IonCol size="4" style={{display:'flex',flexDirection:'column',alignItems:'center',justifyContent:'center'}}>
-                       <div className="resourceContainer">
-                       <IonImg src={'/assets/images/chapterResources/pen-and-paper.png'} alt="chapterImage"  className="resourceContainerimg"/>
-                        <IonText>
-                            Text Book Link - Hindi
-                        </IonText>
-                       </div>
-                    </IonCol>
-                </IonRow> */}
+                )} */}
+                {/* reels section */}
+                <div className="reels-preview-section">
+                    <IonText className="reels-section-title">
+                        <h3 style={{ margin: '15px 0 10px 15px', fontWeight: '600' }}>Edu Reels</h3>
+                    </IonText>
+                    <div className="reels-preview-container">
+                        {videos.slice(0, 3).map((video, index) => (
+                            <div
+                                key={video.id}
+                                className="reel-preview-card"
+                                onClick={() => navigate.push('/reels', 'forward')}
+                            >
+                                <div className="reel-preview-thumbnail">
+                                    <video
+                                        src={video.url}
+                                        muted
+                                        playsInline
+                                        className="reel-preview-video"
+                                    />
+                                    <div className="reel-preview-overlay">
+                                        <IonIcon icon={playCircleOutline} className="reel-play-icon" />
+                                    </div>
+                                </div>
+                                <IonText className="reel-preview-title">{video.title}</IonText>
+                            </div>
+                        ))}
+                        <div
+                            className="reel-preview-card reel-view-more-card"
+                            onClick={() => navigate.push('/reels', 'forward')}
+                        >
+                            <div className="reel-view-more-content">
+                                <IonIcon icon={arrowForward} className="reel-view-more-icon" />
+                                <IonText className="reel-view-more-text">View More</IonText>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </IonContent>
         </IonPage>
     )

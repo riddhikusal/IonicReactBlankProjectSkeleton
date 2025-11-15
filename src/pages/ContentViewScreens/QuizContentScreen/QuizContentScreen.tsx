@@ -21,6 +21,7 @@ const PadAIQuizContentScreen = () => {
     const [isAnswerConfirmed, setIsAnswerConfirmed] = useState<boolean>(false);
     const [score, setScore] = useState<number>(0);
     const [progress, setProgress] = useState<number>(0);
+    const [isQuizCompleted, setIsQuizCompleted] = useState<boolean>(false);
 
     useEffect(() => {
         let isMounted = true;
@@ -90,9 +91,9 @@ const PadAIQuizContentScreen = () => {
         
         if (selectedOption === currentQuestion.correctIndex) {
             setScore(prevScore => prevScore + 1);
-            successToaster('Correct Answer!');
+            // successToaster('Correct Answer!');
         } else {
-            dangerToaster('Wrong Answer!');
+            // dangerToaster('Wrong Answer!');
         }
     }
 
@@ -109,14 +110,26 @@ const PadAIQuizContentScreen = () => {
                 setIsAnswerConfirmed(false);
             });
         } else {
-            // Quiz completed
-            successToaster(`Quiz Completed! Your Score: ${score}/${quiz.length}`);
-            
-            // Delay navigation slightly to allow toast to show
-            setTimeout(() => {
-                navigate.push('/home');
-            }, 500);
+            // Quiz completed - show celebration UI
+            setIsQuizCompleted(true);
         }
+    }
+
+    const resetQuizState = () => {
+        // Clear all quiz state to start fresh
+        setQuiz([]);
+        setCurrentQuestion(null);
+        setCurrentQuestionIndex(0);
+        setSelectedOption(null);
+        setIsAnswerConfirmed(false);
+        setScore(0);
+        setProgress(0);
+        setIsQuizCompleted(false);
+    }
+
+    const handleGoBack = () => {
+        resetQuizState();
+        navigate.goBack();
     }
 
     if (loading) {
@@ -142,6 +155,80 @@ const PadAIQuizContentScreen = () => {
                     <PadAIChapterHeader />
                     <div className="quiz-empty">
                         <p>No quiz questions available</p>
+                    </div>
+                </IonContent>
+            </IonPage>
+        );
+    }
+
+    // Quiz Completion Celebration Screen
+    if (isQuizCompleted) {
+        const percentage = Math.round((score / quiz.length) * 100);
+        const isPerfect = score === quiz.length;
+        const isGood = percentage >= 70;
+        
+        return (
+            <IonPage className='padAIquizContentScreen-page'>
+                <PadAIBackheader />
+                <IonContent>
+                    {/* <PadAIChapterHeader /> */}
+                    <div className="quiz-completion-container">
+                        <div className="celebration-wrapper">
+                            {/* Confetti Animation */}
+                            <div className="confetti-container">
+                                {[...Array(50)].map((_, i) => (
+                                    <div 
+                                        key={i} 
+                                        className={`confetti confetti-${i % 5}`}
+                                        style={{
+                                            left: `${(i * 2) % 100}%`,
+                                            animationDelay: `${(i * 0.1) % 2}s`,
+                                            animationDuration: `${3 + (i % 3)}s`
+                                        }}
+                                    ></div>
+                                ))}
+                            </div>
+                            
+                            {/* Celebration Icon */}
+                            <div className="celebration-icon">
+                                {isPerfect ? '🎉' : isGood ? '🎊' : '✨'}
+                            </div>
+                            
+                            {/* Title */}
+                            <h1 className="completion-title">
+                                {isPerfect ? 'Perfect Score!' : isGood ? 'Great Job!' : 'Quiz Completed!'}
+                            </h1>
+                            
+                            {/* Score Display */}
+                            <div className="score-display">
+                                <div className="score-circle">
+                                    <div className="score-number">{score}</div>
+                                    <div className="score-total">/{quiz.length}</div>
+                                </div>
+                                <div className="score-percentage">{percentage}%</div>
+                            </div>
+                            
+                            {/* Performance Message */}
+                            <p className="performance-message">
+                                {isPerfect 
+                                    ? 'Outstanding! You got all questions correct!' 
+                                    : isGood 
+                                    ? 'Well done! You scored above average!' 
+                                    : 'Good effort! Keep practicing to improve!'}
+                            </p>
+                            
+                            {/* Go Back Button */}
+                            <div className="completion-actions">
+                                <PadaiButton
+                                    onClick={handleGoBack}
+                                    color="primary"
+                                    expand="block"
+                                    size="large"
+                                >
+                                    Go Back
+                                </PadaiButton>
+                            </div>
+                        </div>
                     </div>
                 </IonContent>
             </IonPage>
@@ -183,6 +270,18 @@ const PadAIQuizContentScreen = () => {
                         </IonCardContent>
                     </IonCard>
 
+                      {/* Description Section */}
+                      {isAnswerConfirmed && (
+                        <IonCard className="quiz-description-card">
+                            <IonCardContent>
+                                <h3 className="quiz-description-title">Explanation</h3>
+                                <p className="quiz-description-text">
+                                    {currentQuestion.description}
+                                </p>
+                            </IonCardContent>
+                        </IonCard>
+                    )}
+
                     {/* Options Section */}
                     <div className="quiz-options-container" key={`question-${currentQuestion.questionId}`}>
                         <IonRadioGroup 
@@ -200,12 +299,17 @@ const PadAIQuizContentScreen = () => {
                                             ? 'wrong-option' 
                                             : ''
                                     }`}
+                                    onClick={() => !isAnswerConfirmed && setSelectedOption(option.optionIndex)}
                                 >
                                     <IonRadio 
+                                        id={`radio-${option.optionId}`}
                                         value={option.optionIndex}
                                         disabled={isAnswerConfirmed}
                                     />
-                                    <label className="quiz-option-text">
+                                    <label 
+                                        htmlFor={`radio-${option.optionId}`}
+                                        className="quiz-option-text"
+                                    >
                                         {option.optionText}
                                     </label>
                                 </div>
@@ -227,7 +331,7 @@ const PadAIQuizContentScreen = () => {
                         ) : (
                             <PadaiButton
                                 onClick={handleNext}
-                                color="success"
+                                color="primary"
                                 expand="block"
                                 size="large"
                             >
@@ -235,18 +339,6 @@ const PadAIQuizContentScreen = () => {
                             </PadaiButton>
                         )}
                     </div>
-
-                    {/* Description Section */}
-                    {isAnswerConfirmed && (
-                        <IonCard className="quiz-description-card">
-                            <IonCardContent>
-                                <h3 className="quiz-description-title">Explanation</h3>
-                                <p className="quiz-description-text">
-                                    {currentQuestion.description}
-                                </p>
-                            </IonCardContent>
-                        </IonCard>
-                    )}
                 </div>
             </IonContent>
         </IonPage>
