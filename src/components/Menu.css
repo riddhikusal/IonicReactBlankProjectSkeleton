@@ -17,7 +17,8 @@ ion-menu.md ion-note {
   margin-bottom: 30px;
 }
 
-ion-menu.md ion-list-header, ion-menu.md ion-note {
+ion-menu.md ion-list-header,
+ion-menu.md ion-note {
   padding-left: 10px;
 }
 
@@ -110,4 +111,99 @@ ion-note {
 
 ion-item.selected {
   --color: var(--ion-color-primary);
-} 
+}
+
+
+
+
+.sideNav_ion_content {
+  padding: 0px !important;
+  --padding-start: 0px !important;
+  --padding-end: 0px !important;
+  --padding-top: 0px !important;
+  --padding-bottom: 0px !important;
+
+  #inbox-list {
+    padding: 0px !important;
+    border: none;
+    border-bottom: 0px !important;
+  }
+  ion-list-header{
+    padding: 5px !important;
+    padding-top: 18px !important;
+    background-color: #f5f5f5 !important;
+    margin-bottom: 10px !important;
+  }
+
+  .profileImage-info {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 5px;
+    margin-top: 10px;
+    padding-left: 10px !important;
+    ion-text{
+      padding-left: 10px !important;
+    }
+  }
+
+  .profile-avatar {
+    width: 120px;
+    height: 120px;
+    --border-radius: 50%;
+  }
+
+  .profileImage-placeholder {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+
+    ion-text {
+      font-size: 32px;
+      color: white !important;
+      text-transform: uppercase;
+      font-weight: 600;
+      font-family: 'Inter';
+    }
+  }
+
+  .profileImage-placeholder IonText {
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 480px) {
+    .userProfile-container {
+      padding: 16px;
+      border-radius: 16px 16px 0 0;
+    }
+
+    .profile-avatar {
+      width: 80px;
+      height: 80px;
+    }
+
+    .profileImage-placeholder IonText {
+      font-size: 12px;
+    }
+
+    .userProfile-name {
+      font-size: 20px;
+    }
+
+    .userProfile-contact {
+      font-size: 13px;
+    }
+  }
+
+}
