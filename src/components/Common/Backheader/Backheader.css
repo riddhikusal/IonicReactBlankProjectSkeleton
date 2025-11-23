@@ -25,3 +25,6 @@ ion-toolbar {
     padding: 4px;
     border-radius: 10px
 }
+.reelScreen-header{
+    background: #000000 !important;
+}

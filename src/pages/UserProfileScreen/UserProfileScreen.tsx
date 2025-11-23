@@ -32,11 +32,14 @@ import vectoreBgImage from '/assets/images/dashboardScreen/topVectorOne.png';
 import { clearUserProfile, getUserProfile, UserProfile } from '../../utils/profileStorage';
 import './UserProfileScreen.css';
 import Backheader from '../../components/Common/Backheader/Backheader';
+import PadAISignUpForm from '../../components/LoginScreen/SignUpForm/SignUpForm';
 
 const UserProfileScreen: React.FC = () => {
     const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const navigate = useIonRouter();
+
+    const [editProfileTabActive, setEditProfileTabActive] = useState<boolean>(false);
 
     const getUserProfileData = async () => {
         try {
@@ -57,6 +60,7 @@ const UserProfileScreen: React.FC = () => {
     const handleEditProfile = () => {
         // Navigate to edit profile screen
         console.log('Edit profile clicked');
+        setEditProfileTabActive(true);
     };
 
     const handleLogout = () => {
@@ -84,10 +88,10 @@ const UserProfileScreen: React.FC = () => {
             <IonContent className='userProfileScreen-content'>
                 <div className="userProfile-container">
                     {/* Profile Section */}
-                    <div className="userProfile-section">
+                    {!editProfileTabActive && <div className="userProfile-section">
                         <div className="profileImage-container">
                             <div className="profileImage-placeholder">
-                                <IonText>{userProfile?.name?.split(' ')[0]?.charAt(0)+''+(userProfile?.name &&userProfile?.name?.split(' ')?.length > 1 ? userProfile?.name?.split(' ')[userProfile?.name?.split(' ')?.length - 1]?.charAt(0) : '')}</IonText>
+                                <IonText>{!userProfile || !userProfile?.name ? 'GU' : userProfile?.name?.split(' ')[0]?.charAt(0)+''+(userProfile?.name &&userProfile?.name?.split(' ')?.length > 1 ? userProfile?.name?.split(' ')[userProfile?.name?.split(' ')?.length - 1]?.charAt(0) : '')}</IonText>
                             </div>
                             {/* <div className="profileImage-edit" onClick={handleEditProfile}>
                                 <IonIcon icon={pencilOutline} />
@@ -101,10 +105,10 @@ const UserProfileScreen: React.FC = () => {
                                 <p>{userProfile?.emailId || ''} | {userProfile?.mobileNo || ''}</p>
                             </IonText>
                         </div>
-                    </div>
+                    </div>}
 
                     {/* Menu Items */}
-                    <div className="userProfile-menu">
+                    {!editProfileTabActive && <div className="userProfile-menu" >
                         {menuItems.map((item, index) => (
                             <IonItem 
                                 key={index} 
@@ -132,7 +136,19 @@ const UserProfileScreen: React.FC = () => {
                                 )}
                             </IonItem>
                         ))}
-                    </div>
+                    </div>}
+                    {editProfileTabActive && <div className="userProfile-menu">
+                        <PadAISignUpForm 
+                            setStep={(step)=>{
+                                if(step === 'profile'){
+                                    setEditProfileTabActive(false);
+                                }
+                            }}
+                            loginForm={null}
+                            setLoginForm={()=>{}}
+                            FROM_PROFILE={true}
+                        />
+                    </div>}
                 </div>
             </IonContent>
         </IonPage>

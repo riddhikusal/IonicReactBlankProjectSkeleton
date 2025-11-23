@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import type { KeyboardEvent } from 'react';
 import type { FlashcardData } from '../media';
+import { IonButton, IonIcon } from '@ionic/react';
+import { sparkles } from 'ionicons/icons';
 import './FlashViewer.css';
 
-const PadAIFlashViewer = ({ question, answer, image }: FlashcardData) => {
+const PadAIFlashViewer = ({ question, answer, image, onSelectedTextClick }: FlashcardData) => {
     const [flipped, setFlipped] = useState<boolean>(false);
 
     const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
@@ -11,6 +13,11 @@ const PadAIFlashViewer = ({ question, answer, image }: FlashcardData) => {
             e.preventDefault();
             setFlipped(prev => !prev);
         }
+    };
+
+    const handleAskAIClick = (e: any) => {
+        e.stopPropagation(); // Prevent card flip
+        onSelectedTextClick(question);
     };
 
     return (
@@ -26,6 +33,14 @@ const PadAIFlashViewer = ({ question, answer, image }: FlashcardData) => {
                 {/* Image Section - Left Side (Always Visible) */}
                 {image && (
                     <div className="card-image-section">
+                        <IonButton
+                                className="ask-ai-button"
+                                fill="clear"
+                                onClick={handleAskAIClick}
+                            >
+                                <IonIcon icon={sparkles} />
+                                <span>Ask AI</span>
+                            </IonButton>
                         <img
                             src={image}
                             alt="illustration"
@@ -44,6 +59,7 @@ const PadAIFlashViewer = ({ question, answer, image }: FlashcardData) => {
                                 className="card-question"
                                 dangerouslySetInnerHTML={{ __html: question }}
                             />
+                            
                         </div>
                     </div>
                     

@@ -4,28 +4,33 @@ import { IonHeader, IonToolbar } from "@ionic/react"
 import './Backheader.css';
 import { arrowBackOutline, homeOutline } from "ionicons/icons";
 import logoImage from '/assets/logo/padai_logo.png';
-
-const PadAIBackheader = () => {
+export interface IBackheaderProps {
+    forReelScreen?: boolean;
+}
+const PadAIBackheader: React.FC<IBackheaderProps> = ({ forReelScreen = false }) => {
     const navigate = useIonRouter();
     return (
         <IonHeader mode="ios">
-            <IonToolbar>
+            <IonToolbar className={forReelScreen ? "reelScreen-header" : ""}>
                 <IonButtons slot="start">
-                    <IonButton className="padAI-commonheader-button" fill="clear" onClick={() => {
+                    <IonButton className="padAI-commonheader-button" fill={forReelScreen ? "clear" : "clear"} onClick={() => {
                         navigate.back();
                     }}>
-                        <IonIcon icon={arrowBackOutline} color={'dark'}></IonIcon>
+                        <IonIcon icon={arrowBackOutline} color={forReelScreen ? "light" : "dark"}></IonIcon>
                     </IonButton>
                 </IonButtons>
-                <IonImg src={logoImage} alt="logo" className='padAIlogoInnerScreen'>
-                </IonImg>
-                <IonButtons slot="end">
-                    <IonButton className="padAI-commonheader-button" fill="clear" onClick={() => {
-                        navigate.push('/home', 'forward');
-                    }}>
-                        <IonIcon icon={homeOutline} color={'dark'}></IonIcon>
-                    </IonButton>
-                </IonButtons>
+                {!forReelScreen && (
+                    <>
+                        <IonImg src={logoImage} alt="logo" className='padAIlogoInnerScreen'>
+                        </IonImg>
+                        <IonButtons slot="end">
+                            <IonButton className="padAI-commonheader-button" fill="clear" onClick={() => {
+                                navigate.push('/home', 'forward');
+                            }}>
+                                <IonIcon icon={homeOutline} color={'dark'}></IonIcon>
+                            </IonButton>
+                        </IonButtons>
+                    </>)}
             </IonToolbar>
         </IonHeader>
     )

@@ -18,11 +18,17 @@
   margin: 0px auto;
 }
 
-.reel div[data-vjs-player],
-.aspect-video {
+.reel div[data-vjs-player] {
+  height: 100%;
+  width: 100%;
+  position: relative;
+}
+
+.reel div[data-vjs-player] .aspect-video {
   height: 100%;
   width: 100%;
   border-radius: 16px;
+  position: relative;
 }
 
 
@@ -52,6 +58,7 @@
   height: 100%;
 }
 
+
 .its-video .vjs-poster {
   display: none;
 }
@@ -72,4 +79,106 @@
 
 .video-container{
   background: #000000 !important;
+}
+
+/* Hide default video.js control bar and big play button */
+.video-js .vjs-control-bar {
+  display: none !important;
+}
+
+.video-js .vjs-big-play-button {
+  display: none !important;
+}
+
+/* Overlay Controls Styles - position relative only when needed */
+
+/* Overlay Controls - positioned absolutely relative to reel container */
+.video-overlay-controls {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  z-index: 10000;
+  pointer-events: none;
+}
+
+.overlay-control-btn {
+  background: rgba(0, 0, 0, 0.6);
+  border: 2px solid rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: white;
+  position: relative;
+  padding: 0;
+  outline: none;
+  pointer-events: auto;
+}
+
+.overlay-control-btn:hover {
+  background: rgba(0, 0, 0, 0.8);
+  border-color: rgba(255, 255, 255, 1);
+  transform: scale(1.1);
+}
+
+.overlay-control-btn:active {
+  transform: scale(0.95);
+}
+
+.play-pause-btn {
+  width: 72px;
+  height: 72px;
+  background: rgba(0, 0, 0, 0.7);
+  border-width: 3px;
+}
+
+.play-pause-btn:hover {
+  background: rgba(0, 0, 0, 0.9);
+}
+
+.backward-btn,
+.forward-btn {
+  flex-direction: column;
+  font-size: 10px;
+  font-weight: 600;
+  gap: 2px;
+}
+
+.backward-btn span,
+.forward-btn span {
+  font-size: 10px;
+  line-height: 1;
+  margin-top: -2px;
+}
+
+.backward-btn svg,
+.forward-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+  .overlay-control-btn {
+    width: 64px;
+    height: 64px;
+  }
+  
+  .play-pause-btn {
+    width: 80px;
+    height: 80px;
+  }
+  
+  .overlay-control-btn:hover {
+    transform: scale(1);
+  }
 }
