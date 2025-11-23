@@ -133,7 +133,7 @@ const PadAIHomeScreen: React.FC = () => {
             <IonContent className='padAIhomeScreen-content'>
                 <div className='padAIHomeSection-Container'>
                     <IonRow className='padAIHomeSection-Container-Row'>
-                        {isubjectDataLoading && [1, 2, 3, 4, 5, 6, 7, 8, 9].map((index) =>
+                        {isubjectDataLoading && [1, 2, 3, 4, 5, 6, 7, 8, 9,10,11,12,13,14,15,16,17,18,19,20].map((index) =>
                         (<IonCol size="4">
                             <IonText className="ion-text-wrap padAIHomeScreenUserBooks-text-container" style={{ textOverflow: 'ellipsis' }}>
                                 <IonSkeletonText animated={true} style={{ width: '120px', height: '180px' }}></IonSkeletonText>

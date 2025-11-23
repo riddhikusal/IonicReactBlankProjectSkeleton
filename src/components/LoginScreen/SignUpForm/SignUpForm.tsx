@@ -45,14 +45,30 @@ const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm, FR
       setEmailId((loginForm as any)?.emailId || prof?.emailId || '');
       setBoard((loginForm as any)?.board || prof?.board || '');
       setStudentClass((loginForm as any)?.class || prof?.class || '');
-      setLangMedium((loginForm as any)?.langMedium || prof?.langMedium || '');
-      setLangNative((loginForm as any)?.langNative || prof?.langNative || '');
 
       // 3) load languages from API
       try {
         const resp = await getLanguages();
         if (resp.data?.languages?.length) {
           setLanguages(resp.data.languages);
+
+        const mediumLanguage = (loginForm as any)?.langMedium || prof?.langMedium || '';
+        const nativeLanguage = (loginForm as any)?.langNative || prof?.langNative || '';
+        let mediumLanguageCode = '';
+        let nativeLanguageCode = '';
+        // console.log('mediumLanguage', mediumLanguage);
+        // console.log('nativeLanguage', nativeLanguage);
+        // console.log('resp.data', resp.data);
+        if (mediumLanguage && resp.data && resp.data.languages && resp.data.languages.length > 0) {
+          mediumLanguageCode = resp.data.languages.find((l) => l.name.toLowerCase() === mediumLanguage.toLowerCase())?.code || '';
+        }
+        if (nativeLanguage && resp.data && resp.data.languages && resp.data.languages.length > 0) {
+          nativeLanguageCode = resp.data.languages.find((l) => l.name.toLowerCase() === nativeLanguage.toLowerCase())?.code || '';
+        }
+        // console.log('mediumLanguageCode', mediumLanguageCode);
+        // console.log('nativeLanguageCode', nativeLanguageCode);
+        setLangMedium(mediumLanguageCode);
+        setLangNative(nativeLanguageCode);
         }
       } catch (e) {
         console.error('Failed to fetch languages', e);
@@ -216,14 +232,14 @@ const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm, FR
           </IonItem>
 
           <IonItem lines="full" className="padAI-login-input">
-            <IonLabel position="stacked">Preferred Language (Medium)</IonLabel>
+            <IonLabel position="stacked">Preferred Language (Medium) {langMedium}</IonLabel>
             <IonSelect interface="popover" placeholder="Select language" value={langMedium} onIonChange={(e) => setLangMedium(e.detail.value)}>
               {renderLangOptions()}
             </IonSelect>
           </IonItem>
 
           <IonItem lines="full" className="padAI-login-input">
-            <IonLabel position="stacked">Native Language</IonLabel>
+            <IonLabel position="stacked">Native Language {langNative}</IonLabel>
             <IonSelect interface="popover" placeholder="Select language" value={langNative} onIonChange={(e) => setLangNative(e.detail.value)}>
               {renderLangOptions()}
             </IonSelect>
