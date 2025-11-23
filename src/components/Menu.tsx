@@ -127,7 +127,7 @@ const Menu: React.FC = () => {
             <div className="profileImage-container" style={{marginBottom:'0px'}}>
               <IonAvatar className="profile-avatar">
                 <div className="profileImage-placeholder">
-                  <IonText>{userProfile?.name?.split(' ')[0]?.charAt(0) + '' + (userProfile?.name && userProfile?.name?.split(' ')?.length > 1 ? userProfile?.name?.split(' ')[userProfile?.name?.split(' ')?.length - 1]?.charAt(0) : '')}</IonText>
+                  <IonText>{!userProfile || !userProfile?.name ? 'GU' : userProfile?.name?.split(' ')[0]?.charAt(0) + '' + (userProfile?.name && userProfile?.name?.split(' ')?.length > 1 ? userProfile?.name?.split(' ')[userProfile?.name?.split(' ')?.length - 1]?.charAt(0) : '')}</IonText>
                 </div>
               </IonAvatar>
               {/* <div className="profileImage-edit" onClick={handleEditProfile}>
