@@ -8,6 +8,8 @@ import { IGetChapterFlashcardsRequest } from "../../../api/contentApi/contentApi
 import { GetFlashcards } from "../../../services/homeService";
 import { useToaster } from "../../../hooks/toasterHooks/useToaster";
 import FlashViewer from "../../../components/ContentView/FlashViewer/FlashViewer";
+import { useChatsStore } from "../../../services/store/chats.store";
+
 
 const PadAIFlashcardContentScreen = () => {
     const { dangerToaster, successToaster } = useToaster();
@@ -16,7 +18,12 @@ const PadAIFlashcardContentScreen = () => {
     const selectedChapterResources = useChapterStore((state) => state.selectedChapterResources);
     const [loading, setLoading] = useState<boolean>(false);
     const [flashcards, setFlashcards] = useState<any[]>([]);
-
+    const setSelectedText = useChatsStore((state: any) => state.setSelectedText);;
+    const setIsChatOpen = useChatsStore((state: any) => state.setIsChatOpen);
+    const onSelectedTextClick = (selectedText: string) => {
+        setSelectedText(selectedText,true);
+        setIsChatOpen?.(true);
+    }
     useEffect(() => {
         let isMounted = true;
 
@@ -24,11 +31,13 @@ const PadAIFlashcardContentScreen = () => {
             try {
                 if (!isMounted) return;
                 setLoading(true);
+                console.log("chapterInfo",chapterInfo);
+                console.log("selectedChapterResources",selectedChapterResources);
 
                 if (chapterInfo.chapterId) {
                     let data: IGetChapterFlashcardsRequest = {
                         chapterId: Number(chapterInfo.chapterId),
-                        language: 'en'
+                        language: selectedChapterResources && selectedChapterResources.language?.toLowerCase() == 'hindi' ? 'hi' : 'en'
                     }
                     const res = await GetFlashcards(data);
 
@@ -91,15 +100,16 @@ const PadAIFlashcardContentScreen = () => {
                                     question={flashcard.question}
                                     answer={flashcard.answer}
                                     image={flashcard.imageUrl}
+                                    onSelectedTextClick={onSelectedTextClick}
                                 />
                             </div>
                         </IonCol>
                     ))}
                 </IonRow>
-                <div className="mb-10" style={{height: '100px'}}></div>
+                <div className="mb-10" style={{ height: '100px' }}></div>
             </IonContent>
             <IonFooter>
-                <PadAIContentAIPanel />
+                <PadAIContentAIPanel showActionsButton={false} />
             </IonFooter>
         </IonPage>)
 }

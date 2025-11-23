@@ -15,6 +15,7 @@ export interface FlashcardData {
   question: string;
   answer: string;
   image: string;
+  onSelectedTextClick: (text: string) => void;
 }
 export interface QuizQuestion {
   question: string;

@@ -153,8 +153,9 @@ const ReelScreen: React.FC = () => {
 
     return (
         <IonPage>
+            <Backheader forReelScreen={true} />
             <IonContent className="reelScreen-content">
-                {/* <Backheader /> */}
+
                 <div className="reelContainer" ref={containerRef}>
                     {reelVideos.map((video, index) => (
                         <div
@@ -173,7 +174,7 @@ const ReelScreen: React.FC = () => {
                                 loop
                                 muted
                                 playsInline
-                                
+
                             />
                             <div className="reelOverlay">
                                 <div className="reelTitle">{video.title}</div>

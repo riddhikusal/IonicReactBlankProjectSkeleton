@@ -8,6 +8,7 @@ interface Message {
     isUser: boolean;
     timestamp: Date;
     type: 'ai' | 'user' | 'selected-text';
+    isSelectedTextHTML?: boolean;
 }
 
 interface ChatInfo {
@@ -21,7 +22,7 @@ interface ChatsStore {
     setIsChatOpen: (isChatOpen: boolean) => void;
     setAIReply: (message: Message) => void;
     setUserMessage: (message: Message) => void;
-    setSelectedText: (text: string) => void;
+    setSelectedText: (text: string, isSelectedTextHTML: boolean) => void;
     removeSelectedText: (messageId: string) => void;
 }
 const initialState: ChatsStore = {
@@ -32,7 +33,7 @@ const initialState: ChatsStore = {
     setIsChatOpen: () => { },
     setAIReply: () => { },
     setUserMessage: () => { },
-    setSelectedText: () => { },
+    setSelectedText: (text: string, isSelectedTextHTML: boolean) => { },
     removeSelectedText: () => { },
 }
 
@@ -62,7 +63,7 @@ export const useChatsStore = create<ChatsStore>()(
                     messages: [...state.chatInfo.messages, message]
                 }
             })),
-            setSelectedText: (text: string) => set((state: any) => ({
+            setSelectedText: (text: string, isSelectedTextHTML: boolean = false) => set((state: any) => ({
                 ...state,
                 chatInfo: {
                     ...state.chatInfo,
@@ -71,7 +72,8 @@ export const useChatsStore = create<ChatsStore>()(
                         text: text,
                         isUser: false,
                         timestamp: new Date(),
-                        type: 'selected-text'
+                        type: 'selected-text',
+                        isSelectedTextHTML: isSelectedTextHTML
                     }]
                 }
             })),

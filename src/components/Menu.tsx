@@ -119,15 +119,17 @@ const Menu: React.FC = () => {
     navigate.push('/login', 'root');
   };
 
+
+
   return (
-    <IonMenu contentId="main" type="overlay" swipeGesture={false}>
+    <IonMenu contentId="main" type="overlay" swipeGesture={false} >
       <IonContent className='p-0 sideNav_ion_content' style={{padding: '0px !important'}}>
         <IonList id="inbox-list" className='p-0' style={{padding: '0px !important'}}>
           <IonListHeader className='p-3 bg-light' style={{ textTransform: 'capitalize' }}>
             <div className="profileImage-container" style={{marginBottom:'0px'}}>
               <IonAvatar className="profile-avatar">
                 <div className="profileImage-placeholder">
-                  <IonText>{userProfile?.name?.split(' ')[0]?.charAt(0) + '' + (userProfile?.name && userProfile?.name?.split(' ')?.length > 1 ? userProfile?.name?.split(' ')[userProfile?.name?.split(' ')?.length - 1]?.charAt(0) : '')}</IonText>
+                  <IonText>{!userProfile || !userProfile?.name ? 'GU' : userProfile?.name?.split(' ')[0]?.charAt(0) + '' + (userProfile?.name && userProfile?.name?.split(' ')?.length > 1 ? userProfile?.name?.split(' ')[userProfile?.name?.split(' ')?.length - 1]?.charAt(0) : '')}</IonText>
                 </div>
               </IonAvatar>
               {/* <div className="profileImage-edit" onClick={handleEditProfile}>

@@ -264,8 +264,7 @@ const PadAIQuizContentScreen = () => {
                             {/* <h2 className="quiz-question-number">
                                 Question {currentQuestionIndex + 1}
                             </h2> */}
-                            <p className="quiz-question-text">
-                            Question {currentQuestionIndex + 1} : {currentQuestion.question}
+                            <p className="quiz-question-text"> {currentQuestion.question}
                             </p>
                         </IonCardContent>
                     </IonCard>
