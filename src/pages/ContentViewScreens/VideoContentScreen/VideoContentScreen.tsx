@@ -3,11 +3,12 @@ import vectoreBgImage from '/assets/images/dashboardScreen/topVectorOne.png';
 import { IonPage } from "@ionic/react";
 import PadAIBackheader from "../../../components/Common/Backheader/Backheader";
 import PadAIChapterHeader from "../../../components/ContentView/ChapterHeader/ChapterHeader";
-import PadAIVideoPlayer from "../../../components/ContentView/VideoPlayer/VideoPlayer";
+// import PadAIVideoPlayer from "../../../components/ContentView/VideoPlayer/VideoPlayer";
 import { VideoContentDummy } from "../dummyData";
 import PadAIContentAIPanel from "../../../components/ContentView/ContentAIPanel/ContentAIPanel";
 import PadAIHtmlContentViwer from "../../../components/ContentView/HtmlViewer/HtmlViewer";
 import { useChapterStore } from "../../../services/store/chapter.store";
+import PadAIVideoPlayer from "../../../components/ContentView/VideoPlayer/VideoPlayerNew";
 
 const PadAIVideoContentScreen: React.FC = () => {
     const chapterInfo = useChapterStore((state)=>state.chapterInfo);

@@ -47,7 +47,6 @@ import PadAIYoutubeContentScreen from './pages/ContentViewScreens/YoutubeContent
 import PadAIHTMLContentScreen from './pages/ContentViewScreens/HtmlContentScreen/HtmlContentScreen';
 import PadAIChaptersScreen from './pages/ChaptersScreen/ChaptersScreen';
 import PadAIChapterDetailsScreen from './pages/ChapterDetailsScreen/ChapterDetailsScreen';
-import PadAIFlashViewScreen from './pages/ContentViewScreens/FlashViewScreen/FlashViewScreen';
 import PadAIQuestionAnswerContentScreen from './pages/ContentViewScreens/QuestionAnswerContentScreen/QuestionAnswerContentScreen';
 import PadAIQuizContentScreen from './pages/ContentViewScreens/QuizContentScreen/QuizContentScreen';
 import { useChapterStore } from './services/store/chapter.store';

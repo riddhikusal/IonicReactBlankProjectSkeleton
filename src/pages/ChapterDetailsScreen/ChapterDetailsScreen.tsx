@@ -373,7 +373,7 @@ const PadAIChapterDetailsScreen: React.FC = () => {
                 {/* reels section */}
                 <div className="reels-preview-section">
                     <IonText className="reels-section-title">
-                        <h3 style={{ margin: '15px 0 10px 15px', fontWeight: '600' }}>Edu Reels</h3>
+                        <h3 style={{ margin: '15px 0 10px 15px', fontWeight: '600',fontSize:'16px' }}>Edu Reels</h3>
                     </IonText>
                     <div className="reels-preview-container">
                         {videos.slice(0, 3).map((video, index) => (
