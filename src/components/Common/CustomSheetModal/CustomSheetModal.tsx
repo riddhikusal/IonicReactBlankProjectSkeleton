@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { IonButton, IonIcon, IonContent, IonTextarea, IonText } from '@ionic/react';
-import { close, expand, contract } from 'ionicons/icons';
+import { IonButton, IonIcon, IonContent, IonTextarea, IonText, IonChip } from '@ionic/react';
+import { close, expand, contract, mic, send } from 'ionicons/icons';
 import './CustomSheetModal.css';
 import { useChatsStore } from '../../../services/store/chats.store';
 import { useChapterStore } from '../../../services/store/chapter.store';
@@ -67,13 +67,25 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [aiResponseLoading, setAiResponseLoading] = useState(false);
 
+  // Predefined text chips
+  const predefinedChips = [
+    'Please explain',
+    'Explain in Bangla',
+    'Translate into Hindi',
+    'What is the meaning?',
+    'Give me an example',
+    'Explain simply',
+    'Summarize this',
+    'Explain in detail'
+  ];
+
   // chat and chapter info store
   const chapterInfo = useChapterStore((state: any) => state.chapterInfo);
   const chatInfo = useChatsStore((state: any) => state.chatInfo);
   const setIsChatOpen = useChatsStore((state: any) => state.setIsChatOpen);
   const removeSelectedText = useChatsStore((state: any) => state.removeSelectedText);
   const setAIReply = useChatsStore((state: any) => state.setAIReply);
-  const setUserMessage = useChatsStore((state: any) => state.setUserMessage); 
+  const setUserMessage = useChatsStore((state: any) => state.setUserMessage);
   useEffect(() => {
     setMessages(chatInfo.messages);
     setIsCustomSheetOpen(chatInfo.isChatOpen);
@@ -115,11 +127,11 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
     onClose();
   };
 
-  const handleSendMessage = async () => {
-    if (inputText.trim()) {
+  const handleSendMessage = async (defaultText: string = '') => {
+    if (defaultText.trim() || inputText.trim()) {
       const newMessage: Message = {
         id: Date.now().toString(),
-        text: inputText.trim(),
+        text: defaultText.trim() ? defaultText.trim() : inputText.trim(),
         isUser: true,
         timestamp: new Date(),
         type: 'user'
@@ -132,7 +144,7 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
       setAiResponseLoading(true);
       const response = await AskOpenAIAssistant({
         prompt: newMessage.text, // 'magnet', // newMessage.text,
-        chapterId:  12 // chapterInfo.chapterId
+        chapterId: 12 // chapterInfo.chapterId
       }).then((response) => {
         setAiResponseLoading(false);
         if (response.responseStatus === 'DATA_FOUND') {
@@ -161,6 +173,11 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
   const handleRemoveSelectedText = (messageId: string) => {
     setMessages(messages?.filter(msg => msg.id !== messageId) || []);
     removeSelectedText(messageId);
+  };
+
+  const handleChipClick = (chipText: string) => {
+    // setInputText(chipText);
+    handleSendMessage(chipText);
   };
 
   if (!isCustomSheetOpen) return null;
@@ -257,25 +274,53 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
 
 
 
+          {/* Predefined Chips Area */}
+          <div className="chips-container">
+            <div className="chips-scroll-wrapper">
+              {predefinedChips.map((chip, index) => (
+                <IonChip
+                  key={index}
+                  className="predefined-chip"
+                  onClick={() => handleChipClick(chip)}
+                >
+                  <IonText>{chip}</IonText>
+                </IonChip>
+              ))}
+            </div>
+          </div>
+
           {/* Input Area */}
           <div className="input-area">
-            <IonTextarea
-              value={inputText}
-              onIonInput={(e) => setInputText(e.detail.value!)}
-              onKeyDown={handleKeyPress}
-              placeholder="Type your message..."
-              className="message-input"
-              rows={1}
-              autoGrow={true}
-            />
-            <IonButton
-              fill="solid"
-              onClick={handleSendMessage}
-              disabled={!inputText.trim()}
-              className="send-button"
-            >
-              Send
-            </IonButton>
+            <div className="input-area-content">
+              <IonTextarea
+                value={inputText}
+                onIonInput={(e) => setInputText(e.detail.value!)}
+                onKeyDown={handleKeyPress}
+                placeholder="Type your message..."
+                className="message-input"
+                rows={1}
+                autoGrow={true}
+              />
+              <div className='input-area-buttons'>
+                <IonButton
+                  fill="clear"
+                  onClick={() => {
+                    // Audio button - function not implemented
+                  }}
+                  className="audio-button"
+                >
+                  <IonIcon icon={mic} />
+                </IonButton>
+                <IonButton
+                  fill="solid"
+                  onClick={() => handleSendMessage()}
+                  disabled={!inputText.trim()}
+                  className="send-button"
+                >
+                  <IonIcon icon={send} />
+                </IonButton>
+              </div>
+            </div>
           </div>
         </div>
       </div>
