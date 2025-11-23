@@ -48,6 +48,7 @@ interface Message {
   isUser: boolean;
   timestamp: Date;
   type: 'ai' | 'user' | 'selected-text';
+  isSelectedTextHTML?: boolean;
 }
 
 interface CustomSheetModalProps {
@@ -218,7 +219,7 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
                         </IonButton>
                       </div>
                       <div className="selected-text-content">
-                        <IonText>{message.text}</IonText>
+                        {message.isSelectedTextHTML ? <div dangerouslySetInnerHTML={{ __html: message.text }} /> : <IonText>{message.text}</IonText>}
                       </div>
                       <div className="message-time">
                         {message.timestamp.toLocaleTimeString([], {

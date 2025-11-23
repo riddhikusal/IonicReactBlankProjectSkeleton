@@ -6,7 +6,10 @@ import CustomSheetModal from '../../Common/CustomSheetModal/CustomSheetModal';
 import { useChapterStore } from '../../../services/store/chapter.store';
 import { useChatsStore } from '../../../services/store/chats.store';
 import { getPlatform } from '../../../utils/platform';
-const PadAIContentAIPanel = () => {
+export interface ContentAIPanelProps {
+    showActionsButton?: boolean;
+}
+const PadAIContentAIPanel = ({ showActionsButton = true }: ContentAIPanelProps) => {
     const [showSelectedText, setShowSelectedText] = useState<boolean>(false);
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const modal = useRef<HTMLIonModalElement>(null);
@@ -58,7 +61,7 @@ const PadAIContentAIPanel = () => {
     }, [chapterInfo.contentLoaded, chapterInfo.audioIsPlaying]);
 
     return (<>
-        <div className='padAIcontentAIPanel-container-overlay'>
+        {showActionsButton && <div className='padAIcontentAIPanel-container-overlay'>
             {/* {showSelectedText && <div className='padAIcontentAIPanel-description-container'>
                 <IonText className='padAIcontentAIPanel-description-text'><p>
                     " Lorem ipsum dolor sit amet consectetur adipisicing elit. Qui laudantium perferendis magni at illum, earum itaque quaerat impedit soluta, optio placeat! Ab ipsam earum ex sit praesentium vitae! Repellat saepe commodi laudantium atque, praesentium aliquam expedita corrupti necessitatibus eaque possimus."
@@ -110,7 +113,7 @@ const PadAIContentAIPanel = () => {
                     </div>
                 </div>
             </div>
-        </div>
+        </div>}
         <CustomSheetModal
             isOpen={isModalOpen}
             onClose={() => {

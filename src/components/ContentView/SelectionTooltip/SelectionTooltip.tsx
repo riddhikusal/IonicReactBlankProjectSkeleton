@@ -17,12 +17,12 @@ const SelectionTooltip: React.FC<Props> = ({ top, left, selectedText, onAction }
   const onSelectedTextClick = () => {
     setSelectedText(selectedText);
     setIsChatOpen?.(true);
-    onAction?.('Ask Expert', selectedText);
+    onAction?.('Ask AI', selectedText);
   }
   return (
     <div className="custom-tooltip" style={{ top, left }}>
       {/* <button onClick={() => onAction('Translate', selectedText)}>Translate</button> */}
-      <button onClick={() => onSelectedTextClick()}>Ask Expert</button>
+      <button onClick={() => onSelectedTextClick()}>Ask AI</button>
       {/* <button onClick={() => navigator.clipboard.writeText(selectedText)}>Copy</button> */}
     </div>
   );
