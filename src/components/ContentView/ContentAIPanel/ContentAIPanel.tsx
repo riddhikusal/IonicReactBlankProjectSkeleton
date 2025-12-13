@@ -8,8 +8,31 @@ import { useChatsStore } from '../../../services/store/chats.store';
 import { getPlatform } from '../../../utils/platform';
 export interface ContentAIPanelProps {
     showActionsButton?: boolean;
+    showAskAiButton?:boolean;
+    onpressAskAIButton?:()=>void;
+    showAudioButtons?:boolean;
+    showSearchButton?:boolean;
+    showTranslateButton?:boolean;
+    showMicButton?:boolean;
+    showDocumentButton?:boolean;
+    showColorPaletteButton?:boolean;
+    showGlobeButton?:boolean;
+    showEllipsisButton?:boolean;
+
 }
-const PadAIContentAIPanel = ({ showActionsButton = true }: ContentAIPanelProps) => {
+const PadAIContentAIPanel = ({ 
+    showActionsButton = true,
+    showAskAiButton = true,
+    onpressAskAIButton = () => {},
+    showAudioButtons = true,
+    showSearchButton = true,
+    showTranslateButton = true,
+    showMicButton = true,
+    showDocumentButton = true,
+    showColorPaletteButton = true,
+    showGlobeButton = true,
+    showEllipsisButton = true,
+ }: ContentAIPanelProps) => {
     const [showSelectedText, setShowSelectedText] = useState<boolean>(false);
     const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
     const modal = useRef<HTMLIonModalElement>(null);
@@ -69,10 +92,11 @@ const PadAIContentAIPanel = ({ showActionsButton = true }: ContentAIPanelProps) 
             </div>} */}
             <div className="padAIcontentAIPanel-container">
                 <div className="padAIFooterFlexBtnContainer">
-                    <IonButton
+                    {showAskAiButton && <IonButton
                         className={`btnGradient ${checkIosOrAndroid()}`}
                         fill='clear'
                         onClick={() => {
+                            onpressAskAIButton?.();
                             setIsModalOpen(true);
                             setIsChatOpen?.(true);
                         }}
@@ -80,21 +104,22 @@ const PadAIContentAIPanel = ({ showActionsButton = true }: ContentAIPanelProps) 
                         {/* <IonImg src={'/assets/images/contentScreens/aiAsk.png'} alt='AI' /> */}
                         <IonIcon icon={sparkles}></IonIcon>
                         {!chapterInfo.contentLoaded && <IonText>Ask AI</IonText>}
-                    </IonButton>
+                    </IonButton>}
+                   {(showAudioButtons || showSearchButton || showTranslateButton || showMicButton || showEllipsisButton) &&
                     <div className={`padAIFooterFlexBtnContainer aiFooterIcons ${!chapterInfo.contentLoaded ? 'aiFooterIconsModify' : ''}`} id={!chapterInfo.contentLoaded ? 'aiFooterIconsModify' : ''}>
-                        {!chapterInfo.contentLoaded && <IonButton className='padAIFooterFlexBtn no-border-right-redius' fill='clear' onClick={() => handleLoadContent()} > <IonIcon icon={volumeHighOutline} className='footericons' ></IonIcon></IonButton>}
-                        {chapterInfo.contentLoaded && <IonButton className='padAIFooterFlexBtn no-border-right-redius' fill='clear' onClick={() => handleClearContentLoadingFlag()} > <IonIcon icon={banOutline} className='footericons' ></IonIcon></IonButton>}
-                        {chapterInfo.contentLoaded && chapterInfo.audioIsPlaying && <IonButton className='padAIFooterFlexBtn no-border-right-redius no-border-left-redius' fill='clear' onClick={() => handlePlayAndPause(false)} >
+                        {showAudioButtons && !chapterInfo.contentLoaded && <IonButton className='padAIFooterFlexBtn no-border-right-redius' fill='clear' onClick={() => handleLoadContent()} > <IonIcon icon={volumeHighOutline} className='footericons' ></IonIcon></IonButton>}
+                        {showAudioButtons && chapterInfo.contentLoaded && <IonButton className='padAIFooterFlexBtn no-border-right-redius' fill='clear' onClick={() => handleClearContentLoadingFlag()} > <IonIcon icon={banOutline} className='footericons' ></IonIcon></IonButton>}
+                        {showAudioButtons && chapterInfo.contentLoaded && chapterInfo.audioIsPlaying && <IonButton className='padAIFooterFlexBtn no-border-right-redius no-border-left-redius' fill='clear' onClick={() => handlePlayAndPause(false)} >
                             <IonIcon icon={pause} className='footericons' ></IonIcon>
                         </IonButton>}
-                        {chapterInfo.contentLoaded && !chapterInfo.audioIsPlaying && <IonButton className='padAIFooterFlexBtn no-border-right-redius no-border-left-redius' fill='clear' onClick={() => handlePlayAndPause(false)} >
+                        {showAudioButtons && chapterInfo.contentLoaded && !chapterInfo.audioIsPlaying && <IonButton className='padAIFooterFlexBtn no-border-right-redius no-border-left-redius' fill='clear' onClick={() => handlePlayAndPause(false)} >
                             <IonIcon icon={play} className='footericons' ></IonIcon>
                         </IonButton>}
-                        <IonButton className='padAIFooterFlexBtn no-border-right-redius no-border-left-redius' fill='clear' > <IonIcon icon={searchOutline} className='footericons' ></IonIcon></IonButton>
-                        <IonButton className='padAIFooterFlexBtn no-border-right-redius no-border-left-redius' fill='clear' > <IonIcon icon={language} className='footericons' ></IonIcon></IonButton>
-                        <IonButton className='padAIFooterFlexBtn no-border-right-redius no-border-left-redius' fill='clear' > <IonIcon icon={mic} className='footericons'></IonIcon></IonButton>
+                        {showSearchButton && <IonButton className='padAIFooterFlexBtn no-border-right-redius no-border-left-redius' fill='clear' > <IonIcon icon={searchOutline} className='footericons' ></IonIcon></IonButton>}
+                        {showTranslateButton && <IonButton className='padAIFooterFlexBtn no-border-right-redius no-border-left-redius' fill='clear' > <IonIcon icon={language} className='footericons' ></IonIcon></IonButton>}
+                        {showMicButton && <IonButton className='padAIFooterFlexBtn no-border-right-redius no-border-left-redius' fill='clear' > <IonIcon icon={mic} className='footericons'></IonIcon></IonButton>}
                         {/* <IonButton className='padAIFooterFlexBtn no-border-left-redius'  fill='clear' > <IonIcon icon={ellipsisVertical} className='footericons'></IonIcon></IonButton> */}
-                        <IonFab style={{ position: 'relative' }}>
+                        {showEllipsisButton && <IonFab style={{ position: 'relative' }}>
                             <IonFabButton className='padAIFooterFlexBtn fbbtnmodify no-border-left-redius'>
                                 <IonIcon icon={ellipsisVertical}></IonIcon>
                             </IonFabButton>
@@ -109,8 +134,8 @@ const PadAIContentAIPanel = ({ showActionsButton = true }: ContentAIPanelProps) 
                                     <IonIcon icon={globe}></IonIcon>
                                 </IonFabButton>
                             </IonFabList>
-                        </IonFab>
-                    </div>
+                        </IonFab>}
+                    </div>}
                 </div>
             </div>
         </div>}
