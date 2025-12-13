@@ -33,7 +33,7 @@
     width: 94% !important;
 }
 .updated-img-card{
-    object-fit: contain !important;
+    object-fit: fill !important;
 }
 .updated-img-card-container{
     height: 175px !important;

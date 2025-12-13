@@ -259,7 +259,7 @@ const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm, FR
               fill='solid'
               expand='block'
             >
-              {loading ? 'Saving...' : 'Create Account'}
+              {loading ? 'Saving...' : FROM_PROFILE ? 'Update Profile' : 'Create Account'}
             </PadaiButton>
           </div>
           <div className=''>

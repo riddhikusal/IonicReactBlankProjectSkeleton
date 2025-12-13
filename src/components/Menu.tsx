@@ -36,7 +36,7 @@ const appPages: AppPage[] = [
   },
   {
     title: 'Reels',
-    url: '/reels',
+    url: '/reels-new',
     iosIcon: videocamOutline,
     mdIcon: videocamOutline
   },
@@ -144,7 +144,7 @@ const Menu: React.FC = () => {
           {appPages.map((appPage, index) => {
             return (
               <IonMenuToggle key={index} autoHide={false} className='p-3'>
-                <IonItem className={location.pathname === appPage.url ? 'selected' : ''} routerLink={appPage.url} routerDirection="none" lines="none" detail={false}>
+                <IonItem className={location.pathname === appPage.url ? 'selected' : ''} routerLink={appPage.url} routerDirection="forward" lines="none" detail={false}>
                   <IonIcon aria-hidden="true" slot="start" ios={appPage.iosIcon} md={appPage.mdIcon} />
                   <IonLabel>{appPage.title}</IonLabel>
                 </IonItem>

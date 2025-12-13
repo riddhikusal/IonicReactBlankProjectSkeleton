@@ -3,6 +3,172 @@
     background-color: #000000;
     overflow: hidden;
     position: relative;
+    height: 100vh;
+    max-height: 100vh;
+}
+
+/* Subject Filter Container */
+.subject-filter-container {
+    position: absolute;
+    top: 10px;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding: 10px 0;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.subject-filter-back-button {
+    --color: #ffffff;
+    --background: rgba(255, 255, 255, 0.2);
+    --border-radius: 50%;
+    --padding-start: 10px;
+    --padding-end: 10px;
+    --padding-top: 10px;
+    --padding-bottom: 10px;
+    flex-shrink: 0;
+    margin-left: 12px;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.subject-filter-back-button:hover {
+    --background: rgba(255, 255, 255, 0.3);
+}
+
+.subject-filter-back-button ion-icon {
+    font-size: 22px;
+    color: #ffffff;
+}
+
+.subject-filter-scroll {
+    display: flex;
+    gap: 10px;
+    padding: 0 8px 0 0;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    flex: 1;
+}
+
+.subject-filter-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.subject-filter-button {
+    --border-radius: 20px;
+    --padding-start: 16px;
+    --padding-end: 16px;
+    --padding-top: 8px;
+    --padding-bottom: 8px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    font-size: 14px;
+    margin: 0;
+}
+
+.subject-filter-button.inactive {
+    --background: rgba(255, 255, 255, 0.2);
+    --color: #999999;
+    --border-color: rgba(255, 255, 255, 0.3);
+    --border-width: 1px;
+}
+
+.subject-filter-button.inactive ion-text {
+    color: #999999;
+    font-weight: 400;
+}
+
+.subject-filter-button.active {
+    --background: #ffffff;
+    --color: #000000;
+    --border-color: #ffffff;
+    --border-width: 1px;
+}
+
+.subject-filter-button.active ion-text {
+    color: #000000;
+    font-weight: 700;
+}
+
+/* Progress Chips Container - WhatsApp Status Style */
+.progress-chips-container {
+    position: absolute;
+    top: 70px;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    display: flex;
+    gap: 4px;
+    padding: 0 8px;
+    background: transparent;
+}
+
+.progress-chip {
+    flex: 1;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 2px;
+    overflow: hidden;
+    cursor: pointer;
+    position: relative;
+    transition: height 0.2s ease;
+}
+
+.progress-chip:hover {
+    height: 4px;
+}
+
+.progress-chip.active {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.4);
+}
+
+.progress-chip.completed {
+    background: rgba(255, 255, 255, 0.6);
+}
+
+.progress-chip-fill {
+    height: 100%;
+    background: #ffffff;
+    border-radius: 2px;
+    transition: width 0.1s linear;
+}
+
+.progress-chip.active .progress-chip-fill {
+    background: #ffffff;
+}
+
+.progress-chip.completed .progress-chip-fill {
+    background: rgba(255, 255, 255, 0.8);
+}
+
+/* Play/Pause Indicator */
+.play-pause-indicator {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 50;
+    background: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+
+.play-pause-indicator ion-text {
+    font-size: 32px;
+    color: #ffffff;
 }
 
 .reelScreen-content-empty {
@@ -22,9 +188,11 @@
 
 .reelContainer {
     width: 100%;
-    height: 95vh;
+    height: calc(100vh - 0px);
     position: relative;
     overflow: hidden;
+    margin: 0;
+    padding: 0;
 }
 
 .reelItem {
@@ -94,12 +262,68 @@
 
 /* Mobile responsive */
 @media (max-width: 768px) {
+    .subject-filter-container {
+        top: 10px;
+        padding: 8px 0;
+        gap: 8px;
+    }
+
+    .subject-filter-back-button {
+        margin-left: 8px;
+        width: 36px;
+        height: 36px;
+        --padding-start: 8px;
+        --padding-end: 8px;
+        --padding-top: 8px;
+        --padding-bottom: 8px;
+    }
+
+    .subject-filter-back-button ion-icon {
+        font-size: 20px;
+    }
+
+    .subject-filter-scroll {
+        padding: 0 4px 0 0;
+        gap: 8px;
+    }
+
+    .progress-chips-container {
+        top: 70px;
+        padding: 0 6px;
+        gap: 3px;
+    }
+
+    .progress-chip {
+        height: 2.5px;
+    }
+
+    .progress-chip.active {
+        height: 3px;
+    }
+
+    .subject-filter-button {
+        --padding-start: 12px;
+        --padding-end: 12px;
+        --padding-top: 6px;
+        --padding-bottom: 6px;
+        font-size: 13px;
+    }
+
     .reelOverlay {
         padding: 50px 15px 15px;
     }
 
     .reelTitle {
         font-size: 14px;
+    }
+
+    .play-pause-indicator {
+        width: 50px;
+        height: 50px;
+    }
+
+    .play-pause-indicator ion-text {
+        font-size: 28px;
     }
 }
 
