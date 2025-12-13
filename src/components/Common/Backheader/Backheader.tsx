@@ -14,7 +14,8 @@ const PadAIBackheader: React.FC<IBackheaderProps> = ({ forReelScreen = false }) 
             <IonToolbar className={forReelScreen ? "reelScreen-header" : ""}>
                 <IonButtons slot="start">
                     <IonButton className="padAI-commonheader-button" fill={forReelScreen ? "clear" : "clear"} onClick={() => {
-                        navigate.back();
+                        // navigate.back();
+                        navigate.goBack();
                     }}>
                         <IonIcon icon={arrowBackOutline} color={forReelScreen ? "light" : "dark"}></IonIcon>
                     </IonButton>

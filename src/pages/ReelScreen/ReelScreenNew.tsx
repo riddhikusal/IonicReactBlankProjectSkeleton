@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { IonPage, IonContent, IonLoading } from '@ionic/react';
+import { IonPage, IonContent, IonLoading, IonText, IonButton, IonIcon } from '@ionic/react';
 import { useToaster } from '../../hooks/toasterHooks/useToaster';
+import { arrowBackOutline } from 'ionicons/icons';
+import { useIonRouter } from '@ionic/react';
 import './ReelScreen.css';
 import Backheader from '../../components/Common/Backheader/Backheader';
 
@@ -51,15 +53,29 @@ const reelsData:IReelData[]=[{
 
 
 
-const ReelScreen: React.FC = () => {
-    const [reelVideos, setReelVideos] = useState<Video[]>(videos);
+const ReelNewScreen: React.FC = () => {
+    const navigate = useIonRouter();
+    const [selectedSubject, setSelectedSubject] = useState<IReelData>(reelsData[0]);
+    const [reelVideos, setReelVideos] = useState<Video[]>(reelsData[0].reels);
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
+    const [videoProgress, setVideoProgress] = useState<{ [key: number]: number }>({});
+    const [isPaused, setIsPaused] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
     const videoRefs = useRef<{ [key: number]: HTMLVideoElement }>({});
+    const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
     const touchStartY = useRef(0);
     const touchEndY = useRef(0);
     const { dangerToaster } = useToaster();
+
+    // Update videos when subject changes
+    useEffect(() => {
+        if (selectedSubject) {
+            setReelVideos(selectedSubject.reels);
+            setCurrentIndex(0);
+            setVideoProgress({});
+        }
+    }, [selectedSubject]);
 
     // Initialize videos
     useEffect(() => {
@@ -68,17 +84,56 @@ const ReelScreen: React.FC = () => {
         }
     }, [reelVideos, dangerToaster]);
 
-    // Handle video play/pause
+    // Handle video play/pause and progress tracking
     useEffect(() => {
         const currentVideo = videoRefs.current[currentIndex];
         const otherVideos = Object.values(videoRefs.current).filter(
             (video, index) => index !== currentIndex
         );
 
+        // Clear previous progress interval
+        if (progressIntervalRef.current) {
+            clearInterval(progressIntervalRef.current);
+        }
+
         if (currentVideo) {
-            currentVideo.play().catch(() => {
-                // Auto-play failed, user interaction needed
-            });
+            // Reset progress for current video
+            setVideoProgress(prev => ({ ...prev, [currentIndex]: 0 }));
+
+            // Set up progress tracking
+            const updateProgress = () => {
+                if (currentVideo && !currentVideo.paused && currentVideo.duration) {
+                    const progress = (currentVideo.currentTime / currentVideo.duration) * 100;
+                    setVideoProgress(prev => ({ ...prev, [currentIndex]: Math.min(progress, 100) }));
+                }
+            };
+
+            const handleVideoEnd = () => {
+                const currentIdx = currentIndex;
+                const videosLength = reelVideos.length;
+                if (currentIdx < videosLength - 1) {
+                    setTimeout(() => {
+                        setCurrentIndex(currentIdx + 1);
+                    }, 300);
+                }
+            };
+
+            // Track video time updates
+            currentVideo.addEventListener('timeupdate', updateProgress);
+            currentVideo.addEventListener('ended', handleVideoEnd);
+
+            // Play current video
+            if (!isPaused) {
+                currentVideo.play().catch(() => {
+                    // Auto-play failed, user interaction needed
+                });
+            }
+
+            // Cleanup
+            return () => {
+                currentVideo.removeEventListener('timeupdate', updateProgress);
+                currentVideo.removeEventListener('ended', handleVideoEnd);
+            };
         }
 
         // Pause other videos
@@ -87,7 +142,7 @@ const ReelScreen: React.FC = () => {
                 video.pause();
             }
         });
-    }, [currentIndex]);
+    }, [currentIndex, reelVideos.length, isPaused]);
 
     // Handle scroll/gesture navigation
     const handleScroll = (event: WheelEvent) => {
@@ -174,12 +229,77 @@ const ReelScreen: React.FC = () => {
         );
     }
 
+    const handleSubjectSelect = (subject: IReelData) => {
+        setSelectedSubject(subject);
+        setCurrentIndex(0);
+    };
+
+    const handleVideoClick = () => {
+        const currentVideo = videoRefs.current[currentIndex];
+        if (currentVideo) {
+            if (currentVideo.paused) {
+                currentVideo.play();
+                setIsPaused(false);
+            } else {
+                currentVideo.pause();
+                setIsPaused(true);
+            }
+        }
+    };
+
     return (
         <IonPage>
-            <Backheader forReelScreen={true} />
+            {/* <Backheader forReelScreen={true} /> */}
             <IonContent className="reelScreen-content">
+                {/* Subject Filter - Horizontal Scroll */}
+                <div className="subject-filter-container">
+                    <IonButton
+                        fill="clear"
+                        className="subject-filter-back-button"
+                        onClick={() => navigate.goBack()}
+                    >
+                        <IonIcon icon={arrowBackOutline} />
+                    </IonButton>
+                    <div className="subject-filter-scroll">
+                        {reelsData.map((subject) => (
+                            <IonButton
+                                key={subject.id}
+                                fill={selectedSubject.id === subject.id ? 'solid' : 'outline'}
+                                className={`subject-filter-button ${selectedSubject.id === subject.id ? 'active' : 'inactive'}`}
+                                onClick={() => handleSubjectSelect(subject)}
+                            >
+                                <IonText>{subject.subject}</IonText>
+                            </IonButton>
+                        ))}
+                    </div>
+                </div>
 
-                <div className="reelContainer" ref={containerRef}>
+                {/* Progress Chips - WhatsApp Status Style */}
+                {reelVideos.length > 0 && (
+                    <div className="progress-chips-container">
+                        {reelVideos.map((_, index) => (
+                            <div
+                                key={index}
+                                className={`progress-chip ${index === currentIndex ? 'active' : ''} ${index < currentIndex ? 'completed' : ''}`}
+                                onClick={() => setCurrentIndex(index)}
+                            >
+                                <div
+                                    className="progress-chip-fill"
+                                    style={{
+                                        width: index === currentIndex
+                                            ? `${videoProgress[index] || 0}%`
+                                            : index < currentIndex
+                                            ? '100%'
+                                            : '0%',
+                                    }}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                )}
+
+                {/* Reel Container */}
+                <div className="reelContainer" ref={containerRef} onClick={handleVideoClick}>
                     {reelVideos.map((video, index) => (
                         <div
                             key={`${video.id}-${index}`}
@@ -194,14 +314,18 @@ const ReelScreen: React.FC = () => {
                                 }}
                                 className="reelVideo"
                                 src={video.url}
-                                loop
+                                loop={false}
                                 muted
                                 playsInline
-
                             />
                             <div className="reelOverlay">
                                 <div className="reelTitle">{video.title}</div>
                             </div>
+                            {isPaused && index === currentIndex && (
+                                <div className="play-pause-indicator">
+                                    <IonText>⏸</IonText>
+                                </div>
+                            )}
                         </div>
                     ))}
                 </div>
@@ -211,4 +335,4 @@ const ReelScreen: React.FC = () => {
     );
 };
 
-export default ReelScreen;
+export default ReelNewScreen;

@@ -56,6 +56,8 @@ import UserProfileScreen from './pages/UserProfileScreen/UserProfileScreen';
 import ReelScreen from './pages/ReelScreen/ReelScreen';
 import { SplashScreen } from '@capacitor/splash-screen';
 import PadAIAudioReaderHTMLContentScreen from './pages/ContentViewScreens/AudioReadoutScreen/AudioReadoutScreen';
+import PadAIQuestionAnswerDetailsScreen from './pages/ContentViewScreens/QuestionAnswerContentScreen/QuestionAnswerDetailsScreen/QuestionAnswerDetailsScreen';
+import ReelNewScreen from './pages/ReelScreen/ReelScreenNew';
 
 
 setupIonicReact();
@@ -199,6 +201,14 @@ const App: React.FC = () => {
             {/* Reel Screen */}
             <Route path="/reels" exact={true}>
               <ReelScreen />
+            </Route>
+            {/* Reel New Screen */}
+            <Route path="/reels-new" exact={true}>
+              <ReelNewScreen />
+            </Route>
+            {/* Question Answer Details Screen */}
+            <Route path="/question-answer-details" exact={true}>
+              <PadAIQuestionAnswerDetailsScreen />
             </Route>
             {/* Catch-all route - redirect any invalid route to home */}
             {/* <Route path="*">

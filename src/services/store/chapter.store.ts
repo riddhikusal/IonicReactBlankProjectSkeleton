@@ -1,6 +1,7 @@
 import { create, StateCreator } from 'zustand';
 import { IChapterResources, IGetChapterResponse, IResourceItem } from '../../api/contentApi/contentApi.interface';
 import { persist, createJSONStorage, PersistOptions } from 'zustand/middleware';
+import { QuestionAnswer } from '../../pages/ContentViewScreens/QuestionAnswerContentScreen/QuestionAnswerContentScreen';
 
 // Type for persisted state
 type PersistedChapterStore = Omit<IChapterStore, 'setSubjectAndBookName' | 'setChapterInfo' | 'setChapterResources' | 'resetChapterStore' | 'setSelectedChapterResources' | 'setAudioIsPlaying' | 'setContentLoading' | 'setContentLoaded'>;
@@ -16,6 +17,8 @@ export type IChapterStore = {
     chapterInfo: IFullChapterInfo;
     chapterResources: IChapterResources;
     selectedChapterResources: IResourceItem | null;
+    selectedQuestionAnsList: QuestionAnswer[] | null;
+    selectedQuestionIndex: number | null;
     resetChapterStore?: () => void;
     setSubjectAndBookName?: (subjectName: string, bookName: string) => void;
     setChapterInfo?: (chapterInfo: IFullChapterInfo) => void;
@@ -24,9 +27,11 @@ export type IChapterStore = {
     setAudioIsPlaying?: (audioIsPlaying: boolean) => void;
     setContentLoading?: (contentLoading: boolean) => void;
     setContentLoaded?: (contentLoaded: boolean) => void;
+    setSelectedQuestionAnsList?: (selectedQuestionAnsList: QuestionAnswer[]) => void;
+    setSelectedQuestionIndex?: (selectedQuestionIndex: number) => void;
 }
 
-const initialState: Omit<IChapterStore, 'setSubjectAndBookName' | 'setChapterInfo' | 'setChapterResources' | 'resetChapterStore' | 'setSelectedChapterResources'> = {
+const initialState: Omit<IChapterStore, 'setSubjectAndBookName' | 'setChapterInfo' | 'setChapterResources' | 'resetChapterStore' | 'setSelectedChapterResources' | 'setSelectedQuestionAnsList' | 'setSelectedQuestionIndex'> = {
     chapterInfo: {
         chapterId: 0,
         subjectId: 0,
@@ -51,7 +56,8 @@ const initialState: Omit<IChapterStore, 'setSubjectAndBookName' | 'setChapterInf
         "VIDEO EXPLAINERS": [],
     },
     selectedChapterResources: null,
-
+    selectedQuestionAnsList: null,
+    selectedQuestionIndex: null,
 }
 
 type ChapterStoreState = StateCreator<IChapterStore, [], [["zustand/persist", unknown]]>;
@@ -78,6 +84,8 @@ export const useChapterStore = create<IChapterStore>()(
             setChapterResources: (chapterResources: IChapterResources) => set({ chapterResources }),
             resetChapterStore: () => set(initialState),
             setSelectedChapterResources: (selectedChapterResources: IResourceItem) => set({ selectedChapterResources }),
+            setSelectedQuestionAnsList: (selectedQuestionAnsList: QuestionAnswer[]) => set({ selectedQuestionAnsList }),
+            setSelectedQuestionIndex: (selectedQuestionIndex: number) => set({ selectedQuestionIndex }),
         }),
         {
             name: 'chapter-store',
@@ -92,6 +100,8 @@ export const useChapterStore = create<IChapterStore>()(
                 },
                 chapterResources: state.chapterResources, // Always reset to false on persist
                 selectedChapterResources: state.selectedChapterResources, // Always reset to false on persist   
+                selectedQuestionAnsList: state.selectedQuestionAnsList, // Always reset to false on persist
+                selectedQuestionIndex: state.selectedQuestionIndex, // Always reset to false on persist
             }),
         }
     )
