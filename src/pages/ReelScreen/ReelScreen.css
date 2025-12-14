@@ -1,29 +1,48 @@
 .reelScreen-content {
     --background: #000000;
     background-color: #000000;
-    overflow: hidden;
-    position: relative;
-    height: 100vh;
-    max-height: 100vh;
+    overflow: hidden !important;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    height: 100dvh; /* Dynamic viewport height for iOS */
+    max-height: 100dvh;
+    touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: none;
+    -webkit-overscroll-behavior: none;
+}
+
+.reelScreen-content::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
 }
 
 /* Subject Filter Container */
 .subject-filter-container {
-    position: absolute;
-    top: 10px;
+    position: fixed;
+    top: 0px;
     left: 0;
     right: 0;
-    z-index: 100;
+    z-index: 1000;
     padding: 10px 0;
     background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8), transparent);
     display: flex;
     align-items: center;
     gap: 12px;
+    opacity: 1;
+    transition: opacity 0.3s ease-in-out;
+    pointer-events: auto;
 }
 
 .subject-filter-back-button {
     --color: #ffffff;
-    --background: rgba(255, 255, 255, 0.2);
+    /* --background: rgba(255, 255, 255, 0.2); */
     --border-radius: 50%;
     --padding-start: 10px;
     --padding-end: 10px;
@@ -99,15 +118,18 @@
 
 /* Progress Chips Container - WhatsApp Status Style */
 .progress-chips-container {
-    position: absolute;
+    position: fixed;
     top: 70px;
     left: 0;
     right: 0;
-    z-index: 100;
+    z-index: 1000;
     display: flex;
     gap: 4px;
     padding: 0 8px;
     background: transparent;
+    opacity: 1;
+    transition: opacity 0.3s ease-in-out;
+    pointer-events: auto;
 }
 
 .progress-chip {
@@ -155,7 +177,7 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    z-index: 50;
+    z-index: 100;
     background: rgba(0, 0, 0, 0.5);
     border-radius: 50%;
     width: 60px;
@@ -177,6 +199,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
+    height: 100dvh;
+    height: -webkit-fill-available;
+    overflow: hidden;
 }
 
 .reelScreen-empty {
@@ -188,33 +213,82 @@
 
 .reelContainer {
     width: 100%;
-    height: calc(100vh - 0px);
-    position: relative;
-    overflow: hidden;
+    height: 100%;
+    height: 100dvh; /* Dynamic viewport height for iOS */
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow: hidden !important;
     margin: 0;
     padding: 0;
+    touch-action: pan-y;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: none;
+    -webkit-overscroll-behavior: none;
+    z-index: 1;
+}
+
+.reelContainer::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
 }
 
 .reelItem {
     position: absolute;
     width: 100%;
     height: 100%;
-    transition: transform 0.3s ease-in-out;
+    height: 100dvh; /* Dynamic viewport height for iOS */
+    top: 0;
+    left: 0;
+    transition: transform 0.3s ease-in-out, background-color 0.5s ease;
     display: flex;
     align-items: center;
     justify-content: center;
     background-color: #000000;
+    overflow: hidden;
+    touch-action: pan-y;
+    z-index: 1;
+}
+
+.reel-blur-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    filter: blur(50px) brightness(0.5) saturate(1.2);
+    -webkit-filter: blur(50px) brightness(0.5) saturate(1.2);
+    transform: scale(1.2);
+    z-index: 0;
+    opacity: 0.9;
+    will-change: transform;
 }
 
 .reelItem.active {
     z-index: 10;
 }
 
+.reelItem.active .reelVideo {
+    z-index: 2;
+}
+
 .reelVideo {
     width: 100%;
     height: 100%;
-    object-fit: contain;
-    background-color: #000000;
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover; /* contain */
+    background-color: transparent;
+    display: block;
+    touch-action: pan-y;
+    position: relative;
+    z-index: 1;
 }
 
 .reelOverlay {
@@ -225,6 +299,7 @@
     background: linear-gradient(to top, rgba(0, 0, 0, 0.8), transparent);
     padding: 60px 20px 20px;
     pointer-events: none;
+    z-index: 2;
 }
 
 .reelTitle {
@@ -260,10 +335,40 @@
     }
 }
 
+/* iOS specific fixes */
+@supports (-webkit-touch-callout: none) {
+    .reelScreen-content {
+        height: -webkit-fill-available;
+    }
+    
+    .reelContainer {
+        height: -webkit-fill-available;
+    }
+    
+    .reelItem {
+        height: -webkit-fill-available;
+    }
+}
+
 /* Mobile responsive */
 @media (max-width: 768px) {
+    .reelScreen-content {
+        height: 100dvh;
+        height: -webkit-fill-available; /* iOS Safari fallback */
+    }
+    
+    .reelContainer {
+        height: 100dvh;
+        height: -webkit-fill-available; /* iOS Safari fallback */
+    }
+    
+    .reelItem {
+        height: 100dvh;
+        height: -webkit-fill-available; /* iOS Safari fallback */
+    }
+    
     .subject-filter-container {
-        top: 10px;
+        top: 0px;
         padding: 8px 0;
         gap: 8px;
     }
@@ -338,6 +443,205 @@
 @media (min-width: 1025px) {
     .reelVideo {
         max-width: 400px;
+    }
+}
+
+/* Swipe Guide Animation - YouTube/Instagram Style */
+.swipe-guide-container {
+    position: fixed !important;
+    bottom: 100px !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    z-index: 9999 !important;
+    pointer-events: none;
+    animation: swipeGuideFadeInOut 6s ease-in-out;
+    width: auto;
+    height: auto;
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.swipe-guide-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    background: rgb(0 0 0 / 8%);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    padding: 20px 28px;
+    border-radius: 50px;
+    border: 1.5px solid rgb(255 255 255 / 0%);
+    box-shadow: 0 8px 32px rgb(0 0 0 / 4%);
+}
+
+.swipe-guide-icon-container {
+    position: relative;
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.swipe-guide-icon {
+    animation: swipeGuideSwipe 2s ease-in-out infinite;
+    color: #ffffff;
+    font-size: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.swipe-guide-icon::before {
+    content: '';
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    animation: swipeGuidePulse 2s ease-in-out infinite;
+}
+
+.swipe-guide-arrows {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.swipe-guide-arrow {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 20px;
+    animation: swipeGuideArrowMove 1.5s ease-in-out infinite;
+}
+
+.swipe-guide-arrow:nth-child(1) {
+    animation-delay: 0s;
+}
+
+.swipe-guide-arrow:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.swipe-guide-arrow:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+.swipe-guide-text {
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 600;
+    text-align: center;
+    white-space: nowrap;
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes swipeGuideSwipe {
+    0%, 100% {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+    25% {
+        transform: translateY(-8px) scale(1.1);
+        opacity: 0.9;
+    }
+    50% {
+        transform: translateY(-15px) scale(1.15);
+        opacity: 0.7;
+    }
+    75% {
+        transform: translateY(-8px) scale(1.1);
+        opacity: 0.9;
+    }
+}
+
+@keyframes swipeGuidePulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.3;
+    }
+    50% {
+        transform: scale(1.3);
+        opacity: 0;
+    }
+}
+
+@keyframes swipeGuideArrowMove {
+    0% {
+        transform: translateY(0);
+        opacity: 0;
+    }
+    50% {
+        transform: translateY(-12px);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+}
+
+@keyframes swipeGuideFadeInOut {
+    0% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(30px) scale(0.9);
+    }
+    8% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0) scale(1);
+    }
+    92% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0) scale(1);
+    }
+    100% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-30px) scale(0.9);
+    }
+}
+
+/* Mobile responsive for swipe guide */
+@media (max-width: 768px) {
+    .swipe-guide-container {
+        bottom: 80px;
+    }
+
+    .swipe-guide-content {
+        padding: 16px 24px;
+        gap: 10px;
+        border-radius: 40px;
+    }
+
+    .swipe-guide-icon-container {
+        width: 50px;
+        height: 50px;
+    }
+
+    .swipe-guide-icon {
+        font-size: 32px;
+    }
+
+    .swipe-guide-icon::before {
+        width: 40px;
+        height: 40px;
+    }
+
+    .swipe-guide-arrow {
+        font-size: 16px;
+    }
+
+    .swipe-guide-text {
+        font-size: 14px;
     }
 }
 
