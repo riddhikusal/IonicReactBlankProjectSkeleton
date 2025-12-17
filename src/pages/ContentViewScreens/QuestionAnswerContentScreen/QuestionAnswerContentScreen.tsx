@@ -131,7 +131,7 @@ return (
                                             <IonText className="question-text">
                                                 {qa.Question}
                                             </IonText>
-                                            <IonText className="question-answer-read-more">Read more</IonText>
+                                            {/* <IonText className="question-answer-read-more">Read more</IonText> */}
                                         </div>
                                     </div>
 
