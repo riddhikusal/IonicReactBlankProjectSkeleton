@@ -1,9 +1,9 @@
-import { IonContent, IonPage, IonText, IonButton, IonIcon, IonCard, IonCardContent, IonFooter } from "@ionic/react"
+import { IonContent, IonPage, IonText, IonButton, IonIcon, IonCard, IonCardContent, IonFooter, useIonRouter, IonToggle, IonHeader } from "@ionic/react"
 import PadAIBackheader from "../../../../components/Common/Backheader/Backheader"
 import PadAIChapterHeader from "../../../../components/ContentView/ChapterHeader/ChapterHeader"
 import { useChapterStore } from "../../../../services/store/chapter.store"
-import { useState, useEffect } from "react"
-import { playCircle, close, chevronBack, chevronForward } from "ionicons/icons"
+import { useState, useEffect, useRef } from "react"
+import { playCircle, close, listOutline, arrowBack, arrowForward, arrowUp, arrowDown, chevronDown, chevronUp } from "ionicons/icons"
 import { QuestionAnswer } from "../QuestionAnswerContentScreen"
 import PadAIVideoPlayer from "../../../../components/ContentView/VideoPlayer/VideoPlayerNew"
 import './QuestionAnswerDetailsScreen.css'
@@ -16,6 +16,10 @@ const PadAIQuestionAnswerDetailsScreen = () => {
     const selectedQuestionIndex = useChapterStore((state) => state.selectedQuestionIndex);
     const setSelectedQuestionIndex = useChapterStore((state) => state.setSelectedQuestionIndex);
     const [showVideo, setShowVideo] = useState(false);
+    const [toggleValue, setToggleValue] = useState(false);
+    const [isExplanationExpanded, setIsExplanationExpanded] = useState(false);
+    const navigate = useIonRouter();
+    const paginationScrollRef = useRef<HTMLDivElement>(null);
 
     const currentIndex = selectedQuestionIndex ?? 0;
     const questions = selectedQuestionAnsList || [];
@@ -24,43 +28,22 @@ const PadAIQuestionAnswerDetailsScreen = () => {
     const handleQuestionSelect = (index: number) => {
         setSelectedQuestionIndex?.(index);
         setShowVideo(false); // Hide video when switching questions
+        setIsExplanationExpanded(false); // Reset explanation to collapsed state
     };
 
-    const handlePrevious = () => {
-        if (currentIndex > 0) {
-            handleQuestionSelect(currentIndex - 1);
+    const handleBackToList = () => {
+        navigate.goBack();
+    };
+
+    // Scroll to active question in pagination
+    useEffect(() => {
+        if (paginationScrollRef.current) {
+            const activeTab = paginationScrollRef.current.querySelector(`.pagination-tab.active`) as HTMLElement;
+            if (activeTab) {
+                activeTab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+            }
         }
-    };
-
-    const handleNext = () => {
-        if (currentIndex < questions.length - 1) {
-            handleQuestionSelect(currentIndex + 1);
-        }
-    };
-
-    // Get question number range for pagination (showing 3 questions before and after)
-    const getPaginationRange = () => {
-        const total = questions.length;
-        const current = currentIndex;
-        const rangeSize = 6; // Show 6 tabs as in the screenshot
-        const halfRange = Math.floor(rangeSize / 2);
-
-        let start = Math.max(0, current - halfRange);
-        let end = Math.min(total - 1, start + rangeSize - 1);
-
-        // Adjust start if we're near the end
-        if (end - start < rangeSize - 1) {
-            start = Math.max(0, end - rangeSize + 1);
-        }
-
-        return { start, end };
-    };
-
-    const { start, end } = getPaginationRange();
-    const paginationNumbers = [];
-    for (let i = start; i <= end && i < questions.length; i++) {
-        paginationNumbers.push(i);
-    }
+    }, [currentIndex]);
 
     // Extract options if available (assuming they might be in options array or as separate fields)
     const getOptions = (question: QuestionAnswer) => {
@@ -109,69 +92,84 @@ const PadAIQuestionAnswerDetailsScreen = () => {
 
     return (
         <IonPage className="question-answer-details-page">
-            <PadAIBackheader />
-            <IonContent>
-                <PadAIChapterHeader />
+            {/* <PadAIBackheader /> */}
+            <IonHeader>
+                    {toggleValue && (
+                        <div className="question-details-header">
+                            <PadAIChapterHeader />
+                        </div>
+                    )}
 
-                {/* Video Player - appears on top when showVideo is true */}
-                {showVideo && (currentQuestion.ExplainerVideo) && (
-                    <div className="question-video-container">
-                        <div className="video-header">
-                            <IonText className="video-title">Explainer Video</IonText>
+
+
+                    {/* Navigation and Pagination Section */}
+                    <div className="question-navigation-pagination-wrapper">
+                        {/* Navigation and Toggle Section */}
+                        <div className="question-navigation-container">
                             <IonButton
                                 fill="clear"
-                                onClick={() => setShowVideo(false)}
-                                className="close-video-btn"
+                                className="pagination-list-button"
+                                onClick={handleBackToList}
                             >
-                                <IonIcon icon={close} />
+                                <IonIcon icon={listOutline} />
                             </IonButton>
+                            {/* <IonButton
+                            fill="clear"
+                            className="pagination-list-button"
+                            onClick={() => setToggleValue(!toggleValue)}
+                        >
+                            <IonIcon icon={toggleValue ? arrowUp : arrowDown} />
+                        </IonButton> */}
                         </div>
-                        <PadAIVideoPlayer
-                            video={{
-                                id: currentQuestion.id?.toString() || String(currentIndex),
-                                title: questionText,
-                                url: currentQuestion.ExplainerVideo || '',
-                                thumbnail: currentQuestion.videoThumbnail || currentQuestion.image || '',
-                                duration: '',
-                                description: questionText,
-                                contentType: 'video'
-                            }}
-                        />
-                    </div>
-                )}
 
-                {/* Pagination/Quick Jump Tabs */}
-                <div className="question-pagination-container">
-                    <div className="question-pagination-wrapper">
-                        <IonButton
-                            fill="clear"
-                            className="pagination-nav-button"
-                            onClick={handlePrevious}
-                            disabled={currentIndex === 0}
-                        >
-                            <IonIcon icon={chevronBack} />
-                        </IonButton>
-                        <div className="question-pagination-tabs">
-                            {paginationNumbers.map((num) => (
-                                <button
-                                    key={num}
-                                    className={`pagination-tab ${num === currentIndex ? 'active' : ''}`}
-                                    onClick={() => handleQuestionSelect(num)}
-                                >
-                                    {num + 1}
-                                </button>
-                            ))}
+                        {/* Pagination/Quick Jump Tabs - Ribbon Style */}
+                        <div className="question-pagination-container">
+                            <div className="question-pagination-tabs" ref={paginationScrollRef}>
+                                {questions.map((_, num) => (
+                                    <button
+                                        key={num}
+                                        className={`pagination-tab ${num === currentIndex ? 'active' : ''}`}
+                                        onClick={() => handleQuestionSelect(num)}
+                                    >
+                                        {num + 1}
+                                    </button>
+                                ))}
+                            </div>
                         </div>
-                        <IonButton
-                            fill="clear"
-                            className="pagination-nav-button"
-                            onClick={handleNext}
-                            disabled={currentIndex === questions.length - 1}
-                        >
-                            <IonIcon icon={chevronForward} />
-                        </IonButton>
                     </div>
-                </div>
+
+
+                    {/* Video Player - appears on top when showVideo is true */}
+                    {showVideo && (currentQuestion.ExplainerVideo) && (
+                        <div className="question-video-container">
+                            <div className="video-header">
+                                <IonText className="video-title">Explainer Video</IonText>
+                                <IonButton
+                                    fill="clear"
+                                    onClick={() => setShowVideo(false)}
+                                    className="close-video-btn"
+                                    color={'light'}
+                                >
+                                    <IonIcon icon={close} />
+                                </IonButton>
+                            </div>
+                            <PadAIVideoPlayer
+                                video={{
+                                    id: currentQuestion.id?.toString() || String(currentIndex),
+                                    title: questionText,
+                                    url: currentQuestion.ExplainerVideo || '',
+                                    thumbnail: currentQuestion.videoThumbnail || currentQuestion.image || '',
+                                    duration: '',
+                                    description: questionText,
+                                    contentType: 'video'
+                                }}
+                            />
+                        </div>
+                    )}
+
+                </IonHeader>
+            <IonContent>
+             
 
                 {/* Question Card */}
                 <IonCard className="question-details-card">
@@ -223,7 +221,23 @@ const PadAIQuestionAnswerDetailsScreen = () => {
                                         </IonButton>
                                     )}
                                 </div>
-                                <IonText className="explanation-text">{explanation}</IonText>
+                                <div className="explanation-content-wrapper">
+                                    <IonText
+                                        className={`explanation-text ${!isExplanationExpanded ? 'explanation-text-collapsed' : ''}`}
+                                    >
+                                        {explanation}
+                                    </IonText>
+                                    <IonButton
+                                        fill="clear"
+                                        className="read-more-button"
+                                        onClick={() => setIsExplanationExpanded(!isExplanationExpanded)}
+                                    >
+                                        <IonText className="read-more-text">
+                                            {isExplanationExpanded ? 'View Less' : 'Read More'}
+                                        </IonText>
+                                        <IonIcon icon={isExplanationExpanded ? chevronUp : chevronDown} />
+                                    </IonButton>
+                                </div>
                             </div>
                         )}
                     </IonCardContent>
@@ -244,23 +258,23 @@ const PadAIQuestionAnswerDetailsScreen = () => {
 
                 <div className="mb-10" style={{ height: '100px' }}></div>
             </IonContent>
-            <IonFooter>
+            <div className="footer-gradient-wrapper">
                 <PadAIContentAIPanel
-                showActionsButton={true}
-                showAskAiButton={true}
-                showAudioButtons={false}
-                showSearchButton={false}
-                showTranslateButton={false}
-                showMicButton={false}
-                showDocumentButton={false}
-                showColorPaletteButton={false}
-                showGlobeButton={false}
-                showEllipsisButton={false}
-                onpressAskAIButton={() => {
-                    setSelectedText(questionText,true);
-                }}
+                    showActionsButton={true}
+                    showAskAiButton={true}
+                    showAudioButtons={false}
+                    showSearchButton={false}
+                    showTranslateButton={false}
+                    showMicButton={false}
+                    showDocumentButton={false}
+                    showColorPaletteButton={false}
+                    showGlobeButton={false}
+                    showEllipsisButton={false}
+                    onpressAskAIButton={() => {
+                        setSelectedText(questionText, true);
+                    }}
                 />
-            </IonFooter>
+            </div>
         </IonPage>
     )
 }

@@ -98,15 +98,15 @@ ion-modal .modal-wrapper {
     height: 90px;
     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
     backdrop-filter: blur(7px);
-    -webkit-backdrop-filter: blur(7px);
+    /* -webkit-backdrop-filter: blur(7px); */
     border: 1px solid rgba(255, 255, 255, 0.3);
 }
 .padAIcontentAIPanel-container {
     width: inherit;
     padding: 0px 12px;
-    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
-    backdrop-filter: blur(7px);
-    -webkit-backdrop-filter: blur(7px);
+    /* box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(7px); */
+    /* -webkit-backdrop-filter: blur(7px); */
     border: 1px solid rgba(255, 255, 255, 0.3);
 }
 .padAIFooterFlexBtnContainer{
