@@ -28,12 +28,12 @@ const PadAIHomeScreen: React.FC = () => {
     const [isubjectDataLoading, setIsubjectDataLoading] = useState<boolean>(false);
     const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
 
-    const getAllSubjects = async () => {
+    const getAllSubjects = async (langMedium: string, langNative: string, classId: number) => {
         try {
             setIsubjectDataLoading(true);
             let getData: IGetSubjectsRequest = {
-                language: 'en',
-                classId: 13
+                language: langMedium,
+                classId: classId
             }
             const res = await GetSubjects(getData);
             console.log("Component", res);
@@ -54,12 +54,16 @@ const PadAIHomeScreen: React.FC = () => {
                 setCopyAllBooks(res.data);
                 setFilteredSubjects(res.data);
             } else {
-                dangerToaster(res.message);
+                setSelectedSubject('');
+                setFilteredSubjects([]);
+                setSubjects([]);
+                setCopyAllBooks([]);
+                dangerToaster(res.message || 'Failed to get subjects');
             }
         } catch (error: any) {
             console.log(error);
             setSubjects([]);
-            dangerToaster(error.message);
+            dangerToaster(error.message || 'Failed to get subjects');
 
         } finally {
             setIsubjectDataLoading(false);
@@ -78,11 +82,12 @@ const PadAIHomeScreen: React.FC = () => {
     const getUserProfileData = async () => {
         const userProfile = await getUserProfile();
         setUserProfile(userProfile);
+        getAllSubjects(userProfile?.langMedium || '', userProfile?.langNative || '', Number(userProfile?.class) || 0);
     }
 
     useEffect(() => {
-        getAllSubjects();
-        getUserProfileData();
+       
+        // getUserProfileData();
     }, []);
 
     useEffect(() => {
@@ -94,6 +99,7 @@ const PadAIHomeScreen: React.FC = () => {
         setContentLoading?.(false);
         setContentLoaded?.(false);
         setAudioIsPlaying?.(false);
+        getUserProfileData();
     });
 
     return (
@@ -114,11 +120,11 @@ const PadAIHomeScreen: React.FC = () => {
                         {isubjectDataLoading && [1, 2, 3, 4].map((index) => <IonSegmentButton><IonSkeletonText key={index} animated={true} style={{ width: '80px' }}></IonSkeletonText></IonSegmentButton>)}
                         {!isubjectDataLoading && (
                             <>
-                                <IonSegmentButton value="All" onClick={() => setSelectedSubject('All')}>
+                                {subjects.length > 0 && <IonSegmentButton value="All" onClick={() => setSelectedSubject('All')}>
                                     <IonText>
                                         <p className={`padAIHomeScreenUserBooksFilter-text`}>All</p>
                                     </IonText>
-                                </IonSegmentButton>
+                                </IonSegmentButton>}
                                 {subjects.map((subject, index) => (
                                     <IonSegmentButton key={index} value={subject.subjectGroup} onClick={() => setSelectedSubject(subject.subjectGroup)}>
                                         <IonText key={index}>

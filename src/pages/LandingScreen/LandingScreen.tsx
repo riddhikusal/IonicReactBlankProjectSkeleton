@@ -19,23 +19,23 @@ const LandingScreen: React.FC = () => {
     const imageUrl = platform === 'android' || platform === 'ios' ?  `${import.meta.env.BASE_URL}/assets/images/landingScreens/vectorTwoBg.png`:`assets/images/landingScreens/vectorTwoBg.png`;
      setImageUrl(imageUrl);
 
-    //  const getUserProfileData = async () => {
-    //   try {
-    //     const userProfile = await getUserProfile();
-    //     if(userProfile.mobileNo && userProfile.name){
-    //       navigate.push('/home','forward');
-    //     }else{
-    //       // N/a
-    //     }
-    //   }
-    //   catch(error){
-    //     console.error('Error getting user profile:', error);
-    //   }
-    //   finally{
-    //     // setIsLoading(false);
-    //   }
-    //  }
-    //  getUserProfileData();
+     const getUserProfileData = async () => {
+      try {
+        const userProfile = await getUserProfile();
+        if(userProfile.mobileNo && userProfile.name){
+          navigate.push('/home','forward');
+        }else{
+          // N/a
+        }
+      }
+      catch(error){
+        console.error('Error getting user profile:', error);
+      }
+      finally{
+        // setIsLoading(false);
+      }
+     }
+     getUserProfileData();
   }, []);
 
 

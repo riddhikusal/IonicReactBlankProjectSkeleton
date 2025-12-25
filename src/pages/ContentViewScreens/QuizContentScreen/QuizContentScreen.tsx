@@ -19,6 +19,7 @@ const PadAIQuizContentScreen = () => {
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
     const [selectedOption, setSelectedOption] = useState<number | null>(null);
     const [isAnswerConfirmed, setIsAnswerConfirmed] = useState<boolean>(false);
+    const selectedChapterResources = useChapterStore((state) => state.selectedChapterResources);
     const [score, setScore] = useState<number>(0);
     const [progress, setProgress] = useState<number>(0);
     const [isQuizCompleted, setIsQuizCompleted] = useState<boolean>(false);
@@ -34,7 +35,7 @@ const PadAIQuizContentScreen = () => {
                 if (chapterInfo.chapterId) {
                     let data: IGetChapterQuizRequest = {
                         chapterId: Number(chapterInfo.chapterId),
-                        language: 'en'
+                        language: selectedChapterResources && selectedChapterResources.language?.toLowerCase() == 'en' ? 'en' : selectedChapterResources?.language?.toLowerCase() == 'hi' ? 'hi' : 'en'
                     }
                     const res = await GetQuiz(data);
                     

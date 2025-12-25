@@ -13,8 +13,12 @@ export interface QuestionAnswer {
     // id?: string | number;
     // questionId?: number;
     // question: string;
-    AnswerExplanation?:string;
-    CorrectAnswer?:string;
+    LongAnswer?:string;
+    LongAnswerImage?:string;
+    ShortAnswer?:string;
+    ShortAnswerImage?:string;
+    // AnswerExplanation?:string;
+    // CorrectAnswer?:string;
     ExplainerVideo?:string;
     ImagePrompt?:string;
     Question?:string;

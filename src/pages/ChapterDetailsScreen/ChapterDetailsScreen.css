@@ -55,6 +55,7 @@
     margin-bottom: 20px;
     background: #00000000 !important;
     --background: #00000000 !important;
+    width: fit-content;
 }
 
 .reels-section-title {
