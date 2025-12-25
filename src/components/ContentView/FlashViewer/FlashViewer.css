@@ -143,6 +143,11 @@
     flex-direction: column;
     gap: 8px;
 }
+.question-section-flash{
+    display: flex;
+    flex-direction: column;
+    gap: 8px; 
+}
 
 .question-label,
 .answer-label {

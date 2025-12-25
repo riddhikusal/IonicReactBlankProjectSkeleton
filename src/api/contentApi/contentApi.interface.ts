@@ -29,6 +29,7 @@ export interface IChapterResources {
     "QUESTION ANSWERS": IResourceItem[];
     "QUIZ": IResourceItem[];
     "VIDEO EXPLAINERS": IResourceItem[];
+    "EDUCLIPS": IResourceItem[];
 }
 
 // Main Response Interface
@@ -39,6 +40,7 @@ export interface IGetChapterResourcesResponse {
     "QUESTION ANSWERS"?: IResourceItem[];
     "QUIZ"?: IResourceItem[];
     "VIDEO EXPLAINERS"?: IResourceItem[];
+    "EDUCLIPS"?: IResourceItem[];
 }
 
 export interface IGetChapterResourcesRequest {

@@ -31,13 +31,13 @@ const PadAIFlashcardContentScreen = () => {
             try {
                 if (!isMounted) return;
                 setLoading(true);
-                console.log("chapterInfo",chapterInfo);
-                console.log("selectedChapterResources",selectedChapterResources);
+                // console.log("chapterInfo",chapterInfo);
+                // console.log("selectedChapterResources",selectedChapterResources);
 
                 if (chapterInfo.chapterId) {
                     let data: IGetChapterFlashcardsRequest = {
                         chapterId: Number(chapterInfo.chapterId),
-                        language: selectedChapterResources && selectedChapterResources.language?.toLowerCase() == 'hindi' ? 'hi' : 'en'
+                        language: selectedChapterResources && selectedChapterResources.language?.toLowerCase() == 'hi' ? 'hi' : 'en'
                     }
                     const res = await GetFlashcards(data);
 
