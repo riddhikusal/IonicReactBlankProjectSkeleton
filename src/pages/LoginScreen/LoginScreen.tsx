@@ -27,17 +27,6 @@ const PadAILoginScreen = () => {
       <PadaiHeader />
       <IonContent className='padAIlandingScreen-content'>
         {step !== 'signup' && <PadaiHeaderBanner />}
-        {/* {step === 1 && <PadAIStateAndSchoolSelection setStep={setStep} loginForm={loginForm} setLoginForm={setLoginForm} />} */}
-        {/* {step === 'login' && (
-          <PadAILoginForm
-            mobileNo={mobileNo}
-            onBack={() => setStep('phone')}
-            onSubmit={(vals) => {
-              // TODO: call your real login endpoint here and then route to /home
-              console.log('Login with', vals);
-            }}
-          />
-        )} */}
         {step === 'phone' && <PadAIPhoneNoValidation setStep={setStep} loginForm={loginForm} setLoginForm={setLoginForm} />}
         {step === 'signup' && <PadAISignUpForm setStep={setStep} loginForm={loginForm} setLoginForm={setLoginForm} />}
         <PadaiFooter />

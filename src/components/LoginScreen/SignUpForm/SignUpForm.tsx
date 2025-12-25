@@ -56,17 +56,17 @@ const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm, FR
         const nativeLanguage = (loginForm as any)?.langNative || prof?.langNative || '';
         let mediumLanguageCode = '';
         let nativeLanguageCode = '';
-        // console.log('mediumLanguage', mediumLanguage);
-        // console.log('nativeLanguage', nativeLanguage);
-        // console.log('resp.data', resp.data);
+        console.log('mediumLanguage', mediumLanguage);
+        console.log('nativeLanguage', nativeLanguage);
+        console.log('resp.data', resp.data);
         if (mediumLanguage && resp.data && resp.data.languages && resp.data.languages.length > 0) {
-          mediumLanguageCode = resp.data.languages.find((l) => l.name.toLowerCase() === mediumLanguage.toLowerCase())?.code || '';
+          mediumLanguageCode = resp.data.languages.find((l) => l.code.toLowerCase() === mediumLanguage.toLowerCase())?.code || '';
         }
         if (nativeLanguage && resp.data && resp.data.languages && resp.data.languages.length > 0) {
-          nativeLanguageCode = resp.data.languages.find((l) => l.name.toLowerCase() === nativeLanguage.toLowerCase())?.code || '';
+          nativeLanguageCode = resp.data.languages.find((l) => l.code.toLowerCase() === nativeLanguage.toLowerCase())?.code || '';
         }
-        // console.log('mediumLanguageCode', mediumLanguageCode);
-        // console.log('nativeLanguageCode', nativeLanguageCode);
+        console.log('mediumLanguageCode', mediumLanguageCode);
+        console.log('nativeLanguageCode', nativeLanguageCode);
         setLangMedium(mediumLanguageCode);
         setLangNative(nativeLanguageCode);
         }
@@ -223,7 +223,7 @@ const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm, FR
               value={studentClass}
               onIonChange={(e) => setStudentClass(e.detail.value)}
             >
-              {[...Array(10)].map((_, i) => (
+              {[...Array(13)].map((_, i) => (
                 <IonSelectOption key={i + 1} value={(i + 1).toString()}>
                   {i + 1}
                 </IonSelectOption>

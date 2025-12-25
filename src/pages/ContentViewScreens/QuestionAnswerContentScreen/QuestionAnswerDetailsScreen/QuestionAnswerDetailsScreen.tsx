@@ -1,4 +1,4 @@
-import { IonContent, IonPage, IonText, IonButton, IonIcon, IonCard, IonCardContent, IonFooter, useIonRouter, IonToggle, IonHeader } from "@ionic/react"
+import { IonContent, IonPage, IonText, IonButton, IonIcon, IonCard, IonCardContent, IonFooter, useIonRouter, IonToggle, IonHeader, IonModal } from "@ionic/react"
 import PadAIBackheader from "../../../../components/Common/Backheader/Backheader"
 import PadAIChapterHeader from "../../../../components/ContentView/ChapterHeader/ChapterHeader"
 import { useChapterStore } from "../../../../services/store/chapter.store"
@@ -18,6 +18,7 @@ const PadAIQuestionAnswerDetailsScreen = () => {
     const [showVideo, setShowVideo] = useState(false);
     const [toggleValue, setToggleValue] = useState(false);
     const [isExplanationExpanded, setIsExplanationExpanded] = useState(false);
+    const [selectedImage, setSelectedImage] = useState<string | null>(null);
     const navigate = useIonRouter();
     const paginationScrollRef = useRef<HTMLDivElement>(null);
 
@@ -59,15 +60,48 @@ const PadAIQuestionAnswerDetailsScreen = () => {
         return options;
     };
 
+    // get image
+    const getImageUrl = (contentFor:'question' | 'shortAnswer' | 'longAnswer'):string=>{
+        const baseUrl = "https://d1rb72t9cnnyis.cloudfront.net/";
+        if(contentFor === 'question'){
+            return currentQuestion?.QuestionImage ? `${baseUrl}${currentQuestion.QuestionImage}` : '';
+        }else if(contentFor === 'shortAnswer'){
+            return currentQuestion?.ShortAnswerImage ? `${baseUrl}${currentQuestion.ShortAnswerImage}` : '';
+        }else if(contentFor === 'longAnswer'){
+            return currentQuestion?.LongAnswerImage ? `${baseUrl}${currentQuestion.LongAnswerImage}` : '';
+        }
+        return '';
+    }
+
+    // Check if image exists
+    const hasImage = (contentFor:'question' | 'shortAnswer' | 'longAnswer'):boolean=>{
+        if (!currentQuestion) return false;
+        if(contentFor === 'question'){
+            return !!(currentQuestion.QuestionImage && currentQuestion.QuestionImage.trim() !== '');
+        }else if(contentFor === 'shortAnswer'){
+            return !!(currentQuestion.ShortAnswerImage && currentQuestion.ShortAnswerImage.trim() !== '');
+        }else if(contentFor === 'longAnswer'){
+            return !!(currentQuestion.LongAnswerImage && currentQuestion.LongAnswerImage.trim() !== '');
+        }
+        return false;
+    }
+
+    // Handle image click to open modal
+    const handleImageClick = (contentFor:'question' | 'shortAnswer' | 'longAnswer') => {
+        const imageUrl = getImageUrl(contentFor);
+        if (imageUrl) {
+            setSelectedImage(imageUrl);
+        }
+    }
     // Get correct answer
     const getCorrectAnswer = (question: QuestionAnswer) => {
-        if (question.CorrectAnswer) return question.CorrectAnswer;
+        if (question.ShortAnswer) return question.ShortAnswer;
         return null;
     };
 
     // Get explanation
     const getExplanation = (question: QuestionAnswer) => {
-        if (question.AnswerExplanation) return question.AnswerExplanation;
+        if (question.LongAnswer) return question.LongAnswer;
         return null;
     };
 
@@ -180,6 +214,18 @@ const PadAIQuestionAnswerDetailsScreen = () => {
                             <IonText className="question-title">{questionText}</IonText>
                         </div>
 
+                        {/* Question Image */}
+                        {hasImage('question') && (
+                            <div className="question-image-container">
+                                <img 
+                                    src={getImageUrl('question')} 
+                                    alt="Question" 
+                                    className="question-image"
+                                    onClick={() => handleImageClick('question')}
+                                />
+                            </div>
+                        )}
+
                         {/* Options */}
                         {options.length > 0 && (
                             <div className="question-options">
@@ -202,6 +248,17 @@ const PadAIQuestionAnswerDetailsScreen = () => {
                             <div className="correct-answer-section">
                                 <IonText className="correct-answer-label">Correct Answer:</IonText>
                                 <IonText className="correct-answer-text">{correctAnswer}</IonText>
+                                {/* Short Answer Image */}
+                                {hasImage('shortAnswer') && (
+                                    <div className="answer-image-container">
+                                        <img 
+                                            src={getImageUrl('shortAnswer')} 
+                                            alt="Correct Answer" 
+                                            className="answer-image"
+                                            onClick={() => handleImageClick('shortAnswer')}
+                                        />
+                                    </div>
+                                )}
                             </div>
                         )}
 
@@ -227,6 +284,17 @@ const PadAIQuestionAnswerDetailsScreen = () => {
                                     >
                                         {explanation}
                                     </IonText>
+                                    {/* Long Answer Image - Only show when expanded */}
+                                    {isExplanationExpanded && hasImage('longAnswer') && (
+                                        <div className="explanation-image-container">
+                                            <img 
+                                                src={getImageUrl('longAnswer')} 
+                                                alt="Explanation" 
+                                                className="explanation-image"
+                                                onClick={() => handleImageClick('longAnswer')}
+                                            />
+                                        </div>
+                                    )}
                                     <IonButton
                                         fill="clear"
                                         className="read-more-button"
@@ -258,6 +326,35 @@ const PadAIQuestionAnswerDetailsScreen = () => {
 
                 <div className="mb-10" style={{ height: '100px' }}></div>
             </IonContent>
+
+            {/* Full Screen Image Modal */}
+            <IonModal 
+                isOpen={!!selectedImage} 
+                onDidDismiss={() => setSelectedImage(null)}
+                className="image-modal"
+            >
+                <div className="image-modal-container">
+                    <div className="image-modal-header">
+                        <IonButton
+                            fill="clear"
+                            onClick={() => setSelectedImage(null)}
+                            className="close-image-btn"
+                        >
+                            <IonIcon icon={close} />
+                        </IonButton>
+                    </div>
+                    {selectedImage && (
+                        <div className="image-modal-content">
+                            <img 
+                                src={selectedImage} 
+                                alt="Full screen" 
+                                className="full-screen-image"
+                            />
+                        </div>
+                    )}
+                </div>
+            </IonModal>
+
             <div className="footer-gradient-wrapper">
                 <PadAIContentAIPanel
                     showActionsButton={true}

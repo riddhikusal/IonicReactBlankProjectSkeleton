@@ -93,6 +93,7 @@ const PadAIChapterDetailsScreen: React.FC = () => {
     const setSelectedChapterResources = useChapterStore((state) => state.setSelectedChapterResources);
     const setContentLoaded = useChapterStore((state) => state.setContentLoaded);
     const setAudioIsPlaying = useChapterStore((state) => state.setAudioIsPlaying);
+    const setSelectedChapterEduclips = useChapterStore((state) => state.setSelectedChapterEduclips);
     const { id } = useParams<{ id: string }>();
     const navigate = useIonRouter();
     const location = useLocation();
@@ -115,10 +116,10 @@ const PadAIChapterDetailsScreen: React.FC = () => {
     const getChapterResouces = async () => {
         try {
             setLoading(true);
-            console.log('ChapterId from route:', chapterIdFromRoute);
-            console.log('ChapterId from query:', chapterIdFromQuery);
-            console.log('Final chapterId:', chapterId);
-            console.log('Current location:', location.pathname, location.search);
+            // console.log('ChapterId from route:', chapterIdFromRoute);
+            // console.log('ChapterId from query:', chapterIdFromQuery);
+            // console.log('Final chapterId:', chapterId);
+            // console.log('Current location:', location.pathname, location.search);
 
             if (chapterId) {
                 let data: IGetChapterResourcesRequest = {
@@ -156,6 +157,7 @@ const PadAIChapterDetailsScreen: React.FC = () => {
         else if (key === 'QUIZ') return QuizImage;
         else if (key === 'FLASHCARDS') return FlashcardImage;
         else if (key === 'NOTES & REFERENCES') return NotesReferencesImage;
+        else if (key === 'EDUCLIPS') return NotesReferencesImage;
     }
     useEffect(() => {
         setContentLoaded?.(false);
@@ -206,9 +208,9 @@ const PadAIChapterDetailsScreen: React.FC = () => {
                     (
                         Object.keys(chapterResources).map((resource, index) => (
                             <React.Fragment key={resource}>
-                                <IonItem lines="none" className="padAIChapterDetailsScreenContentAccordionItemNew" style={{marginTop: '7px',marginBottom: '7px'}}>
-                                    <IonText slot="start" className="ion-text-wrap padAIHomeScreenUserChapter-text-container" style={{ textOverflow: 'ellipsis',fontWeight: '600' }}>
-                                        {resource === 'BOOK READER' ? 'Book Reader' : resource === 'AUDIO READER' ? 'Audio Reader' : resource === 'VIDEO EXPLAINERS' ? 'Video Explainers' : resource === 'QUESTION ANSWERS' ? 'Question Answers' : resource === 'QUIZ' ? 'Quiz' : resource === 'FLASHCARDS' ? 'Flashcards' : resource === 'NOTES & REFERENCES' ? 'Notes & References' : ''}
+                                <IonItem lines="none" className="padAIChapterDetailsScreenContentAccordionItemNew" style={{ marginTop: '7px', marginBottom: '7px' }}>
+                                    <IonText slot="start" className="ion-text-wrap padAIHomeScreenUserChapter-text-container" style={{ textOverflow: 'ellipsis', fontWeight: '600' }}>
+                                        {resource === 'BOOK READER' ? 'Book Reader' : resource === 'AUDIO READER' ? 'Audio Reader' : resource === 'VIDEO EXPLAINERS' ? 'Video Explainers' : resource === 'QUESTION ANSWERS' ? 'Question Answers' : resource === 'QUIZ' ? 'Quiz' : resource === 'FLASHCARDS' ? 'Flashcards' : resource === 'NOTES & REFERENCES' ? 'Notes & References' : resource === 'EDUCLIPS' ? 'Educlips' : ''}
                                     </IonText>
                                     {/* <IonButtons slot="end">
                                         <IonButton fill="clear" slot="icon-only" style={{ fontSize: '18px' }}>
@@ -217,7 +219,7 @@ const PadAIChapterDetailsScreen: React.FC = () => {
                                     </IonButtons> */}
                                 </IonItem>
                                 <div className="padAIChapterDetailsScreenContentAccordionnnEW resource-cards-container">
-                                    {chapterResources[resource as keyof IChapterResources].map((resourceItem, indexnEW) => (
+                                    {resource !== 'EDUCLIPS' && chapterResources[resource as keyof IChapterResources].map((resourceItem, indexnEW) => (
                                         <div
                                             key={`${resource}-${resourceItem.id || indexnEW}`}
                                             className="resource-card"
@@ -255,6 +257,44 @@ const PadAIChapterDetailsScreen: React.FC = () => {
                                             </div>
                                         </div>
                                     ))}
+                                    {resource === 'EDUCLIPS' && <>
+                                        <div className="reels-preview-section">
+                                            <div className="reels-preview-container">
+                                                {chapterResources[resource as keyof IChapterResources].map((video, index) => (
+                                                    <div
+                                                        key={video.id}
+                                                        className="reel-preview-card"
+                                                        onClick={() => {
+                                                            setSelectedChapterEduclips?.(chapterResources[resource as keyof IChapterResources] as IResourceItem[]);
+                                                            navigate.push('/reels-for-chapter', 'forward')
+                                                        }}
+                                                    >
+                                                        <div className="reel-preview-thumbnail">
+                                                            <video
+                                                                src={video.url}
+                                                                muted
+                                                                playsInline
+                                                                className="reel-preview-video"
+                                                            />
+                                                            <div className="reel-preview-overlay">
+                                                                <IonIcon icon={playCircleOutline} className="reel-play-icon" />
+                                                            </div>
+                                                        </div>
+                                                        <IonText className="reel-preview-title">{video.name}</IonText>
+                                                    </div>
+                                                ))}
+                                                <div
+                                                    className="reel-preview-card reel-view-more-card"
+                                                    onClick={() => navigate.push('/reels', 'forward')}
+                                                >
+                                                    <div className="reel-view-more-content">
+                                                        <IonIcon icon={arrowForward} className="reel-view-more-icon" />
+                                                        <IonText className="reel-view-more-text">View More</IonText>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </>}
                                 </div>
                             </React.Fragment>
                         ))
@@ -371,9 +411,9 @@ const PadAIChapterDetailsScreen: React.FC = () => {
                     </IonAccordionGroup>
                 )} */}
                 {/* reels section */}
-                <div className="reels-preview-section">
+                {/* <div className="reels-preview-section">
                     <IonText className="reels-section-title">
-                        <h3 style={{ margin: '15px 0 10px 15px', fontWeight: '600',fontSize:'16px' }}>Edu Reels</h3>
+                        <h3 style={{ margin: '15px 0 10px 15px', fontWeight: '600', fontSize: '16px' }}>Edu Reels</h3>
                     </IonText>
                     <div className="reels-preview-container">
                         {videos.slice(0, 3).map((video, index) => (
@@ -406,7 +446,7 @@ const PadAIChapterDetailsScreen: React.FC = () => {
                             </div>
                         </div>
                     </div>
-                </div>
+                </div> */}
             </IonContent>
         </IonPage>
     )

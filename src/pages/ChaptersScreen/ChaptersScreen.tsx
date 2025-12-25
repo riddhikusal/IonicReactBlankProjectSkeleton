@@ -1,4 +1,4 @@
-import { IonCol, IonContent, IonHeader, IonImg, IonItem, IonLabel, IonList, IonListHeader, IonRow, IonSkeletonText, IonText, IonThumbnail, IonTitle, useIonRouter } from "@ionic/react";
+import { IonCol, IonContent, IonHeader, IonImg, IonItem, IonLabel, IonList, IonListHeader, IonRow, IonSkeletonText, IonText, IonThumbnail, IonTitle, useIonRouter, useIonViewWillEnter } from "@ionic/react";
 import './ChaptersScreen.css';
 import { IonPage } from "@ionic/react";
 import { useLocation, useParams } from 'react-router-dom';
@@ -10,6 +10,7 @@ import { GetChapters } from "../../services/homeService";
 import { IGetChapterRequest, IGetChapterResponse } from "../../api/contentApi/contentApi.interface";
 import { useToaster } from "../../hooks/toasterHooks/useToaster";
 import vectoreBgImage from '/assets/images/dashboardScreen/topVectorOne.png';
+import { getUserProfile, UserProfile } from "../../utils/profileStorage";
 
 
 
@@ -20,6 +21,8 @@ const PadAIChaptersScreen: React.FC = () => {
     const { bookId } = useParams<{ bookId: string }>();
     const [chapters, setChapters] = useState<IGetChapterResponse[]>([]);
     const [isChaptersLoading, setIsChaptersLoading] = useState(false);
+    const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+
 
     // Method 1: Get query parameters from URL
     const searchParams = new URLSearchParams(location.search);
@@ -35,13 +38,13 @@ const PadAIChaptersScreen: React.FC = () => {
 
 
 
-    const getChapters = async () => {
+    const getChapters = async (langMedium: string, langNative: string, classId: number) => {
         try {
             if (subjectId) {
                 setIsChaptersLoading(true);
                 let getData: IGetChapterRequest = {
                     subjectId: Number(subjectId),
-                    language: 'en'
+                    language: langMedium
                 }
                 const res = await GetChapters(getData);
                 if (res.responseStatus === 'DATA_FOUND') {
@@ -63,9 +66,20 @@ const PadAIChaptersScreen: React.FC = () => {
         }
     }
 
+    const getUserProfileData = async () => {
+        const userProfile = await getUserProfile();
+        setUserProfile(userProfile);
+        getChapters(userProfile?.langMedium || '', userProfile?.langNative || '', Number(userProfile?.class) || 0);
+    }
+
+
+    useIonViewWillEnter(() => {
+       //  getChapters();
+    });
+
     useEffect(() => {
-        console.log(subjectId, subject, bookName, routeBookId, stateData);
-        getChapters();
+        // console.log(subjectId, subject, bookName, routeBookId, stateData);
+        getUserProfileData();
     }, [subjectId, subject, bookName, routeBookId, stateData]);
 
     return (
