@@ -36,14 +36,32 @@ const PadAIQuestionAnswerDetailsScreen = () => {
         navigate.goBack();
     };
 
-    // Scroll to active question in pagination
+    // Scroll to active question in pagination and center it
     useEffect(() => {
-        if (paginationScrollRef.current) {
-            const activeTab = paginationScrollRef.current.querySelector(`.pagination-tab.active`) as HTMLElement;
-            if (activeTab) {
-                activeTab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+        const scrollToActiveTab = () => {
+            if (paginationScrollRef.current) {
+                const activeTab = paginationScrollRef.current.querySelector(`.pagination-tab.active`) as HTMLElement;
+                if (activeTab && paginationScrollRef.current) {
+                    const container = paginationScrollRef.current;
+                    const containerWidth = container.offsetWidth;
+                    const tabLeft = activeTab.offsetLeft;
+                    const tabWidth = activeTab.offsetWidth;
+                    
+                    // Calculate the scroll position to center the tab
+                    const scrollPosition = tabLeft - (containerWidth / 2) + (tabWidth / 2);
+                    
+                    container.scrollTo({
+                        left: scrollPosition,
+                        behavior: 'smooth'
+                    });
+                }
             }
-        }
+        };
+
+        // Use requestAnimationFrame and setTimeout to ensure DOM is ready
+        requestAnimationFrame(() => {
+            setTimeout(scrollToActiveTab, 100);
+        });
     }, [currentIndex]);
 
     // Extract options if available (assuming they might be in options array or as separate fields)
