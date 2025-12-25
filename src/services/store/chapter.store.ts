@@ -17,6 +17,9 @@ export type IChapterStore = {
     chapterInfo: IFullChapterInfo;
     chapterResources: IChapterResources;
     selectedChapterResources: IResourceItem | null;
+    selectedChapterEduclips: IResourceItem[] | null;
+    setSelectedChapterEduclips?: (selectedChapterEduclips: IResourceItem[]) => void;
+    resetSelectedChapterEduclips?: () => void;
     selectedQuestionAnsList: QuestionAnswer[] | null;
     selectedQuestionIndex: number | null;
     resetChapterStore?: () => void;
@@ -54,10 +57,15 @@ const initialState: Omit<IChapterStore, 'setSubjectAndBookName' | 'setChapterInf
         "QUESTION ANSWERS": [],
         "QUIZ": [],
         "VIDEO EXPLAINERS": [],
+        "EDUCLIPS": [],
     },
     selectedChapterResources: null,
     selectedQuestionAnsList: null,
     selectedQuestionIndex: null,
+
+    selectedChapterEduclips: null,  
+    setSelectedChapterEduclips: (selectedChapterEduclips: IResourceItem[]) => {},
+    resetSelectedChapterEduclips: () => {},
 }
 
 type ChapterStoreState = StateCreator<IChapterStore, [], [["zustand/persist", unknown]]>;
@@ -86,6 +94,8 @@ export const useChapterStore = create<IChapterStore>()(
             setSelectedChapterResources: (selectedChapterResources: IResourceItem) => set({ selectedChapterResources }),
             setSelectedQuestionAnsList: (selectedQuestionAnsList: QuestionAnswer[]) => set({ selectedQuestionAnsList }),
             setSelectedQuestionIndex: (selectedQuestionIndex: number) => set({ selectedQuestionIndex }),
+            setSelectedChapterEduclips: (selectedChapterEduclips: IResourceItem[]) => set({ selectedChapterEduclips }),
+            resetSelectedChapterEduclips: () => set({ selectedChapterEduclips: null }),
         }),
         {
             name: 'chapter-store',
@@ -99,7 +109,8 @@ export const useChapterStore = create<IChapterStore>()(
                     contentLoaded: false, // Always reset to false on persist
                 },
                 chapterResources: state.chapterResources, // Always reset to false on persist
-                selectedChapterResources: state.selectedChapterResources, // Always reset to false on persist   
+                selectedChapterResources: state.selectedChapterResources, // Always reset to false on persist 
+                selectedChapterEduclips: state.selectedChapterEduclips, // Always reset to false on persist
                 selectedQuestionAnsList: state.selectedQuestionAnsList, // Always reset to false on persist
                 selectedQuestionIndex: state.selectedQuestionIndex, // Always reset to false on persist
             }),

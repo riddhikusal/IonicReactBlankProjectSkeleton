@@ -58,6 +58,7 @@ import { SplashScreen } from '@capacitor/splash-screen';
 import PadAIAudioReaderHTMLContentScreen from './pages/ContentViewScreens/AudioReadoutScreen/AudioReadoutScreen';
 import PadAIQuestionAnswerDetailsScreen from './pages/ContentViewScreens/QuestionAnswerContentScreen/QuestionAnswerDetailsScreen/QuestionAnswerDetailsScreen';
 import ReelNewScreen from './pages/ReelScreen/ReelScreenNew';
+import ReelsForChapterScreen from './pages/ReelScreen/ReeeScreenForChapter';
 
 
 setupIonicReact();
@@ -205,6 +206,10 @@ const App: React.FC = () => {
             {/* Reel New Screen */}
             <Route path="/reels-new" exact={true}>
               <ReelNewScreen />
+            </Route>
+            {/* Reels for Selected Chapter */}
+            <Route path="/reels-for-chapter" exact={true}>
+              <ReelsForChapterScreen />
             </Route>
             {/* Question Answer Details Screen */}
             <Route path="/question-answer-details" exact={true}>

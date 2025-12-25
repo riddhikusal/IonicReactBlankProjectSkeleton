@@ -53,7 +53,7 @@ const PadAIFlashViewer = ({ question, answer, image, onSelectedTextClick }: Flas
                 <div className="card-text-wrapper">
                     {/* Front Side - Question */}
                     <div className="card-text-section front-text">
-                        <div className="question-section">
+                        <div className="question-section-flash" style={{flexDirection:'column !important' as any}}>
                             <div className="question-label">Question</div>
                             <div
                                 className="card-question"
