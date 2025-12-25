@@ -5,6 +5,7 @@ import './CustomSheetModal.css';
 import { useChatsStore } from '../../../services/store/chats.store';
 import { useChapterStore } from '../../../services/store/chapter.store';
 import { AskOpenAIAssistant } from '../../../services/homeService';
+import { useToaster } from '../../../hooks/toasterHooks/useToaster';
 // [
 //   {
 //     id: '1',
@@ -58,6 +59,7 @@ interface CustomSheetModalProps {
   selectedText?: string;
 }
 const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, trigger, selectedText }) => {
+  const { dangerToaster } = useToaster();
   const [isExpanded, setIsExpanded] = useState(false);
   const [isCustomSheetOpen, setIsCustomSheetOpen] = useState(false);
   const [isInitialAppear, setIsInitialAppear] = useState(false);
@@ -137,14 +139,27 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
         type: 'user'
       };
 
+      
+      
+      // Check if last message is selected-text and concatenate if needed
+      let promptText = newMessage.text;
+      if (messages && messages.length > 0) {
+        const lastMessage = messages[messages.length - 1];
+        if (lastMessage.type === 'selected-text' && lastMessage.text) {
+          // Concatenate selected text with space before current text
+          promptText = `${lastMessage.text} ${newMessage.text}`;
+        }
+      }
+
       // setMessages([...messages || [], newMessage]);
       setUserMessage(newMessage);
       setInputText('');
 
       setAiResponseLoading(true);
+      
       const response = await AskOpenAIAssistant({
-        prompt: newMessage.text, // 'magnet', // newMessage.text,
-        chapterId: 12 // chapterInfo.chapterId
+        prompt: promptText,
+        chapterId: chapterInfo.chapterId
       }).then((response) => {
         setAiResponseLoading(false);
         if (response.responseStatus === 'DATA_FOUND') {
@@ -159,6 +174,7 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
       }).catch((error) => {
         setAiResponseLoading(false);
         console.log(error);
+        dangerToaster(error.message);
       });
     }
   };
