@@ -1,0 +1,999 @@
+{
+    "sentences": [
+      {
+        "start": 0,
+        "end": 1656,
+        "text": "Notes"
+      },
+      {
+        "start": 1656,
+        "end": 3348,
+        "text": "Overview"
+      },
+      {
+        "start": 3348,
+        "end": 7344,
+        "text": "Chapter 4: Carbon and its Compounds"
+      },
+      {
+        "start": 7344,
+        "end": 46692,
+        "text": "This chapter introduces\u00A0carbon, an element of immense significance, both in its elemental and combined forms. Many everyday items, from food and clothes to medicines and books, are based on this versatile element. All living structures are also carbon-based. Despite its crucial role, the amount of carbon in the Earth\u0027s crust (0.02% as minerals like carbonates, hydrogen-carbonates, coal, petroleum) and atmosphere (0.03% as carbon dioxide) is quite small."
+      },
+      {
+        "start": 46692,
+        "end": 51048,
+        "text": "4.1 Bonding in Carbon \u2013 The Covalent Bond"
+      },
+      {
+        "start": 51048,
+        "end": 54144,
+        "text": "Properties of Carbon Compounds"
+      },
+      {
+        "start": 54144,
+        "end": 66456,
+        "text": "Unlike\u00A0ionic compounds\u00A0which have high melting and boiling points and conduct electricity in solution or molten state, most carbon compounds are\u00A0poor conductors of electricity."
+      },
+      {
+        "start": 66456,
+        "end": 72972,
+        "text": "Carbon compounds generally have\u00A0low melting and boiling points\u00A0compared to ionic compounds."
+      },
+      {
+        "start": 72972,
+        "end": 80424,
+        "text": "This suggests that the forces of attraction between molecules in carbon compounds are not very strong."
+      },
+      {
+        "start": 80424,
+        "end": 87516,
+        "text": "Since they are largely non-conductors, bonding in these compounds does not produce ions."
+      },
+      {
+        "start": 87516,
+        "end": 90864,
+        "text": "Electronic Configuration of Carbon"
+      },
+      {
+        "start": 90864,
+        "end": 94428,
+        "text": "The\u00A0atomic number of carbon is 6."
+      },
+      {
+        "start": 94428,
+        "end": 100188,
+        "text": "It has\u00A0four electrons in its outermost shell\u00A0(valence electrons)."
+      },
+      {
+        "start": 100188,
+        "end": 110196,
+        "text": "To achieve a stable noble gas configuration (a completely filled outer shell), carbon needs to either gain or lose four electrons."
+      },
+      {
+        "start": 110196,
+        "end": 113868,
+        "text": "Challenges of gaining/losing electrons:"
+      },
+      {
+        "start": 113868,
+        "end": 125460,
+        "text": "Gaining four electrons\u00A0to form a C\u2074\u207B anion would be difficult for its nucleus (with 6 protons) to hold on to ten electrons (four extra electrons)."
+      },
+      {
+        "start": 125460,
+        "end": 136800,
+        "text": "Losing four electrons\u00A0to form a C\u2074\u207A cation would require a very large amount of energy, leaving a carbon cation with 6 protons holding only two electrons."
+      },
+      {
+        "start": 136800,
+        "end": 140652,
+        "text": "Covalent Bonding: Sharing Electrons"
+      },
+      {
+        "start": 140652,
+        "end": 149112,
+        "text": "Carbon overcomes this problem by\u00A0sharing its valence electrons\u00A0with other carbon atoms or atoms of other elements."
+      },
+      {
+        "start": 149112,
+        "end": 154404,
+        "text": "Many other elements also form molecules by sharing electrons."
+      },
+      {
+        "start": 154404,
+        "end": 164088,
+        "text": "The\u00A0shared electrons\u00A0are considered to belong to the outermost shells of both atoms, allowing both to attain a noble gas configuration."
+      },
+      {
+        "start": 164088,
+        "end": 170100,
+        "text": "Covalent bonds\u00A0are formed by the sharing of an electron pair between two atoms."
+      },
+      {
+        "start": 170100,
+        "end": 173124,
+        "text": "Examples of Covalent Bonds:"
+      },
+      {
+        "start": 173124,
+        "end": 196092,
+        "text": "Hydrogen (H\u2082):\u00A0Atomic number 1. Each hydrogen atom has one electron in its K shell and needs one more. Two hydrogen atoms share their electrons to form an H\u2082 molecule, allowing each to attain the configuration of helium (2 electrons in K shell). This is a\u00A0single covalent bond."
+      },
+      {
+        "start": 196092,
+        "end": 215712,
+        "text": "Oxygen (O\u2082):\u00A0Atomic number 8. Each oxygen atom has six electrons in its L shell and needs two more. Each atom shares two electrons with another oxygen atom, forming two shared pairs of electrons. This constitutes a\u00A0double bond."
+      },
+      {
+        "start": 215712,
+        "end": 235584,
+        "text": "Nitrogen (N\u2082):\u00A0Atomic number 7. Each nitrogen atom needs three electrons to complete its octet. In an N\u2082 molecule, each nitrogen atom contributes three electrons, forming three shared pairs. This constitutes a\u00A0triple bond."
+      },
+      {
+        "start": 235584,
+        "end": 254448,
+        "text": "Methane (CH\u2084):\u00A0A simple carbon compound used as a fuel. Carbon is\u00A0tetravalent\u00A0(has four valence electrons). It shares these four electrons with four hydrogen atoms (each with valency 1) to achieve a noble gas configuration."
+      },
+      {
+        "start": 254448,
+        "end": 258336,
+        "text": "Properties of Covalently Bonded Molecules:"
+      },
+      {
+        "start": 258336,
+        "end": 264024,
+        "text": "They have\u00A0strong bonds\u00A0within\u00A0the molecule\u00A0but\u00A0weak\u00A0intermolecular\u00A0forces."
+      },
+      {
+        "start": 264024,
+        "end": 268200,
+        "text": "This results in their\u00A0low melting and boiling points."
+      },
+      {
+        "start": 268200,
+        "end": 278352,
+        "text": "Since electrons are shared and no charged particles (ions) are formed, covalent compounds are generally\u00A0poor conductors of electricity."
+      },
+      {
+        "start": 278352,
+        "end": 280908,
+        "text": "Allotropes of Carbon"
+      },
+      {
+        "start": 280908,
+        "end": 288828,
+        "text": "Carbon exists in nature in different forms with widely varying physical properties, known as\u00A0allotropes."
+      },
+      {
+        "start": 288828,
+        "end": 305172,
+        "text": "Diamond:\u00A0Each carbon atom is bonded to four other carbon atoms, forming a\u00A0rigid three-dimensional structure. It is the\u00A0hardest substance known. Synthetic diamonds can be made under high pressure and temperature."
+      },
+      {
+        "start": 305172,
+        "end": 329436,
+        "text": "Graphite:\u00A0Each carbon atom is bonded to three other carbon atoms in the same plane, forming a\u00A0hexagonal array. One of these bonds is a\u00A0double bond, satisfying carbon\u0027s valency. The hexagonal arrays are arranged in layers one above the other. Graphite is\u00A0smooth and slippery\u00A0and a\u00A0very good conductor of electricity."
+      },
+      {
+        "start": 329436,
+        "end": 343008,
+        "text": "Fullerenes:\u00A0Another class of carbon allotropes. The first identified was C-60, with carbon atoms arranged in the shape of a football, named after Buckminster Fuller."
+      },
+      {
+        "start": 343008,
+        "end": 347328,
+        "text": "4.2 Versatile Nature of Carbon"
+      },
+      {
+        "start": 347328,
+        "end": 360756,
+        "text": "The ability of carbon to form a vast number of compounds (estimated in millions, outnumbering compounds of all other elements combined) is due to its covalent bonding and two key factors:"
+      },
+      {
+        "start": 360756,
+        "end": 362664,
+        "text": "Catenation:"
+      },
+      {
+        "start": 362664,
+        "end": 370800,
+        "text": "Carbon has the\u00A0unique ability to form bonds with other atoms of carbon, giving rise to\u00A0large molecules."
+      },
+      {
+        "start": 370800,
+        "end": 378252,
+        "text": "These compounds can have\u00A0long chains,\u00A0branched chains, or\u00A0ring structures\u00A0of carbon atoms."
+      },
+      {
+        "start": 378252,
+        "end": 383976,
+        "text": "Carbon atoms can be linked by\u00A0single, double, or triple bonds."
+      },
+      {
+        "start": 383976,
+        "end": 390600,
+        "text": "Saturated compounds:\u00A0Compounds with only\u00A0single bonds\u00A0between carbon atoms."
+      },
+      {
+        "start": 390600,
+        "end": 397692,
+        "text": "Unsaturated compounds:\u00A0Compounds with\u00A0double or triple bonds\u00A0between their carbon atoms."
+      },
+      {
+        "start": 397692,
+        "end": 409212,
+        "text": "No other element exhibits catenation to this extent. The\u00A0carbon-carbon bond is very strong and stable, contributing to the large number of compounds."
+      },
+      {
+        "start": 409212,
+        "end": 411300,
+        "text": "Tetravalency:"
+      },
+      {
+        "start": 411300,
+        "end": 417420,
+        "text": "Carbon has a\u00A0valency of four, meaning it can bond with\u00A0four other atoms."
+      },
+      {
+        "start": 417420,
+        "end": 423468,
+        "text": "It can bond with other carbon atoms or atoms of other monovalent elements."
+      },
+      {
+        "start": 423468,
+        "end": 434808,
+        "text": "Carbon forms compounds with elements like\u00A0oxygen, hydrogen, nitrogen, sulphur, and chlorine, resulting in compounds with specific properties."
+      },
+      {
+        "start": 434808,
+        "end": 450828,
+        "text": "Bonds formed by carbon with most other elements are also\u00A0very strong and exceptionally stable. This strength is attributed to carbon\u0027s\u00A0small size, which allows its nucleus to hold strongly to the shared electron pairs."
+      },
+      {
+        "start": 450828,
+        "end": 453240,
+        "text": "Organic Compounds"
+      },
+      {
+        "start": 453240,
+        "end": 460692,
+        "text": "Historically, carbon compounds were thought to be formed only within living systems by a \u0022vital force\u0022."
+      },
+      {
+        "start": 460692,
+        "end": 468216,
+        "text": "Friedrich W\u00F6hler disproved this in 1828\u00A0by synthesizing urea from ammonium cyanate."
+      },
+      {
+        "start": 468216,
+        "end": 480708,
+        "text": "However, most carbon compounds (except carbides, oxides of carbon, carbonates, and hydrogencarbonate salts) continue to be studied under\u00A0organic chemistry."
+      },
+      {
+        "start": 480708,
+        "end": 486468,
+        "text": "4.2.1 Saturated and Unsaturated Carbon Compounds"
+      },
+      {
+        "start": 486468,
+        "end": 489600,
+        "text": "Saturated Carbon Compounds:"
+      },
+      {
+        "start": 489600,
+        "end": 493992,
+        "text": "Contain only\u00A0single bonds\u00A0between carbon atoms."
+      },
+      {
+        "start": 493992,
+        "end": 499284,
+        "text": "Examples:\u00A0Methane (CH\u2084),\u00A0Ethane (C\u2082H\u2086)."
+      },
+      {
+        "start": 499284,
+        "end": 508716,
+        "text": "To draw structures, first link carbon atoms with single bonds, then satisfy remaining valencies with hydrogen atoms."
+      },
+      {
+        "start": 508716,
+        "end": 512928,
+        "text": "These compounds are normally\u00A0not very reactive."
+      },
+      {
+        "start": 512928,
+        "end": 516132,
+        "text": "Unsaturated Carbon Compounds:"
+      },
+      {
+        "start": 516132,
+        "end": 520776,
+        "text": "Contain\u00A0double or triple bonds\u00A0between carbon atoms."
+      },
+      {
+        "start": 520776,
+        "end": 528192,
+        "text": "Examples:\u00A0Ethene (C\u2082H\u2084)\u00A0(double bond),\u00A0Ethyne (C\u2082H\u2082)\u00A0(triple bond)."
+      },
+      {
+        "start": 528192,
+        "end": 533556,
+        "text": "These compounds are\u00A0more reactive\u00A0than saturated carbon compounds."
+      },
+      {
+        "start": 533556,
+        "end": 538524,
+        "text": "4.2.2 Chains, Branches and Rings"
+      },
+      {
+        "start": 538524,
+        "end": 556740,
+        "text": "Chains:\u00A0Carbon atoms can form\u00A0straight chains\u00A0of varying lengths, such as methane (1 carbon), ethane (2 carbons), propane (3 carbons), butane (4 carbons), pentane (5 carbons), and hexane (6 carbons)."
+      },
+      {
+        "start": 556740,
+        "end": 572508,
+        "text": "Structural Isomers:\u00A0Compounds with\u00A0identical molecular formulas but different structures\u00A0are called structural isomers. For example, butane (C\u2084H\u2081\u2080) can have a straight chain or a branched chain."
+      },
+      {
+        "start": 572508,
+        "end": 584712,
+        "text": "Rings:\u00A0Some carbon compounds have carbon atoms arranged in a\u00A0ring form. Examples include\u00A0cyclohexane (C\u2086H\u2081\u2082)\u00A0and\u00A0benzene (C\u2086H\u2086)."
+      },
+      {
+        "start": 584712,
+        "end": 590184,
+        "text": "Hydrocarbons:\u00A0Compounds containing only\u00A0carbon and hydrogen."
+      },
+      {
+        "start": 590184,
+        "end": 595692,
+        "text": "Alkanes:\u00A0Saturated hydrocarbons (only single bonds)."
+      },
+      {
+        "start": 595692,
+        "end": 601524,
+        "text": "Alkenes:\u00A0Unsaturated hydrocarbons with one or more\u00A0double bonds."
+      },
+      {
+        "start": 601524,
+        "end": 607608,
+        "text": "Alkynes:\u00A0Unsaturated hydrocarbons with one or more\u00A0triple bonds."
+      },
+      {
+        "start": 607608,
+        "end": 614412,
+        "text": "4.2.3 Will you be my Friend? (Heteroatoms and Functional Groups)"
+      },
+      {
+        "start": 614412,
+        "end": 623736,
+        "text": "Carbon readily forms bonds with other elements like\u00A0halogens (Cl, Br), oxygen, nitrogen, and sulphur."
+      },
+      {
+        "start": 623736,
+        "end": 630648,
+        "text": "In a hydrocarbon chain, one or more hydrogen atoms can be\u00A0replaced by these elements."
+      },
+      {
+        "start": 630648,
+        "end": 636336,
+        "text": "Heteroatom:\u00A0An element replacing hydrogen in a hydrocarbon chain."
+      },
+      {
+        "start": 636336,
+        "end": 653868,
+        "text": "Functional Groups:\u00A0These heteroatoms, or groups containing them, confer\u00A0specific properties\u00A0to the compound, regardless of the carbon chain\u0027s length and nature. They are attached to the carbon chain by replacing one or more hydrogen atoms."
+      },
+      {
+        "start": 653868,
+        "end": 657072,
+        "text": "Examples of Functional Groups:"
+      },
+      {
+        "start": 657072,
+        "end": 662256,
+        "text": "Haloalkanes:\u00A0-Cl (Chloro), -Br (Bromo)"
+      },
+      {
+        "start": 662256,
+        "end": 664776,
+        "text": "Alcohol:\u00A0-OH"
+      },
+      {
+        "start": 664776,
+        "end": 667368,
+        "text": "Aldehyde:\u00A0-CHO"
+      },
+      {
+        "start": 667368,
+        "end": 669672,
+        "text": "Ketone:\u00A0-CO-"
+      },
+      {
+        "start": 669672,
+        "end": 672660,
+        "text": "Carboxylic acid:\u00A0-COOH"
+      },
+      {
+        "start": 672660,
+        "end": 676872,
+        "text": "4.2.4 Homologous Series"
+      },
+      {
+        "start": 676872,
+        "end": 685296,
+        "text": "Definition:\u00A0A series of compounds in which the\u00A0same functional group substitutes for hydrogen\u00A0in a carbon chain."
+      },
+      {
+        "start": 685296,
+        "end": 694836,
+        "text": "Members of a homologous series exhibit\u00A0very similar chemical properties\u00A0because these properties are determined solely by the functional group."
+      },
+      {
+        "start": 694836,
+        "end": 707904,
+        "text": "Successive members\u00A0in a homologous series differ by a\u00A0\u2013CH\u2082- unit. This means their molecular masses also differ by 14 u (12 u for C \u002B 2 u for H)."
+      },
+      {
+        "start": 707904,
+        "end": 709920,
+        "text": "Examples:"
+      },
+      {
+        "start": 709920,
+        "end": 716544,
+        "text": "Alcohols: CH\u2083OH, C\u2082H\u2085OH, C\u2083H\u2087OH, C\u2084H\u2089OH."
+      },
+      {
+        "start": 716544,
+        "end": 725652,
+        "text": "Alkanes (general formula CnH\u2082n\u002B\u2082) [inference from CnH2n for alkenes and the -CH2- difference]."
+      },
+      {
+        "start": 725652,
+        "end": 731952,
+        "text": "Alkenes (general formula CnH\u2082n), where n = 2, 3, 4, ...."
+      },
+      {
+        "start": 731952,
+        "end": 740700,
+        "text": "Alkynes (general formula CnH\u2082n-\u2082) [inference from CnH2n for alkenes and the -CH2- difference]."
+      },
+      {
+        "start": 740700,
+        "end": 757728,
+        "text": "Physical Properties:\u00A0As molecular mass increases within a homologous series, a\u00A0gradation in physical properties\u00A0is observed. Melting and boiling points increase, and solubility in specific solvents shows a similar gradation."
+      },
+      {
+        "start": 757728,
+        "end": 763056,
+        "text": "4.2.5 Nomenclature of Carbon Compounds"
+      },
+      {
+        "start": 763056,
+        "end": 774432,
+        "text": "The naming of compounds in a homologous series follows a system based on the basic carbon chain, modified by a prefix or suffix indicating the functional group."
+      },
+      {
+        "start": 774432,
+        "end": 776772,
+        "text": "Steps for Naming:"
+      },
+      {
+        "start": 776772,
+        "end": 784836,
+        "text": "Identify the number of carbon atoms\u00A0in the compound. (e.g., three carbon atoms = propane)."
+      },
+      {
+        "start": 784836,
+        "end": 790956,
+        "text": "If a\u00A0functional group is present, it\u0027s indicated by a\u00A0prefix or suffix."
+      },
+      {
+        "start": 790956,
+        "end": 808416,
+        "text": "If the functional group suffix begins with a vowel (a, e, i, o, u), the\u00A0final \u2018e\u2019 of the carbon chain name is deleted\u00A0before adding the suffix. (e.g., Propane \u2013 \u2018e\u2019 \u002B \u2018one\u2019 (ketone) = Propanone)."
+      },
+      {
+        "start": 808416,
+        "end": 824436,
+        "text": "If the carbon chain is\u00A0unsaturated, the final \u2018ane\u2019 in the name is replaced by\u00A0\u2018ene\u2019 (for double bonds)\u00A0or\u00A0\u2018yne\u2019 (for triple bonds). (e.g., three-carbon chain with double bond = propene; with triple bond = propyne)."
+      },
+      {
+        "start": 824436,
+        "end": 827676,
+        "text": "Nomenclature Table Examples:"
+      },
+      {
+        "start": 827676,
+        "end": 834876,
+        "text": "Haloalkane: Prefix -chloro, -bromo (e.g., Chloropropane, Bromopropane)."
+      },
+      {
+        "start": 834876,
+        "end": 839664,
+        "text": "Alcohol: Suffix -ol (e.g., Propanol)."
+      },
+      {
+        "start": 839664,
+        "end": 844164,
+        "text": "Aldehyde: Suffix -al (e.g., Propanal)."
+      },
+      {
+        "start": 844164,
+        "end": 848736,
+        "text": "Ketone: Suffix -one (e.g., Propanone)."
+      },
+      {
+        "start": 848736,
+        "end": 855216,
+        "text": "Carboxylic acid: Suffix -oic acid (e.g., Propanoic acid)."
+      },
+      {
+        "start": 855216,
+        "end": 859752,
+        "text": "Alkenes: Suffix -ene (e.g., Propene)."
+      },
+      {
+        "start": 859752,
+        "end": 864216,
+        "text": "Alkynes: Suffix -yne (e.g., Propyne)."
+      },
+      {
+        "start": 864216,
+        "end": 868788,
+        "text": "4.3 Chemical Properties of Carbon Compounds"
+      },
+      {
+        "start": 868788,
+        "end": 872388,
+        "text": "4.3.1 Combustion"
+      },
+      {
+        "start": 872388,
+        "end": 891000,
+        "text": "Process:\u00A0Carbon, in all its allotropic forms,\u00A0burns in oxygen to produce carbon dioxide along with heat and light. Most carbon compounds also release significant heat and light upon burning. These are oxidation reactions."
+      },
+      {
+        "start": 891000,
+        "end": 894492,
+        "text": "C \u002B O\u2082 \u2192 CO\u2082 \u002B heat and light"
+      },
+      {
+        "start": 894492,
+        "end": 898956,
+        "text": "CH\u2084 \u002B O\u2082 \u2192 CO\u2082 \u002B H\u2082O \u002B heat and light"
+      },
+      {
+        "start": 898956,
+        "end": 904140,
+        "text": "CH\u2083CH\u2082OH \u002B O\u2082 \u2192 CO\u2082 \u002B H\u2082O \u002B heat and light"
+      },
+      {
+        "start": 904140,
+        "end": 906660,
+        "text": "Flame Characteristics:"
+      },
+      {
+        "start": 906660,
+        "end": 911268,
+        "text": "Saturated hydrocarbons\u00A0generally give a\u00A0clean flame."
+      },
+      {
+        "start": 911268,
+        "end": 919008,
+        "text": "Unsaturated carbon compounds\u00A0typically give a\u00A0yellow flame with a lot of black smoke\u00A0(sooty deposit)."
+      },
+      {
+        "start": 919008,
+        "end": 927180,
+        "text": "Incomplete combustion\u00A0(limiting air supply) of even saturated hydrocarbons can produce a sooty flame."
+      },
+      {
+        "start": 927180,
+        "end": 940680,
+        "text": "Household gas/kerosene stoves have air inlets for an oxygen-rich mixture, producing a clean blue flame. Blackened cooking vessel bottoms indicate blocked air holes and fuel wastage."
+      },
+      {
+        "start": 940680,
+        "end": 954540,
+        "text": "Pollutants:\u00A0Combustion of fuels like coal and petroleum, which contain nitrogen and sulphur, results in the formation of\u00A0oxides of sulphur and nitrogen, major environmental pollutants."
+      },
+      {
+        "start": 954540,
+        "end": 973692,
+        "text": "Flame Formation:\u00A0A flame is produced only when\u00A0gaseous substances burn. Luminous flames occur when atoms of the gaseous substance are heated and glow. The yellow color of a candle flame is attributed to incomplete combustion, producing soot (carbon)."
+      },
+      {
+        "start": 973692,
+        "end": 986112,
+        "text": "Fossil Fuels:\u00A0Coal and petroleum are\u00A0fossil fuels\u00A0formed from biomass (plants and tiny animals) over millions of years through biological and geological processes."
+      },
+      {
+        "start": 986112,
+        "end": 989856,
+        "text": "4.3.2 Oxidation"
+      },
+      {
+        "start": 989856,
+        "end": 994608,
+        "text": "Carbon compounds can be easily oxidized through combustion."
+      },
+      {
+        "start": 994608,
+        "end": 1001088,
+        "text": "Beyond complete oxidation,\u00A0alcohols can be converted to carboxylic acids."
+      },
+      {
+        "start": 1001088,
+        "end": 1009440,
+        "text": "Example: Ethanol (CH\u2083CH\u2082OH) can be oxidized to Ethanoic acid (CH\u2083COOH)."
+      },
+      {
+        "start": 1009440,
+        "end": 1015488,
+        "text": "Oxidising Agents:\u00A0Substances capable of adding oxygen to others."
+      },
+      {
+        "start": 1015488,
+        "end": 1024884,
+        "text": "Examples:\u00A0Alkaline potassium permanganate\u00A0or\u00A0acidified potassium dichromate\u00A0are used to oxidize alcohols to acids."
+      },
+      {
+        "start": 1024884,
+        "end": 1028952,
+        "text": "4.3.3 Addition Reaction"
+      },
+      {
+        "start": 1028952,
+        "end": 1037376,
+        "text": "Process:\u00A0Unsaturated hydrocarbons\u00A0(containing double or triple bonds) can\u00A0add hydrogen\u00A0atoms."
+      },
+      {
+        "start": 1037376,
+        "end": 1050624,
+        "text": "Catalysts:\u00A0This reaction occurs in the presence of\u00A0catalysts\u00A0such as\u00A0palladium or nickel. Catalysts cause a reaction to proceed at a different rate without being affected themselves."
+      },
+      {
+        "start": 1050624,
+        "end": 1058724,
+        "text": "Product:\u00A0The addition of hydrogen converts unsaturated hydrocarbons into\u00A0saturated hydrocarbons."
+      },
+      {
+        "start": 1058724,
+        "end": 1067760,
+        "text": "Industrial Application:\u00A0This reaction is commonly used in the\u00A0hydrogenation of vegetable oils\u00A0using a nickel catalyst."
+      },
+      {
+        "start": 1067760,
+        "end": 1076364,
+        "text": "Vegetable oils\u00A0generally have long\u00A0unsaturated carbon chains, while\u00A0animal fats\u00A0have\u00A0saturated carbon chains."
+      },
+      {
+        "start": 1076364,
+        "end": 1082412,
+        "text": "Oils containing unsaturated fatty acids are considered healthier for cooking."
+      },
+      {
+        "start": 1082412,
+        "end": 1086876,
+        "text": "4.3.4 Substitution Reaction"
+      },
+      {
+        "start": 1086876,
+        "end": 1095120,
+        "text": "Reactivity:\u00A0Saturated hydrocarbons are generally unreactive\u00A0and inert in the presence of most reagents."
+      },
+      {
+        "start": 1095120,
+        "end": 1111248,
+        "text": "Process:\u00A0In the presence of\u00A0sunlight, elements like\u00A0chlorine can replace hydrogen atoms\u00A0in a hydrocarbon. This is called a\u00A0substitution reaction\u00A0because one type of atom (or group) takes the place of another."
+      },
+      {
+        "start": 1111248,
+        "end": 1118412,
+        "text": "Products:\u00A0A number of products can be formed, especially with higher homologues of alkanes."
+      },
+      {
+        "start": 1118412,
+        "end": 1125540,
+        "text": "Example:\u00A0CH\u2084 \u002B Cl\u2082 \u2192 CH\u2083Cl \u002B HCl (in the presence of sunlight)."
+      },
+      {
+        "start": 1125540,
+        "end": 1131336,
+        "text": "4.4 Some Important Carbon Compounds \u2013 Ethanol and Ethanoic Acid"
+      },
+      {
+        "start": 1131336,
+        "end": 1135548,
+        "text": "4.4.1 Properties of Ethanol"
+      },
+      {
+        "start": 1135548,
+        "end": 1137924,
+        "text": "General Information:"
+      },
+      {
+        "start": 1137924,
+        "end": 1140876,
+        "text": "A liquid at room temperature."
+      },
+      {
+        "start": 1140876,
+        "end": 1147176,
+        "text": "Commonly called\u00A0alcohol, it is the active ingredient in all alcoholic drinks."
+      },
+      {
+        "start": 1147176,
+        "end": 1154304,
+        "text": "A\u00A0good solvent, used in medicines like tincture iodine, cough syrups, and tonics."
+      },
+      {
+        "start": 1154304,
+        "end": 1157976,
+        "text": "Soluble in water\u00A0in all proportions."
+      },
+      {
+        "start": 1157976,
+        "end": 1163772,
+        "text": "Consumption of small quantities of dilute ethanol causes drunkenness."
+      },
+      {
+        "start": 1163772,
+        "end": 1175292,
+        "text": "Intake of even small quantities of\u00A0pure ethanol (absolute alcohol) can be lethal. Long-term consumption leads to various health problems."
+      },
+      {
+        "start": 1175292,
+        "end": 1194696,
+        "text": "Methanol (CH\u2083OH)\u00A0is highly poisonous; even small quantities can cause death. In the liver, methanol is oxidized to methanal, which rapidly reacts with cell components, coagulating protoplasm and affecting the optic nerve, leading to blindness."
+      },
+      {
+        "start": 1194696,
+        "end": 1206432,
+        "text": "Denatured alcohol\u00A0is industrial ethanol made unfit for drinking by adding poisonous substances like methanol and dyes (to color it blue) to prevent misuse."
+      },
+      {
+        "start": 1206432,
+        "end": 1209060,
+        "text": "Reactions of Ethanol:"
+      },
+      {
+        "start": 1209060,
+        "end": 1220040,
+        "text": "Reaction with Sodium:\u00A0Alcohols react with sodium to\u00A0evolve hydrogen gas. With ethanol, the other product is\u00A0sodium ethoxide."
+      },
+      {
+        "start": 1220040,
+        "end": 1227024,
+        "text": "2Na \u002B 2CH\u2083CH\u2082OH \u2192 2CH\u2083CH\u2082O\u207BNa\u207A (Sodium ethoxide) \u002B H\u2082"
+      },
+      {
+        "start": 1227024,
+        "end": 1240416,
+        "text": "Reaction to give Unsaturated Hydrocarbon (Dehydration):\u00A0Heating ethanol at\u00A0443 K with excess concentrated sulphuric acid\u00A0causes dehydration, producing\u00A0ethene."
+      },
+      {
+        "start": 1240416,
+        "end": 1249704,
+        "text": "CH\u2083CH\u2082OH \u2192 CH\u2082=CH\u2082 \u002B H\u2082O (in the presence of Hot Conc. H\u2082SO\u2084 at 443 K)"
+      },
+      {
+        "start": 1249704,
+        "end": 1254924,
+        "text": "Concentrated sulphuric acid acts as a\u00A0dehydrating agent."
+      },
+      {
+        "start": 1254924,
+        "end": 1257408,
+        "text": "Alcohol as a Fuel:"
+      },
+      {
+        "start": 1257408,
+        "end": 1263204,
+        "text": "Ethanol can be produced by fermenting molasses (from sugarcane juice)."
+      },
+      {
+        "start": 1263204,
+        "end": 1274076,
+        "text": "Some countries use alcohol as an\u00A0additive in petrol\u00A0because it is a\u00A0cleaner fuel, producing only carbon dioxide and water when burned in sufficient air."
+      },
+      {
+        "start": 1274076,
+        "end": 1278756,
+        "text": "4.4.2 Properties of Ethanoic Acid"
+      },
+      {
+        "start": 1278756,
+        "end": 1281132,
+        "text": "General Information:"
+      },
+      {
+        "start": 1281132,
+        "end": 1287252,
+        "text": "Commonly called\u00A0acetic acid, belonging to the group of\u00A0carboxylic acids."
+      },
+      {
+        "start": 1287252,
+        "end": 1296036,
+        "text": "A\u00A05-8% solution of acetic acid in water is called vinegar, widely used as a preservative in pickles."
+      },
+      {
+        "start": 1296036,
+        "end": 1306620,
+        "text": "The melting point of pure ethanoic acid is 290 K, causing it to often freeze in cold winters, earning it the name\u00A0glacial acetic acid."
+      },
+      {
+        "start": 1306620,
+        "end": 1317888,
+        "text": "Carboxylic acids are characterized by their\u00A0acidic nature, but they are\u00A0weak acids\u00A0compared to mineral acids like HCl, which are completely ionized."
+      },
+      {
+        "start": 1317888,
+        "end": 1320876,
+        "text": "Reactions of Ethanoic Acid:"
+      },
+      {
+        "start": 1320876,
+        "end": 1332288,
+        "text": "Esterification Reaction:\u00A0Ethanoic acid reacts with absolute ethanol (an alcohol) in the presence of an\u00A0acid catalyst\u00A0to produce an\u00A0ester\u00A0and water."
+      },
+      {
+        "start": 1332288,
+        "end": 1343736,
+        "text": "CH\u2083COOH (Ethanoic acid) \u002B CH\u2083CH\u2082OH (Ethanol) \u2192 CH\u2083COOCH\u2082CH\u2083 (Ester) \u002B H\u2082O (in presence of Acid)"
+      },
+      {
+        "start": 1343736,
+        "end": 1350324,
+        "text": "Esters are typically sweet-smelling substances\u00A0used in perfumes and as flavouring agents."
+      },
+      {
+        "start": 1350324,
+        "end": 1371492,
+        "text": "Saponification:\u00A0Treating an ester with\u00A0sodium hydroxide (an alkali)\u00A0converts it back to alcohol and the sodium salt of a carboxylic acid. This reaction is called saponification because it\u0027s used in making\u00A0soap(sodium or potassium salts of long-chain carboxylic acids)."
+      },
+      {
+        "start": 1371492,
+        "end": 1377108,
+        "text": "CH\u2083COOC\u2082H\u2085 \u002B NaOH \u2192 C\u2082H\u2085OH \u002B CH\u2083COONa"
+      },
+      {
+        "start": 1377108,
+        "end": 1390212,
+        "text": "Reaction with a Base:\u00A0Like mineral acids, ethanoic acid reacts with a base (e.g., sodium hydroxide) to form a\u00A0salt (sodium ethanoate/acetate) and water."
+      },
+      {
+        "start": 1390212,
+        "end": 1395144,
+        "text": "NaOH \u002B CH\u2083COOH \u2192 CH\u2083COONa \u002B H\u2082O"
+      },
+      {
+        "start": 1395144,
+        "end": 1413900,
+        "text": "Reaction with Carbonates and Hydrogencarbonates:\u00A0Ethanoic acid reacts with carbonates (e.g., sodium carbonate) and hydrogencarbonates (e.g., sodium hydrogencarbonate) to produce a\u00A0salt (sodium acetate), carbon dioxide, and water."
+      },
+      {
+        "start": 1413900,
+        "end": 1420092,
+        "text": "2CH\u2083COOH \u002B Na\u2082CO\u2083 \u2192 2CH\u2083COONa \u002B H\u2082O \u002B CO\u2082"
+      },
+      {
+        "start": 1420092,
+        "end": 1426140,
+        "text": "CH\u2083COOH \u002B NaHCO\u2083 \u2192 CH\u2083COONa \u002B H\u2082O \u002B CO\u2082"
+      },
+      {
+        "start": 1426140,
+        "end": 1430028,
+        "text": "4.5 Soaps and Detergents"
+      },
+      {
+        "start": 1430028,
+        "end": 1432728,
+        "text": "Cleaning Action of Soaps:"
+      },
+      {
+        "start": 1432728,
+        "end": 1436940,
+        "text": "Most dirt is\u00A0oily\u00A0and does not dissolve in water."
+      },
+      {
+        "start": 1436940,
+        "end": 1443132,
+        "text": "Soap molecules\u00A0are sodium or potassium salts of long-chain carboxylic acids."
+      },
+      {
+        "start": 1443132,
+        "end": 1445940,
+        "text": "They have two distinct ends:"
+      },
+      {
+        "start": 1445940,
+        "end": 1450764,
+        "text": "An\u00A0ionic-end (hydrophilic)\u00A0which interacts with water."
+      },
+      {
+        "start": 1450764,
+        "end": 1456668,
+        "text": "A\u00A0carbon chain (hydrophobic)\u00A0which interacts with oil/hydrocarbons."
+      },
+      {
+        "start": 1456668,
+        "end": 1470708,
+        "text": "When soap is in water, the hydrophobic tails are in the interior of the cluster, and the hydrophilic ionic ends are on the surface. This unique orientation forms structures called\u00A0micelles."
+      },
+      {
+        "start": 1470708,
+        "end": 1476864,
+        "text": "The\u00A0soap micelle helps trap oily dirt\u00A0in its center, forming an\u00A0emulsion\u00A0in water."
+      },
+      {
+        "start": 1476864,
+        "end": 1489140,
+        "text": "The micelles, with the dirt suspended within them, stay in solution as a colloid and do not precipitate due to ion-ion repulsion, allowing the dirt to be easily rinsed away."
+      },
+      {
+        "start": 1489140,
+        "end": 1495332,
+        "text": "Soap solutions appear cloudy because the micelles are large enough to scatter light."
+      },
+      {
+        "start": 1495332,
+        "end": 1498392,
+        "text": "Hard Water and Scum Formation:"
+      },
+      {
+        "start": 1498392,
+        "end": 1502856,
+        "text": "Hard water\u00A0contains calcium and magnesium salts."
+      },
+      {
+        "start": 1502856,
+        "end": 1511028,
+        "text": "When soap reacts with these salts, it forms an\u00A0insoluble substance called scum\u00A0(a white curdy precipitate)."
+      },
+      {
+        "start": 1511028,
+        "end": 1518372,
+        "text": "This reaction reduces the effectiveness of soap, requiring a larger amount of soap to be used."
+      },
+      {
+        "start": 1518372,
+        "end": 1520352,
+        "text": "Detergents:"
+      },
+      {
+        "start": 1520352,
+        "end": 1528164,
+        "text": "Detergents are a class of cleansing agents developed to overcome the problem of scum formation in hard water."
+      },
+      {
+        "start": 1528164,
+        "end": 1535652,
+        "text": "They are generally\u00A0sodium salts of sulphonic acids or ammonium salts with chloride or bromide ions."
+      },
+      {
+        "start": 1535652,
+        "end": 1539936,
+        "text": "Like soaps, they have long hydrocarbon chains."
+      },
+      {
+        "start": 1539936,
+        "end": 1548828,
+        "text": "The\u00A0charged ends of detergents do not form insoluble precipitates\u00A0with calcium and magnesium ions present in hard water."
+      },
+      {
+        "start": 1548828,
+        "end": 1553400,
+        "text": "Therefore, detergents\u00A0remain effective in hard water."
+      },
+      {
+        "start": 1553400,
+        "end": 1559160,
+        "text": "Detergents are commonly used in shampoos and products for cleaning clothes."
+      }
+    ]
+  }

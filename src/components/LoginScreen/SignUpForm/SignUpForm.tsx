@@ -12,12 +12,13 @@ import { getUserProfile } from '../../../utils/profileStorage';
 import { signupUser } from '../../../services/loginService';
 
 type Props = {
-  setStep: (s: 'phone' | 'login' | 'signup') => void;
-  loginForm: LoginForm;
+  setStep: (s: 'phone' | 'login' | 'signup' | 'profile') => void;
+  loginForm: LoginForm | null;
   setLoginForm: (lf: LoginForm) => void;
+  FROM_PROFILE?: boolean;
 };
 
-const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm }) => {
+const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm, FROM_PROFILE = false }) => {
   const { presentAlert } = useAlert();
 
   // form fields
@@ -44,14 +45,30 @@ const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm }) 
       setEmailId((loginForm as any)?.emailId || prof?.emailId || '');
       setBoard((loginForm as any)?.board || prof?.board || '');
       setStudentClass((loginForm as any)?.class || prof?.class || '');
-      setLangMedium((loginForm as any)?.langMedium || prof?.langMedium || '');
-      setLangNative((loginForm as any)?.langNative || prof?.langNative || '');
 
       // 3) load languages from API
       try {
         const resp = await getLanguages();
         if (resp.data?.languages?.length) {
           setLanguages(resp.data.languages);
+
+        const mediumLanguage = (loginForm as any)?.langMedium || prof?.langMedium || '';
+        const nativeLanguage = (loginForm as any)?.langNative || prof?.langNative || '';
+        let mediumLanguageCode = '';
+        let nativeLanguageCode = '';
+        console.log('mediumLanguage', mediumLanguage);
+        console.log('nativeLanguage', nativeLanguage);
+        console.log('resp.data', resp.data);
+        if (mediumLanguage && resp.data && resp.data.languages && resp.data.languages.length > 0) {
+          mediumLanguageCode = resp.data.languages.find((l) => l.code.toLowerCase() === mediumLanguage.toLowerCase())?.code || '';
+        }
+        if (nativeLanguage && resp.data && resp.data.languages && resp.data.languages.length > 0) {
+          nativeLanguageCode = resp.data.languages.find((l) => l.code.toLowerCase() === nativeLanguage.toLowerCase())?.code || '';
+        }
+        console.log('mediumLanguageCode', mediumLanguageCode);
+        console.log('nativeLanguageCode', nativeLanguageCode);
+        setLangMedium(mediumLanguageCode);
+        setLangNative(nativeLanguageCode);
         }
       } catch (e) {
         console.error('Failed to fetch languages', e);
@@ -75,25 +92,25 @@ const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm }) 
 
   const canSubmit = useMemo(() => {
     const baseOk = !!name && !!mobileNo && !!langMedium && !!langNative;
-    
+
     return baseOk;
   }, [name, mobileNo, langMedium, langNative]);
 
   const handleSubmit = async () => {
     if (!name.trim()) {
-      await presentAlert({ header: 'Required', message: 'Please enter your name.', buttonsActions: [() => {}, () => {}] });
+      await presentAlert({ header: 'Required', message: 'Please enter your name.', buttonsActions: [() => { }, () => { }] });
       return;
     }
     if (!mobileNo || mobileNo.trim().length < 10) {
-      await presentAlert({ header: 'Invalid phone', message: 'Please enter a valid 10-digit mobile number.', buttonsActions: [() => {}, () => {}] });
+      await presentAlert({ header: 'Invalid phone', message: 'Please enter a valid 10-digit mobile number.', buttonsActions: [() => { }, () => { }] });
       return;
     }
     if (!langMedium) {
-      await presentAlert({ header: 'Required', message: 'Please select your study/medium language.', buttonsActions: [() => {}, () => {}] });
+      await presentAlert({ header: 'Required', message: 'Please select your study/medium language.', buttonsActions: [() => { }, () => { }] });
       return;
     }
     if (!langNative) {
-      await presentAlert({ header: 'Required', message: 'Please select your native language.', buttonsActions: [() => {}, () => {}] });
+      await presentAlert({ header: 'Required', message: 'Please select your native language.', buttonsActions: [() => { }, () => { }] });
       return;
     }
 
@@ -155,11 +172,11 @@ const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm }) 
 
   return (
     <div className="padAI-login-container">
-      <IonCard>
+      <IonCard className={`padAISignUpForm-container ${FROM_PROFILE ? 'padAISignUpForm-container-profile-card' : ''}`}>
         <IonCardHeader>
-          <IonCardTitle>Create your account</IonCardTitle>
+          <IonCardTitle>{FROM_PROFILE ? 'Edit your profile' : 'Create your account'}</IonCardTitle>
         </IonCardHeader>
-        <IonCardContent>
+        <IonCardContent className={`${FROM_PROFILE ? 'padAISignUpForm-container-profile-card-content' : ''}`}>
 
           <IonItem lines="full" className="padAI-login-input">
             <IonLabel position="stacked">Full Name</IonLabel>
@@ -173,7 +190,7 @@ const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm }) 
 
           <IonItem lines="full" className="padAI-login-input">
             <IonLabel position="stacked">Mobile Number</IonLabel>
-            <IonInput type="tel" value={mobileNo} placeholder="10-digit mobile number" readonly/>
+            <IonInput type="tel" value={mobileNo} placeholder="10-digit mobile number" readonly />
           </IonItem>
 
           {/* <IonItem lines="full" className="padAI-login-input">
@@ -206,7 +223,7 @@ const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm }) 
               value={studentClass}
               onIonChange={(e) => setStudentClass(e.detail.value)}
             >
-              {[...Array(10)].map((_, i) => (
+              {[...Array(13)].map((_, i) => (
                 <IonSelectOption key={i + 1} value={(i + 1).toString()}>
                   {i + 1}
                 </IonSelectOption>
@@ -215,55 +232,55 @@ const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm }) 
           </IonItem>
 
           <IonItem lines="full" className="padAI-login-input">
-            <IonLabel position="stacked">Preferred Language (Medium)</IonLabel>
+            <IonLabel position="stacked">Preferred Language (Medium) {langMedium}</IonLabel>
             <IonSelect interface="popover" placeholder="Select language" value={langMedium} onIonChange={(e) => setLangMedium(e.detail.value)}>
               {renderLangOptions()}
             </IonSelect>
           </IonItem>
 
           <IonItem lines="full" className="padAI-login-input">
-            <IonLabel position="stacked">Native Language</IonLabel>
+            <IonLabel position="stacked">Native Language {langNative}</IonLabel>
             <IonSelect interface="popover" placeholder="Select language" value={langNative} onIonChange={(e) => setLangNative(e.detail.value)}>
               {renderLangOptions()}
             </IonSelect>
           </IonItem>
 
-         {/* <div className="padAI-login-actions" style={{ marginTop: 16 }}>
+          {/* <div className="padAI-login-actions" style={{ marginTop: 16 }}>
             <PadaiButton onClick={handleSubmit} disabled={loading || !canSubmit}>
               {loading ? 'Saving...' : 'Create Account'}
             </PadaiButton>
           </div> */}
-<div className='ion-margin-top'>
-                        <PadaiButton
-                            onClick={handleSubmit} disabled={loading || !canSubmit}
-                            color='warning'
-                            size='large'
-                            type='button'
-                            fill='solid'
-                            expand='block'
-                        >
-                             {loading ? 'Saving...' : 'Create Account'}
-                        </PadaiButton>
-                    </div>
-                    <div className=''>
-                        <PadaiButton
-                            onClick={(e) => {
-                                e.preventDefault();
-                                setStep('login');
-                            }}
-                            color='warning'
-                            size='large'
-                            type='button'
-                            fill='clear'
-                            expand='block'
-                        >
-                            <IonText className='padAILanguageSubTitle padAIGoBackBtn'>
-                                Go Back
-                            </IonText>
-                        </PadaiButton>
-                    </div>
+          <div className='ion-margin-top'>
+            <PadaiButton
+              onClick={handleSubmit} disabled={loading || !canSubmit}
+              color='warning'
+              size='large'
+              type='button'
+              fill='solid'
+              expand='block'
+            >
+              {loading ? 'Saving...' : FROM_PROFILE ? 'Update Profile' : 'Create Account'}
+            </PadaiButton>
+          </div>
+          <div className=''>
+            <PadaiButton
+              onClick={(e) => {
+                e.preventDefault();
+                setStep(FROM_PROFILE ? 'profile' : 'phone');
+              }}
+              color='warning'
+              size='large'
+              type='button'
+              fill='clear'
+              expand='block'
+            >
+              <IonText className='padAILanguageSubTitle padAIGoBackBtn'>
+                Go Back
+              </IonText>
+            </PadaiButton>
+          </div>
 
-          
+
         </IonCardContent>
       </IonCard>
     </div>

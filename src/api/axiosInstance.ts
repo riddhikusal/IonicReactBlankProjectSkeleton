@@ -20,9 +20,11 @@ const processQueue = (error: any, token: string | null = null) => {
   failedQueue = [];
 };
 
+// https://padai.app/services/
+// 'https://kys-edu.com:90'
 const apiClient: AxiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_BASE_URL || 'https://kys-edu.com:90',
-  timeout: 10000,
+  baseURL: import.meta.env.VITE_API_BASE_URL || 'https://padai.app/services/',
+  timeout: 40000,
 });
 
 //Request Interceptor
@@ -30,7 +32,10 @@ apiClient.interceptors.request.use(async (config: CustomAxiosRequestConfig) => {
   if (!config.skipAuth) {
     const token = await getAccessToken();
     if (token) {
-      config.headers = { ...config.headers, Authorization: `Bearer ${token}` };
+      config.headers = {
+        ...config.headers,
+        Authorization: `Bearer ${token}`
+      };
     }
   }
   return config;

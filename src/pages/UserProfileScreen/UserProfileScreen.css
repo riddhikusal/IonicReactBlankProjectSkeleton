@@ -1,0 +1,175 @@
+.userProfileScreen-content {
+    --background: transparent !important;
+    background-color: transparent !important;
+}
+
+.userProfile-container {
+    padding: 20px;
+    /* background: #ffffff; */
+    border-radius: 20px 20px 0 0;
+    min-height: calc(100vh - 160px);
+    /* margin-top: -40px; */
+    box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.05);
+    font-family: 'Inter', sans-serif !important;
+}
+.menuItem-text {
+    font-size: 16px !important;
+    color: #1a202c !important;
+    font-weight: 500;
+    margin: 0;
+}
+/* Profile Section */
+.userProfile-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px 0;
+    margin-bottom: 20px;
+}
+
+.profileImage-container {
+    position: relative;
+    margin-bottom: 15px;
+}
+
+.profileImage-placeholder {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+
+    ion-text {
+        font-size: 32px;
+        color: white !important;
+        text-transform: uppercase;
+        font-weight: 600;
+        font-family: 'Inter';
+    }
+}
+
+.profileImage-placeholder IonText {
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.profileImage-edit {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #ffffff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.profileImage-edit:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.profileImage-edit IonIcon {
+    color: #667eea;
+    font-size: 18px;
+}
+
+.userProfile-info {
+    text-align: center;
+}
+
+.userProfile-name {
+    margin: 0 0 8px 0;
+    font-size: 24px;
+    font-weight: 600;
+    color: #1a202c;
+    font-family: 'Inter', sans-serif !important;
+    text-transform: capitalize;
+}
+
+.userProfile-contact {
+    font-size: 14px;
+    color: #718096;
+}
+
+.userProfile-contact p {
+    margin: 0;
+}
+
+/* Menu Items */
+.userProfile-menu {
+    margin-top: 20px;
+}
+
+.userProfile-menuItem {
+    --padding-start: 0;
+    --padding-end: 0;
+    --min-height: 56px;
+    margin-bottom: 8px;
+}
+
+.menuItem-icon {
+    font-size: 24px;
+    color: #4a5568;
+    margin-right: 16px;
+}
+
+.menuItem-text {
+    font-size: 16px;
+    color: #1a202c;
+    font-weight: 500;
+    margin: 0;
+}
+
+.menuItem-status {
+    color: #667eea;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.menuItem-value {
+    color: #667eea;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.menuItem-check {
+    font-size: 20px;
+    color: #48bb78;
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+    .userProfile-container {
+        padding: 16px;
+        border-radius: 16px 16px 0 0;
+    }
+
+    .profileImage-placeholder {
+        width: 100px;
+        height: 100px;
+    }
+
+    .profileImage-placeholder IonText {
+        font-size: 12px;
+    }
+
+    .userProfile-name {
+        font-size: 20px;
+    }
+
+    .userProfile-contact {
+        font-size: 13px;
+    }
+}
