@@ -26,7 +26,8 @@ const setItem = async (key: string, value: string) => {
   if (isMobilePlatform()) {
     await Preferences.set({ key, value });
   } else {
-    localStorage.setItem(key, value);
+    // localStorage.setItem(key, value);
+    await Preferences.set({ key, value });
   }
 };
 
@@ -35,7 +36,9 @@ const getItem = async (key: string): Promise<string | null> => {
     const { value } = await Preferences.get({ key });
     return value ?? null;
   } else {
-    return localStorage.getItem(key);
+    // return localStorage.getItem(key);
+    const { value } = await Preferences.get({ key });
+    return value ?? null;
   }
 };
 
@@ -43,7 +46,8 @@ const removeItem = async (key: string) => {
   if (isMobilePlatform()) {
     await Preferences.remove({ key });
   } else {
-    localStorage.removeItem(key);
+    // localStorage.removeItem(key);
+    await Preferences.remove({ key });
   }
 };
 

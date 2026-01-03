@@ -6,36 +6,124 @@ import { useEffect, useState } from "react";
 import { arrowBack, arrowForward, arrowRedoOutline, bookOutline, cloudDownloadOutline, downloadOutline, logoYoutube, playCircleOutline } from "ionicons/icons";
 
 const dummyImageAddress = [
-    ['https://www.shutterstock.com/image-vector/cute-boy-girl-sitting-on-600nw-2486052883.jpg',
-        'https://img.freepik.com/premium-vector/female-teacher-explains-tutorial-using-book-while-students-listen-engage-classroom-female-teacher-explaining-tutorial-with-book_538213-156343.jpg',],
-    ['https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkWmM0SUliqLTbAu2NpmBR9NUSq2hz2KD1xg&s',
+    [
+        'https://www.shutterstock.com/image-vector/cute-boy-girl-sitting-on-600nw-2486052883.jpg',
+        'https://img.freepik.com/premium-vector/female-teacher-explains-tutorial-using-book-while-students-listen-engage-classroom-female-teacher-explaining-tutorial-with-book_538213-156343.jpg',
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkWmM0SUliqLTbAu2NpmBR9NUSq2hz2KD1xg&s',
         'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSp4azd32CMO3IK4stlvIU4EjNZ4666aXMeHw&s',
-        'https://classroomclipart.com/image/static2/preview2/child-reading-book-on-floor-clipart-11057.jpg',],
-    ['https://static.vecteezy.com/system/resources/previews/004/219/741/non_2x/video-tutorials-background-illustration-watching-and-streaming-online-on-computer-about-education-knowledge-for-web-banner-brochures-poster-or-book-cover-vector.jpg',
+        'https://classroomclipart.com/image/static2/preview2/child-reading-book-on-floor-clipart-11057.jpg',
+        'https://static.vecteezy.com/system/resources/previews/004/219/741/non_2x/video-tutorials-background-illustration-watching-and-streaming-online-on-computer-about-education-knowledge-for-web-banner-brochures-poster-or-book-cover-vector.jpg',
         'https://static.vecteezy.com/system/resources/previews/004/217/309/non_2x/video-tutorials-background-illustration-watching-and-streaming-online-on-computer-about-education-knowledge-for-web-banner-brochures-poster-or-book-cover-vector.jpg',
-        'https://img.freepik.com/premium-vector/woman-reads-book-online-audiobook-computer-internet-video-tutorial-a-a-a-a-oncept-distance-learning-digital-classroom-teacher-with-textbook_499739-792.jpg',],
+        'https://img.freepik.com/premium-vector/woman-reads-book-online-audiobook-computer-internet-video-tutorial-a-a-a-a-oncept-distance-learning-digital-classroom-teacher-with-textbook_499739-792.jpg',
+    ],
+    [
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkWmM0SUliqLTbAu2NpmBR9NUSq2hz2KD1xg&s',
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSp4azd32CMO3IK4stlvIU4EjNZ4666aXMeHw&s',
+        'https://classroomclipart.com/image/static2/preview2/child-reading-book-on-floor-clipart-11057.jpg',
+        'https://www.shutterstock.com/image-vector/cute-boy-girl-sitting-on-600nw-2486052883.jpg',
+        'https://img.freepik.com/premium-vector/female-teacher-explains-tutorial-using-book-while-students-listen-engage-classroom-female-teacher-explaining-tutorial-with-book_538213-156343.jpg',
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkWmM0SUliqLTbAu2NpmBR9NUSq2hz2KD1xg&s',
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSp4azd32CMO3IK4stlvIU4EjNZ4666aXMeHw&s',
+        'https://classroomclipart.com/image/static2/preview2/child-reading-book-on-floor-clipart-11057.jpg',
+        'https://static.vecteezy.com/system/resources/previews/004/219/741/non_2x/video-tutorials-background-illustration-watching-and-streaming-online-on-computer-about-education-knowledge-for-web-banner-brochures-poster-or-book-cover-vector.jpg',
+        'https://static.vecteezy.com/system/resources/previews/004/217/309/non_2x/video-tutorials-background-illustration-watching-and-streaming-online-on-computer-about-education-knowledge-for-web-banner-brochures-poster-or-book-cover-vector.jpg',
+        'https://img.freepik.com/premium-vector/woman-reads-book-online-audiobook-computer-internet-video-tutorial-a-a-a-a-oncept-distance-learning-digital-classroom-teacher-with-textbook_499739-792.jpg',
+    ],
+    [
+        'https://static.vecteezy.com/system/resources/previews/004/219/741/non_2x/video-tutorials-background-illustration-watching-and-streaming-online-on-computer-about-education-knowledge-for-web-banner-brochures-poster-or-book-cover-vector.jpg',
+        'https://static.vecteezy.com/system/resources/previews/004/217/309/non_2x/video-tutorials-background-illustration-watching-and-streaming-online-on-computer-about-education-knowledge-for-web-banner-brochures-poster-or-book-cover-vector.jpg',
+        'https://img.freepik.com/premium-vector/woman-reads-book-online-audiobook-computer-internet-video-tutorial-a-a-a-a-oncept-distance-learning-digital-classroom-teacher-with-textbook_499739-792.jpg',
+        'https://www.shutterstock.com/image-vector/cute-boy-girl-sitting-on-600nw-2486052883.jpg',
+        'https://img.freepik.com/premium-vector/female-teacher-explains-tutorial-using-book-while-students-listen-engage-classroom-female-teacher-explaining-tutorial-with-book_538213-156343.jpg',
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkWmM0SUliqLTbAu2NpmBR9NUSq2hz2KD1xg&s',
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSp4azd32CMO3IK4stlvIU4EjNZ4666aXMeHw&s',
+        'https://classroomclipart.com/image/static2/preview2/child-reading-book-on-floor-clipart-11057.jpg',
+        'https://static.vecteezy.com/system/resources/previews/004/219/741/non_2x/video-tutorials-background-illustration-watching-and-streaming-online-on-computer-about-education-knowledge-for-web-banner-brochures-poster-or-book-cover-vector.jpg',
+        'https://static.vecteezy.com/system/resources/previews/004/217/309/non_2x/video-tutorials-background-illustration-watching-and-streaming-online-on-computer-about-education-knowledge-for-web-banner-brochures-poster-or-book-cover-vector.jpg',
+        'https://img.freepik.com/premium-vector/woman-reads-book-online-audiobook-computer-internet-video-tutorial-a-a-a-a-oncept-distance-learning-digital-classroom-teacher-with-textbook_499739-792.jpg',
+    ],
 
     //
-    ['https://www.shutterstock.com/image-vector/quiz-word-pop-art-comic-260nw-2420110745.jpg',
+    [
+        'https://www.shutterstock.com/image-vector/quiz-word-pop-art-comic-260nw-2420110745.jpg',
         'https://www.shutterstock.com/shutterstock/photos/1346231579/display_1500/stock-vector-illustration-of-stickman-kids-reading-a-book-with-a-question-mark-shaped-book-shelf-1346231579.jpg',
         'https://d1e4pidl3fu268.cloudfront.net/e5d7d87d-c3d6-4fff-8743-d659a8827273/Capture.crop_435x326_0,5.preview.PNG',
-        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBtudbWgTsF2rIfj2YHZmBsM18hoUho_H4TgubDQEgVfN0nMbPxYFCrzOAA-VeNTxsAc4&usqp=CAU'
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQBtudbWgTsF2rIfj2YHZmBsM18hoUho_H4TgubDQEgVfN0nMbPxYFCrzOAA-VeNTxsAc4&usqp=CAU',
+        'https://www.shutterstock.com/image-vector/cute-boy-girl-sitting-on-600nw-2486052883.jpg',
+        'https://img.freepik.com/premium-vector/female-teacher-explains-tutorial-using-book-while-students-listen-engage-classroom-female-teacher-explaining-tutorial-with-book_538213-156343.jpg',
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkWmM0SUliqLTbAu2NpmBR9NUSq2hz2KD1xg&s',
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSp4azd32CMO3IK4stlvIU4EjNZ4666aXMeHw&s',
+        'https://classroomclipart.com/image/static2/preview2/child-reading-book-on-floor-clipart-11057.jpg',
+        'https://static.vecteezy.com/system/resources/previews/004/219/741/non_2x/video-tutorials-background-illustration-watching-and-streaming-online-on-computer-about-education-knowledge-for-web-banner-brochures-poster-or-book-cover-vector.jpg',
+        'https://static.vecteezy.com/system/resources/previews/004/217/309/non_2x/video-tutorials-background-illustration-watching-and-streaming-online-on-computer-about-education-knowledge-for-web-banner-brochures-poster-or-book-cover-vector.jpg',
+        'https://img.freepik.com/premium-vector/woman-reads-book-online-audiobook-computer-internet-video-tutorial-a-a-a-a-oncept-distance-learning-digital-classroom-teacher-with-textbook_499739-792.jpg',
+
     ],
-    ['https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkWmM0SUliqLTbAu2NpmBR9NUSq2hz2KD1xg&s',
+    [
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkWmM0SUliqLTbAu2NpmBR9NUSq2hz2KD1xg&s',
         'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSp4azd32CMO3IK4stlvIU4EjNZ4666aXMeHw&s',
-        'https://classroomclipart.com/image/static2/preview2/child-reading-book-on-floor-clipart-11057.jpg',],
-    ['https://static.vecteezy.com/system/resources/previews/004/219/741/non_2x/video-tutorials-background-illustration-watching-and-streaming-online-on-computer-about-education-knowledge-for-web-banner-brochures-poster-or-book-cover-vector.jpg',
+        'https://classroomclipart.com/image/static2/preview2/child-reading-book-on-floor-clipart-11057.jpg',
+        'https://www.shutterstock.com/image-vector/cute-boy-girl-sitting-on-600nw-2486052883.jpg',
+        'https://img.freepik.com/premium-vector/female-teacher-explains-tutorial-using-book-while-students-listen-engage-classroom-female-teacher-explaining-tutorial-with-book_538213-156343.jpg',
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkWmM0SUliqLTbAu2NpmBR9NUSq2hz2KD1xg&s',
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSp4azd32CMO3IK4stlvIU4EjNZ4666aXMeHw&s',
+        'https://classroomclipart.com/image/static2/preview2/child-reading-book-on-floor-clipart-11057.jpg',
+        'https://static.vecteezy.com/system/resources/previews/004/219/741/non_2x/video-tutorials-background-illustration-watching-and-streaming-online-on-computer-about-education-knowledge-for-web-banner-brochures-poster-or-book-cover-vector.jpg',
         'https://static.vecteezy.com/system/resources/previews/004/217/309/non_2x/video-tutorials-background-illustration-watching-and-streaming-online-on-computer-about-education-knowledge-for-web-banner-brochures-poster-or-book-cover-vector.jpg',
-        'https://img.freepik.com/premium-vector/woman-reads-book-online-audiobook-computer-internet-video-tutorial-a-a-a-a-oncept-distance-learning-digital-classroom-teacher-with-textbook_499739-792.jpg',],
+        'https://img.freepik.com/premium-vector/woman-reads-book-online-audiobook-computer-internet-video-tutorial-a-a-a-a-oncept-distance-learning-digital-classroom-teacher-with-textbook_499739-792.jpg',
+    ],
+    [
+        'https://static.vecteezy.com/system/resources/previews/004/219/741/non_2x/video-tutorials-background-illustration-watching-and-streaming-online-on-computer-about-education-knowledge-for-web-banner-brochures-poster-or-book-cover-vector.jpg',
+        'https://static.vecteezy.com/system/resources/previews/004/217/309/non_2x/video-tutorials-background-illustration-watching-and-streaming-online-on-computer-about-education-knowledge-for-web-banner-brochures-poster-or-book-cover-vector.jpg',
+        'https://img.freepik.com/premium-vector/woman-reads-book-online-audiobook-computer-internet-video-tutorial-a-a-a-a-oncept-distance-learning-digital-classroom-teacher-with-textbook_499739-792.jpg',
+        'https://www.shutterstock.com/image-vector/cute-boy-girl-sitting-on-600nw-2486052883.jpg',
+        'https://img.freepik.com/premium-vector/female-teacher-explains-tutorial-using-book-while-students-listen-engage-classroom-female-teacher-explaining-tutorial-with-book_538213-156343.jpg',
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkWmM0SUliqLTbAu2NpmBR9NUSq2hz2KD1xg&s',
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSp4azd32CMO3IK4stlvIU4EjNZ4666aXMeHw&s',
+        'https://classroomclipart.com/image/static2/preview2/child-reading-book-on-floor-clipart-11057.jpg',
+        'https://static.vecteezy.com/system/resources/previews/004/219/741/non_2x/video-tutorials-background-illustration-watching-and-streaming-online-on-computer-about-education-knowledge-for-web-banner-brochures-poster-or-book-cover-vector.jpg',
+        'https://static.vecteezy.com/system/resources/previews/004/217/309/non_2x/video-tutorials-background-illustration-watching-and-streaming-online-on-computer-about-education-knowledge-for-web-banner-brochures-poster-or-book-cover-vector.jpg',
+        'https://img.freepik.com/premium-vector/woman-reads-book-online-audiobook-computer-internet-video-tutorial-a-a-a-a-oncept-distance-learning-digital-classroom-teacher-with-textbook_499739-792.jpg',
+    ],
     //
-    ['https://www.shutterstock.com/image-vector/cute-boy-girl-sitting-on-600nw-2486052883.jpg',
-        'https://www.shutterstock.com/image-vector/cute-boy-girl-sitting-on-600nw-2486052883.jpg',],
-    ['https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkWmM0SUliqLTbAu2NpmBR9NUSq2hz2KD1xg&s',
+    [
+        'https://www.shutterstock.com/image-vector/cute-boy-girl-sitting-on-600nw-2486052883.jpg',
+        'https://www.shutterstock.com/image-vector/cute-boy-girl-sitting-on-600nw-2486052883.jpg',
+        'https://www.shutterstock.com/image-vector/cute-boy-girl-sitting-on-600nw-2486052883.jpg',
+        'https://img.freepik.com/premium-vector/female-teacher-explains-tutorial-using-book-while-students-listen-engage-classroom-female-teacher-explaining-tutorial-with-book_538213-156343.jpg',
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkWmM0SUliqLTbAu2NpmBR9NUSq2hz2KD1xg&s',
         'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSp4azd32CMO3IK4stlvIU4EjNZ4666aXMeHw&s',
-        'https://classroomclipart.com/image/static2/preview2/child-reading-book-on-floor-clipart-11057.jpg',],
-    ['https://static.vecteezy.com/system/resources/previews/004/219/741/non_2x/video-tutorials-background-illustration-watching-and-streaming-online-on-computer-about-education-knowledge-for-web-banner-brochures-poster-or-book-cover-vector.jpg',
+        'https://classroomclipart.com/image/static2/preview2/child-reading-book-on-floor-clipart-11057.jpg',
+        'https://static.vecteezy.com/system/resources/previews/004/219/741/non_2x/video-tutorials-background-illustration-watching-and-streaming-online-on-computer-about-education-knowledge-for-web-banner-brochures-poster-or-book-cover-vector.jpg',
         'https://static.vecteezy.com/system/resources/previews/004/217/309/non_2x/video-tutorials-background-illustration-watching-and-streaming-online-on-computer-about-education-knowledge-for-web-banner-brochures-poster-or-book-cover-vector.jpg',
-        'https://img.freepik.com/premium-vector/woman-reads-book-online-audiobook-computer-internet-video-tutorial-a-a-a-a-oncept-distance-learning-digital-classroom-teacher-with-textbook_499739-792.jpg',],
+        'https://img.freepik.com/premium-vector/woman-reads-book-online-audiobook-computer-internet-video-tutorial-a-a-a-a-oncept-distance-learning-digital-classroom-teacher-with-textbook_499739-792.jpg',
+    ],
+    [
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkWmM0SUliqLTbAu2NpmBR9NUSq2hz2KD1xg&s',
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSp4azd32CMO3IK4stlvIU4EjNZ4666aXMeHw&s',
+        'https://classroomclipart.com/image/static2/preview2/child-reading-book-on-floor-clipart-11057.jpg',
+        'https://www.shutterstock.com/image-vector/cute-boy-girl-sitting-on-600nw-2486052883.jpg',
+        'https://img.freepik.com/premium-vector/female-teacher-explains-tutorial-using-book-while-students-listen-engage-classroom-female-teacher-explaining-tutorial-with-book_538213-156343.jpg',
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkWmM0SUliqLTbAu2NpmBR9NUSq2hz2KD1xg&s',
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSp4azd32CMO3IK4stlvIU4EjNZ4666aXMeHw&s',
+        'https://classroomclipart.com/image/static2/preview2/child-reading-book-on-floor-clipart-11057.jpg',
+        'https://static.vecteezy.com/system/resources/previews/004/219/741/non_2x/video-tutorials-background-illustration-watching-and-streaming-online-on-computer-about-education-knowledge-for-web-banner-brochures-poster-or-book-cover-vector.jpg',
+        'https://static.vecteezy.com/system/resources/previews/004/217/309/non_2x/video-tutorials-background-illustration-watching-and-streaming-online-on-computer-about-education-knowledge-for-web-banner-brochures-poster-or-book-cover-vector.jpg',
+        'https://img.freepik.com/premium-vector/woman-reads-book-online-audiobook-computer-internet-video-tutorial-a-a-a-a-oncept-distance-learning-digital-classroom-teacher-with-textbook_499739-792.jpg',
+    ],
+    [
+        'https://static.vecteezy.com/system/resources/previews/004/219/741/non_2x/video-tutorials-background-illustration-watching-and-streaming-online-on-computer-about-education-knowledge-for-web-banner-brochures-poster-or-book-cover-vector.jpg',
+        'https://static.vecteezy.com/system/resources/previews/004/217/309/non_2x/video-tutorials-background-illustration-watching-and-streaming-online-on-computer-about-education-knowledge-for-web-banner-brochures-poster-or-book-cover-vector.jpg',
+        'https://img.freepik.com/premium-vector/woman-reads-book-online-audiobook-computer-internet-video-tutorial-a-a-a-a-oncept-distance-learning-digital-classroom-teacher-with-textbook_499739-792.jpg',
+        'https://www.shutterstock.com/image-vector/cute-boy-girl-sitting-on-600nw-2486052883.jpg',
+        'https://img.freepik.com/premium-vector/female-teacher-explains-tutorial-using-book-while-students-listen-engage-classroom-female-teacher-explaining-tutorial-with-book_538213-156343.jpg',
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkWmM0SUliqLTbAu2NpmBR9NUSq2hz2KD1xg&s',
+        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSp4azd32CMO3IK4stlvIU4EjNZ4666aXMeHw&s',
+        'https://classroomclipart.com/image/static2/preview2/child-reading-book-on-floor-clipart-11057.jpg',
+        'https://static.vecteezy.com/system/resources/previews/004/219/741/non_2x/video-tutorials-background-illustration-watching-and-streaming-online-on-computer-about-education-knowledge-for-web-banner-brochures-poster-or-book-cover-vector.jpg',
+        'https://static.vecteezy.com/system/resources/previews/004/217/309/non_2x/video-tutorials-background-illustration-watching-and-streaming-online-on-computer-about-education-knowledge-for-web-banner-brochures-poster-or-book-cover-vector.jpg',
+        'https://img.freepik.com/premium-vector/woman-reads-book-online-audiobook-computer-internet-video-tutorial-a-a-a-a-oncept-distance-learning-digital-classroom-teacher-with-textbook_499739-792.jpg',
+    ],
 
 ]
 // Mock videos data (same as ReelScreen)
@@ -207,6 +295,7 @@ const PadAIChapterDetailsScreen: React.FC = () => {
                 {chapterId && !loading && chapterResources &&
                     (
                         Object.keys(chapterResources).map((resource, index) => (
+
                             <React.Fragment key={resource}>
                                 <IonItem lines="none" className="padAIChapterDetailsScreenContentAccordionItemNew" style={{ marginTop: '7px', marginBottom: '7px' }}>
                                     <IonText slot="start" className="ion-text-wrap padAIHomeScreenUserChapter-text-container" style={{ textOverflow: 'ellipsis', fontWeight: '600' }}>
@@ -285,7 +374,7 @@ const PadAIChapterDetailsScreen: React.FC = () => {
                                                 ))}
                                                 <div
                                                     className="reel-preview-card reel-view-more-card"
-                                                    onClick={() => navigate.push('/reels', 'forward')}
+                                                    onClick={() => navigate.push('/reels-for-chapter', 'forward')}
                                                 >
                                                     <div className="reel-view-more-content">
                                                         <IonIcon icon={arrowForward} className="reel-view-more-icon" />
@@ -299,6 +388,40 @@ const PadAIChapterDetailsScreen: React.FC = () => {
                             </React.Fragment>
                         ))
                     )}
+
+                <React.Fragment key={"audio-reader"}>
+                    <IonItem lines="none" className="padAIChapterDetailsScreenContentAccordionItemNew" style={{ marginTop: '7px', marginBottom: '7px' }}>
+                        <IonText slot="start" className="ion-text-wrap padAIHomeScreenUserChapter-text-container" style={{ textOverflow: 'ellipsis', fontWeight: '600' }}>
+                            Audio Reader
+                        </IonText>
+                        {/* <IonButtons slot="end">
+                                        <IonButton fill="clear" slot="icon-only" style={{ fontSize: '18px' }}>
+                                            <IonIcon icon={arrowRedoOutline} />
+                                        </IonButton>
+                                    </IonButtons> */}
+                    </IonItem>
+                    <div className="padAIChapterDetailsScreenContentAccordionnnEW resource-cards-container">
+                        <div
+                            key={`auido-dummy`}
+                            className="resource-card"
+                            onClick={() => {
+                                navigate.push(`/audio-reader-html-content`, 'forward');
+                            }}
+                        >
+                            <div className="resource-card-image">
+                                <IonImg
+                                    // src={getChapterImage(resourceItem, resource)}
+                                    src={dummyImageAddress[0][0]}
+                                    alt="audio reader"
+                                    className="resource-card-img"
+                                />
+                            </div>
+                            <div className="resource-card-title">
+                                <IonText className="resource-card-name">Audio Reader</IonText>
+                            </div>
+                        </div>
+                    </div>
+                </React.Fragment>
 
 
                 {/* {chapterId && !loading && chapterResources && (
