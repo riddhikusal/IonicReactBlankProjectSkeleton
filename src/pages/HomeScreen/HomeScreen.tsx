@@ -11,6 +11,7 @@ import { getUserProfile, UserProfile } from '../../utils/profileStorage';
 import React from 'react';
 import { useChapterStore } from '../../services/store/chapter.store';
 import { chatbubbleOutline, homeOutline, personOutline, videocamOutline } from 'ionicons/icons';
+import { getPlatform } from '../../utils/platform';
 
 const PadAIHomeScreen: React.FC = () => {
     // chapterInfo store
@@ -81,6 +82,8 @@ const PadAIHomeScreen: React.FC = () => {
 
     const getUserProfileData = async () => {
         const userProfile = await getUserProfile();
+        console.log("UserProfile ===>", userProfile);
+        console.log("Platform ===>", getPlatform().code);
         setUserProfile(userProfile);
         getAllSubjects(userProfile?.langMedium || '', userProfile?.langNative || '', Number(userProfile?.class) || 0);
     }
