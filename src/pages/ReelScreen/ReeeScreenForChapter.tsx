@@ -98,6 +98,7 @@ const ReelsForChapterScreen: React.FC = () => {
     const progressIntervalRef = useRef<NodeJS.Timeout | null>(null);
     const touchStartY = useRef(0);
     const touchEndY = useRef(0);
+    const previousIndexRef = useRef(0);
     const { dangerToaster } = useToaster();
 
     // store data
@@ -294,18 +295,43 @@ const ReelsForChapterScreen: React.FC = () => {
     // Handle video play/pause and progress tracking
     useEffect(() => {
         const currentVideo = videoRefs.current[currentIndex];
-        const otherVideos = Object.values(videoRefs.current).filter(
-            (video, index) => index !== currentIndex
-        );
 
         // Clear previous progress interval
         if (progressIntervalRef.current) {
             clearInterval(progressIntervalRef.current);
         }
 
+        // Check if we're navigating to a different video
+        const isNavigatingToNewVideo = currentIndex !== previousIndexRef.current;
+
+        // If navigating to a new video, reset pause state and auto-play
+        if (isNavigatingToNewVideo) {
+            setIsPaused(false);
+        }
+
+        // Pause all videos first, then play the current one
+        Object.keys(videoRefs.current).forEach((key) => {
+            const videoIndex = parseInt(key, 10);
+            const video = videoRefs.current[videoIndex];
+            if (video && videoIndex !== currentIndex) {
+                video.pause();
+                video.currentTime = 0; // Reset other videos to beginning
+            }
+        });
+
         if (currentVideo) {
-            // Reset progress for current video
-            setVideoProgress(prev => ({ ...prev, [currentIndex]: 0 }));
+            // Unmute the video to enable audio
+            currentVideo.muted = false;
+
+            // Reset video to beginning if navigating to a previous video or if index changed
+            const isGoingBack = currentIndex < previousIndexRef.current;
+            if (isGoingBack || isNavigatingToNewVideo) {
+                currentVideo.currentTime = 0;
+                setVideoProgress(prev => ({ ...prev, [currentIndex]: 0 }));
+            }
+
+            // Update previous index
+            previousIndexRef.current = currentIndex;
 
             // Extract dominant color when video loads
             const handleLoadedData = () => {
@@ -325,6 +351,7 @@ const ReelsForChapterScreen: React.FC = () => {
                 if (currentVideo) {
                     currentVideo.currentTime = 0;
                     setVideoProgress(prev => ({ ...prev, [currentIndex]: 0 }));
+                    currentVideo.muted = false; // Ensure unmuted on replay
                     currentVideo.play().catch(() => {
                         // Auto-play failed, user interaction needed
                     });
@@ -343,8 +370,9 @@ const ReelsForChapterScreen: React.FC = () => {
                 }
             }, 2000);
 
-            // Play current video
-            if (!isPaused) {
+            // Play current video (always play when navigating to new video, respect pause state only for current video)
+            if (isNavigatingToNewVideo || !isPaused) {
+                currentVideo.muted = false; // Ensure unmuted before playing
                 currentVideo.play().catch(() => {
                     // Auto-play failed, user interaction needed
                 });
@@ -358,13 +386,6 @@ const ReelsForChapterScreen: React.FC = () => {
                 clearInterval(colorInterval);
             };
         }
-
-        // Pause other videos
-        otherVideos.forEach((video) => {
-            if (video) {
-                video.pause();
-            }
-        });
     }, [currentIndex, reelVideos.length, isPaused]);
 
     // Handle scroll/gesture navigation
@@ -461,6 +482,7 @@ const ReelsForChapterScreen: React.FC = () => {
         const currentVideo = videoRefs.current[currentIndex];
         if (currentVideo) {
             if (currentVideo.paused) {
+                currentVideo.muted = false; // Unmute before playing
                 currentVideo.play();
                 setIsPaused(false);
             } else {
@@ -570,12 +592,14 @@ const ReelsForChapterScreen: React.FC = () => {
                             )}
                             <video
                                 ref={(el) => {
-                                    if (el) videoRefs.current[index] = el;
+                                    if (el) {
+                                        videoRefs.current[index] = el;
+                                        el.muted = false; // Unmute when video element is created
+                                    }
                                 }}
                                 className="reelVideo"
                                 src={video.url}
                                 loop={false}
-                                muted
                                 playsInline
                             />
                             <div className="reelOverlay">
