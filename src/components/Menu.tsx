@@ -46,12 +46,12 @@ const appPages: AppPage[] = [
     iosIcon: informationCircleOutline,
     mdIcon: informationCircleOutline
   },
-  {
-    title: 'Language',
-    url: '/user-profile',
-    iosIcon: languageOutline,
-    mdIcon: languageOutline
-  },
+  // {
+  //   title: 'Language',
+  //   url: '/user-profile',
+  //   iosIcon: languageOutline,
+  //   mdIcon: languageOutline
+  // },
   {
     title: 'Contact us',
     url: '/user-profile',

@@ -77,6 +77,23 @@ export const forgotPassword = async (data: ForgotPasswordRequest) => {
 
 // login API <end>
 
+export interface Board {
+  boardId: number;
+  code: string;
+  awsChapterContainer: string;
+  isActive: boolean;
+}
+
+
+export interface Class {
+  classId: number;
+  boardId: number;
+  code: string;
+  awsChapterContainer: string;
+  isActive: boolean;
+}
+
+
 // Signup Form APIs <start>
 export interface Language {
   code: string;

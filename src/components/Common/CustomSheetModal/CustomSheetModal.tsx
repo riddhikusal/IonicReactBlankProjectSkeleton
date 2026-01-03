@@ -1,11 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { IonButton, IonIcon, IonContent, IonTextarea, IonText, IonChip } from '@ionic/react';
-import { close, expand, contract, mic, send } from 'ionicons/icons';
+import { close, expand, contract, mic, send, bulbOutline, languageOutline, closeOutline } from 'ionicons/icons';
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import './CustomSheetModal.css';
 import { useChatsStore } from '../../../services/store/chats.store';
 import { useChapterStore } from '../../../services/store/chapter.store';
 import { AskOpenAIAssistant } from '../../../services/homeService';
 import { useToaster } from '../../../hooks/toasterHooks/useToaster';
+import audioIcon from '/assets/audio_icon.gif';
 // [
 //   {
 //     id: '1',
@@ -69,16 +71,14 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [aiResponseLoading, setAiResponseLoading] = useState(false);
 
-  // Predefined text chips
+  // Speech Recognition
+  const { finalTranscript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
+
+  // Predefined text chips with icons
   const predefinedChips = [
-    'Please explain',
-    'Explain in Bangla',
-    'Translate into Hindi',
-    'What is the meaning?',
-    'Give me an example',
-    'Explain simply',
-    'Summarize this',
-    'Explain in detail'
+    { text: 'Explain', icon: bulbOutline },
+    { text: 'Translate', icon: languageOutline },
+    { text: 'Clear', icon: closeOutline }
   ];
 
   // chat and chapter info store
@@ -116,6 +116,13 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
     scrollToBottom();
   }, [messages]);
 
+  // Update input text when speech recognition final transcript changes
+  useEffect(() => {
+    if (finalTranscript) {
+      setInputText(finalTranscript);
+    }
+  }, [finalTranscript]);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -128,6 +135,59 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
     setIsExpanded(false);
     onClose();
   };
+
+  // const handleSendMessage = async (defaultText: string = '') => {
+  //   if (defaultText.trim() || inputText.trim()) {
+  //     const newMessage: Message = {
+  //       id: Date.now().toString(),
+  //       text: defaultText.trim() ? defaultText.trim() : inputText.trim(),
+  //       isUser: true,
+  //       timestamp: new Date(),
+  //       type: 'user'
+  //     };
+
+      
+      
+  //     // Check if last message is selected-text and concatenate if needed
+  //     let promptText = newMessage.text;
+  //     if (messages && messages.length > 0) {
+  //       const lastMessage = messages[messages.length - 1];
+  //       if (lastMessage.type === 'selected-text' && lastMessage.text) {
+  //         // Concatenate selected text with space before current text
+  //         promptText = `${lastMessage.text} ${newMessage.text}`;
+  //       }
+  //     }
+
+  //     // setMessages([...messages || [], newMessage]);
+  //     setUserMessage(newMessage);
+  //     setInputText('');
+  //     if (browserSupportsSpeechRecognition) {
+  //       resetTranscript();
+  //     }
+
+  //     setAiResponseLoading(true);
+      
+  //     const response = await AskOpenAIAssistant({
+  //       prompt: promptText,
+  //       chapterId: 12 // chapterInfo.chapterId
+  //     }).then((response) => {
+  //       setAiResponseLoading(false);
+  //       if (response.responseStatus === 'DATA_FOUND') {
+  //         setAIReply({
+  //           id: (Date.now() + 1).toString(),
+  //           text: response.data.response,
+  //           isUser: false,
+  //           timestamp: new Date(),
+  //           type: 'ai'
+  //         });
+  //       }
+  //     }).catch((error) => {
+  //       setAiResponseLoading(false);
+  //       console.log(error);
+  //       dangerToaster(error.message);
+  //     });
+  //   }
+  // };
 
   const handleSendMessage = async (defaultText: string = '') => {
     if (defaultText.trim() || inputText.trim()) {
@@ -154,12 +214,15 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
       // setMessages([...messages || [], newMessage]);
       setUserMessage(newMessage);
       setInputText('');
+      if (browserSupportsSpeechRecognition) {
+        resetTranscript();
+      }
 
       setAiResponseLoading(true);
       
       const response = await AskOpenAIAssistant({
         prompt: promptText,
-        chapterId: chapterInfo.chapterId
+        chapterId: 12 // chapterInfo.chapterId
       }).then((response) => {
         setAiResponseLoading(false);
         if (response.responseStatus === 'DATA_FOUND') {
@@ -178,7 +241,7 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
       });
     }
   };
-
+  
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -192,8 +255,32 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
   };
 
   const handleChipClick = (chipText: string) => {
-    // setInputText(chipText);
-    handleSendMessage(chipText);
+    if (chipText === 'Clear') {
+      setInputText('');
+      if (browserSupportsSpeechRecognition) {
+        resetTranscript();
+      }
+    } else {
+      handleSendMessage(chipText);
+    }
+  };
+
+  const handleVoiceToggle = () => {
+    if (!browserSupportsSpeechRecognition) {
+      dangerToaster('Speech recognition is not supported in your browser');
+      return;
+    }
+    if (listening) {
+      SpeechRecognition.stopListening();
+    } else {
+      SpeechRecognition.startListening({ continuous: true, language: 'en-IN' });
+    }
+  };
+
+  const handleTextareaFocus = () => {
+    if (listening) {
+      SpeechRecognition.stopListening();
+    }
   };
 
   if (!isCustomSheetOpen) return null;
@@ -290,21 +377,6 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
 
 
 
-          {/* Predefined Chips Area */}
-          <div className="chips-container">
-            <div className="chips-scroll-wrapper">
-              {predefinedChips.map((chip, index) => (
-                <IonChip
-                  key={index}
-                  className="predefined-chip"
-                  onClick={() => handleChipClick(chip)}
-                >
-                  <IonText>{chip}</IonText>
-                </IonChip>
-              ))}
-            </div>
-          </div>
-
           {/* Input Area */}
           <div className="input-area">
             <div className="input-area-content">
@@ -312,29 +384,58 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
                 value={inputText}
                 onIonInput={(e) => setInputText(e.detail.value!)}
                 onKeyDown={handleKeyPress}
-                placeholder="Type your message..."
+                onFocus={handleTextareaFocus}
+                placeholder="Ask anything"
                 className="message-input"
                 rows={1}
                 autoGrow={true}
               />
               <div className='input-area-buttons'>
                 <IonButton
-                  fill="clear"
-                  onClick={() => {
-                    // Audio button - function not implemented
-                  }}
-                  className="audio-button"
-                >
-                  <IonIcon icon={mic} />
-                </IonButton>
-                <IonButton
                   fill="solid"
-                  onClick={() => handleSendMessage()}
+                  onClick={() => {handleTextareaFocus(); handleSendMessage()}}
                   disabled={!inputText.trim()}
                   className="send-button"
                 >
                   <IonIcon icon={send} />
                 </IonButton>
+              </div>
+            </div>
+            {/* Chip Buttons Row */}
+            <div className="chips-row">
+              <IonChip
+                className={`voice-chip ${listening ? 'listening' : ''}`}
+                onClick={handleVoiceToggle}
+              >
+                {listening ? (
+                  <img 
+                    src={audioIcon} 
+                    alt="Listening" 
+                    className="audio-wave-gif"
+                  />
+                ) : (
+                  <IonIcon icon={mic} />
+                )}
+                <IonText>Voice</IonText>
+                {/* {listening && (
+                  <>
+                    <span className="voice-wave wave-1"></span>
+                    <span className="voice-wave wave-2"></span>
+                    <span className="voice-wave wave-3"></span>
+                  </>
+                )} */}
+              </IonChip>
+              <div className="action-chips">
+                {predefinedChips.map((chip, index) => (
+                  <IonChip
+                    key={index}
+                    className={`action-chip ${chip.text === 'Clear' ? 'clear-chip' : ''}`}
+                    onClick={() => handleChipClick(chip.text)}
+                  >
+                    <IonIcon icon={chip.icon} />
+                    {chip.text !== 'Clear' && <IonText>{chip.text}</IonText>}
+                  </IonChip>
+                ))}
               </div>
             </div>
           </div>

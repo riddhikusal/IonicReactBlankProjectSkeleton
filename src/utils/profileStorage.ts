@@ -10,6 +10,8 @@ export type UserProfile = {
   langMedium?: string;
   langNative?: string;
   mobileNo?: string;
+  boardId?: number;
+  classId?: number;
 };
 
 const KEY = 'padAI:user_profile';

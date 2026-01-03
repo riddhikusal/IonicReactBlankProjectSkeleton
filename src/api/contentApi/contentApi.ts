@@ -16,12 +16,16 @@ const ContentApiEndpoints = {
 }
 
 export const getBoards = async (data: any) => {
-    return apiClient.post(ContentApiEndpoints.getBoards, data,
+    return apiClient.get(ContentApiEndpoints.getBoards, {
+        params: data
+    },
         { skipAuth: true });
 };
 
 export const getClasses = async (data: any) => {
-    return apiClient.post(ContentApiEndpoints.getClasses, data,
+    return apiClient.get(ContentApiEndpoints.getClasses, {
+        params: data
+    },
         { skipAuth: true });
 };
 

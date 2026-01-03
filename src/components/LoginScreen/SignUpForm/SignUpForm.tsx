@@ -7,9 +7,10 @@ import {
 import PadaiButton from '../../Common/Buttons/Button';
 import { LoginForm } from '../../../pages/LoginScreen/LoginScreen.interface';
 import { useAlert } from '../../../hooks/alertHooks/useAlert';
-import { getLanguages, Language } from '../../../api/loginApi'; // <-- uses your POST API
+import { Board, Class, getLanguages, Language } from '../../../api/loginApi'; // <-- uses your POST API
 import { getUserProfile } from '../../../utils/profileStorage';
 import { signupUser } from '../../../services/loginService';
+import { getBoards, getClasses } from '../../../api/contentApi/contentApi';
 
 type Props = {
   setStep: (s: 'phone' | 'login' | 'signup' | 'profile') => void;
@@ -31,13 +32,49 @@ const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm, FR
   const [langNative, setLangNative] = useState<string>(''); // code
 
   const [languages, setLanguages] = useState<Language[]>([]);
+  const [boards, setBoards] = useState<Board[]>([]);
+  const [classes, setClasses] = useState<Class[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+
+  const getAllClasses = async (board: number, langMedium: string) => {
+    try {
+      if (board && langMedium) {
+        const classesResp = await getClasses({
+          boardId: board,
+          language: langMedium,
+        });
+        if (classesResp.data?.length) {
+          setClasses(classesResp.data);
+        }
+      }
+    } catch (e) {
+      console.error('Failed to fetch classes', e);
+    }
+  }
+  const getAllBoards = async (langMedium: string, board: string) => {
+    try {
+      const boardsResp = await getBoards({
+        language: langMedium,
+      });
+      if (boardsResp.data?.length > 0) {
+        setBoards(boardsResp.data);
+
+        if (board) {
+          let boardId: number = boardsResp.data.find((b: Board) => b.code === board)?.boardId || 0;
+          getAllClasses(boardId, langMedium);
+        }
+      }
+    } catch (e) {
+      console.error('Failed to fetch boards', e);
+    }
+  }
 
   // Prefill + languages
   useEffect(() => {
     (async () => {
       // 1) prefill from saved profile if any
       const prof = await getUserProfile();
+      let boardSelectd = (loginForm as any)?.board || prof?.board || '';
 
       // 2) then overlay loginForm values if present
       setMobileNo(loginForm?.phone_no || prof?.['mobileNo'] || '');
@@ -49,27 +86,31 @@ const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm, FR
       // 3) load languages from API
       try {
         const resp = await getLanguages();
+        let mediumLanguageCode = '';
+        let nativeLanguageCode = '';
         if (resp.data?.languages?.length) {
           setLanguages(resp.data.languages);
 
-        const mediumLanguage = (loginForm as any)?.langMedium || prof?.langMedium || '';
-        const nativeLanguage = (loginForm as any)?.langNative || prof?.langNative || '';
-        let mediumLanguageCode = '';
-        let nativeLanguageCode = '';
-        console.log('mediumLanguage', mediumLanguage);
-        console.log('nativeLanguage', nativeLanguage);
-        console.log('resp.data', resp.data);
-        if (mediumLanguage && resp.data && resp.data.languages && resp.data.languages.length > 0) {
-          mediumLanguageCode = resp.data.languages.find((l) => l.code.toLowerCase() === mediumLanguage.toLowerCase())?.code || '';
+          const mediumLanguage = (loginForm as any)?.langMedium || prof?.langMedium || '';
+          const nativeLanguage = (loginForm as any)?.langNative || prof?.langNative || '';
+
+          console.log('mediumLanguage', mediumLanguage);
+          console.log('nativeLanguage', nativeLanguage);
+          console.log('resp.data', resp.data);
+          if (mediumLanguage && resp.data && resp.data.languages && resp.data.languages.length > 0) {
+            mediumLanguageCode = resp.data.languages.find((l) => l.code.toLowerCase() === mediumLanguage.toLowerCase())?.code || '';
+          }
+          if (nativeLanguage && resp.data && resp.data.languages && resp.data.languages.length > 0) {
+            nativeLanguageCode = resp.data.languages.find((l) => l.code.toLowerCase() === nativeLanguage.toLowerCase())?.code || '';
+          }
+          // console.log('mediumLanguageCode', mediumLanguageCode);
+          // console.log('nativeLanguageCode', nativeLanguageCode);
+          setLangMedium(mediumLanguageCode);
+          setLangNative(nativeLanguageCode);
         }
-        if (nativeLanguage && resp.data && resp.data.languages && resp.data.languages.length > 0) {
-          nativeLanguageCode = resp.data.languages.find((l) => l.code.toLowerCase() === nativeLanguage.toLowerCase())?.code || '';
-        }
-        console.log('mediumLanguageCode', mediumLanguageCode);
-        console.log('nativeLanguageCode', nativeLanguageCode);
-        setLangMedium(mediumLanguageCode);
-        setLangNative(nativeLanguageCode);
-        }
+
+        // boards and classes
+        getAllBoards(mediumLanguageCode, boardSelectd);
       } catch (e) {
         console.error('Failed to fetch languages', e);
       }
@@ -114,12 +155,15 @@ const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm, FR
       return;
     }
 
+    let boardId: number = boards.find((b: Board) => b.code === board)?.boardId || 0;
+    let classId: number = classes.find((c: Class) => c.code === studentClass)?.classId || 0;
+
     const payload = {
       name: name.trim(),
       emailId: emailId.trim() || undefined,
       mobileNo: mobileNo.trim(),
-      board: board || undefined,
-      class: studentClass || undefined,
+      board: boardId || undefined,
+      class: classId || undefined,
       langMedium,
       langNative,
     };
@@ -170,6 +214,20 @@ const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm, FR
       </IonSelectOption>
     ));
 
+  const renderBoardOptions = () =>
+    boards.map((b) => (
+      <IonSelectOption key={b.boardId} value={b.code}>
+        {b.code}
+      </IonSelectOption>
+    ));
+
+  const renderClassOptions = () =>
+    classes.map((c) => (
+      <IonSelectOption key={c.classId} value={c.code}>
+        {c.code}
+      </IonSelectOption>
+    ));
+
   return (
     <div className="padAI-login-container">
       <IonCard className={`padAISignUpForm-container ${FROM_PROFILE ? 'padAISignUpForm-container-profile-card' : ''}`}>
@@ -208,10 +266,13 @@ const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm, FR
               interface="popover"
               placeholder="Select board"
               value={board}
-              onIonChange={(e) => setBoard(e.detail.value)}
+              onIonChange={(e) => {
+                setBoard(e.detail.value);
+                let boardId: number = boards.find((b: Board) => b.code === e.detail.value)?.boardId || 0;
+                getAllClasses(boardId , langMedium);
+              }}
             >
-              <IonSelectOption value="CBSE">CBSE</IonSelectOption>
-              <IonSelectOption value="ICSE">ICSE</IonSelectOption>
+              {renderBoardOptions()}
             </IonSelect>
           </IonItem>
 
@@ -222,24 +283,21 @@ const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm, FR
               placeholder="Select class"
               value={studentClass}
               onIonChange={(e) => setStudentClass(e.detail.value)}
+              disabled={!board}
             >
-              {[...Array(13)].map((_, i) => (
-                <IonSelectOption key={i + 1} value={(i + 1).toString()}>
-                  {i + 1}
-                </IonSelectOption>
-              ))}
+              {renderClassOptions()}
             </IonSelect>
           </IonItem>
 
           <IonItem lines="full" className="padAI-login-input">
-            <IonLabel position="stacked">Preferred Language (Medium) {langMedium}</IonLabel>
+            <IonLabel position="stacked">Preferred Language (Medium)</IonLabel>
             <IonSelect interface="popover" placeholder="Select language" value={langMedium} onIonChange={(e) => setLangMedium(e.detail.value)}>
               {renderLangOptions()}
             </IonSelect>
           </IonItem>
 
           <IonItem lines="full" className="padAI-login-input">
-            <IonLabel position="stacked">Native Language {langNative}</IonLabel>
+            <IonLabel position="stacked">Native Language</IonLabel>
             <IonSelect interface="popover" placeholder="Select language" value={langNative} onIonChange={(e) => setLangNative(e.detail.value)}>
               {renderLangOptions()}
             </IonSelect>
