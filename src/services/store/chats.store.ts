@@ -25,6 +25,7 @@ interface ChatsStore {
     setUserMessage: (message: Message) => void;
     setSelectedText: (text: string, isSelectedTextHTML: boolean) => void;
     removeSelectedText: (messageId: string) => void;
+    clearChat: () => void;
 }
 const initialState: ChatsStore = {
     chatInfo: {
@@ -37,6 +38,7 @@ const initialState: ChatsStore = {
     setUserMessage: () => { },
     setSelectedText: (text: string, isSelectedTextHTML: boolean) => { },
     removeSelectedText: () => { },
+    clearChat: () => { },
 }
 
 
@@ -115,6 +117,13 @@ export const useChatsStore = create<ChatsStore>()(
                 chatInfo: {
                     ...state.chatInfo,
                     messages: state.chatInfo.messages.filter((message: Message) => message.id !== messageId) || []
+                }
+            })),
+            clearChat: () => set((state: any) => ({
+                ...state,
+                chatInfo: {
+                    ...state.chatInfo,
+                    messages: []
                 }
             })),
         }),

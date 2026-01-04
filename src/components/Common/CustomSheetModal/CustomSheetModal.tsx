@@ -96,6 +96,7 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
   const setAIReply = useChatsStore((state: any) => state.setAIReply);
   const updateLastAIReply = useChatsStore((state: any) => state.updateLastAIReply);
   const setUserMessage = useChatsStore((state: any) => state.setUserMessage);
+  const clearChat = useChatsStore((state: any) => state.clearChat);
   useEffect(() => {
     setMessages(chatInfo.messages);
     setIsCustomSheetOpen(chatInfo.isChatOpen);
@@ -324,6 +325,7 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
 
   const handleChipClick = (chipText: string) => {
     if (chipText === 'Clear') {
+      clearChat();
       setInputText('');
       if (browserSupportsSpeechRecognition) {
         resetTranscript();
