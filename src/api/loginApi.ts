@@ -119,8 +119,9 @@ export interface RegisterUserRequest {
   name: string;
   mobile: string;
   emailId?: string;
-  board: string;
-  class: string;
+  boardId?: number;
+  classId?: number;
+  // class: string;
   langMedium: string;
   langNative: string;
 }

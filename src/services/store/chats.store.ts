@@ -21,6 +21,7 @@ interface ChatsStore {
     chatInfo: ChatInfo;
     setIsChatOpen: (isChatOpen: boolean) => void;
     setAIReply: (message: Message) => void;
+    updateLastAIReply: (message: Message) => void;
     setUserMessage: (message: Message) => void;
     setSelectedText: (text: string, isSelectedTextHTML: boolean) => void;
     removeSelectedText: (messageId: string) => void;
@@ -32,6 +33,7 @@ const initialState: ChatsStore = {
     },
     setIsChatOpen: () => { },
     setAIReply: () => { },
+    updateLastAIReply: () => { },
     setUserMessage: () => { },
     setSelectedText: (text: string, isSelectedTextHTML: boolean) => { },
     removeSelectedText: () => { },
@@ -56,6 +58,37 @@ export const useChatsStore = create<ChatsStore>()(
                     messages: [...state.chatInfo.messages, message]
                 }
             })),
+            updateLastAIReply: (message: Message) => set((state: any) => {
+                const messages = state.chatInfo.messages;
+                const lastMessage = messages[messages.length - 1];
+                
+                // Check if last message is AI type
+                if (lastMessage && lastMessage.type === 'ai') {
+                    // Update the last AI message
+                    return {
+                        ...state,
+                        chatInfo: {
+                            ...state.chatInfo,
+                            messages: [
+                                ...messages.slice(0, -1),
+                                {
+                                    ...lastMessage,
+                                    text: message.text
+                                }
+                            ]
+                        }
+                    };
+                } else {
+                    // Add new AI message
+                    return {
+                        ...state,
+                        chatInfo: {
+                            ...state.chatInfo,
+                            messages: [...messages, message]
+                        }
+                    };
+                }
+            }),
             setUserMessage: (message: Message) => set((state: any) => ({
                 ...state,
                 chatInfo: {

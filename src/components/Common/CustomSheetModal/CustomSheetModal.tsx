@@ -61,6 +61,13 @@ interface CustomSheetModalProps {
   selectedText?: string;
 }
 const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, trigger, selectedText }) => {
+  const wsRef = useRef(null);
+  const chatRef = useRef(null);
+  const audioRef = useRef(new Audio());
+
+  const [playingAudio, setPlayingAudio] = useState(false);
+  const [audioPaused, setAudioPaused] = useState(false);
+
   const { dangerToaster } = useToaster();
   const [isExpanded, setIsExpanded] = useState(false);
   const [isCustomSheetOpen, setIsCustomSheetOpen] = useState(false);
@@ -87,6 +94,7 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
   const setIsChatOpen = useChatsStore((state: any) => state.setIsChatOpen);
   const removeSelectedText = useChatsStore((state: any) => state.removeSelectedText);
   const setAIReply = useChatsStore((state: any) => state.setAIReply);
+  const updateLastAIReply = useChatsStore((state: any) => state.updateLastAIReply);
   const setUserMessage = useChatsStore((state: any) => state.setUserMessage);
   useEffect(() => {
     setMessages(chatInfo.messages);
@@ -146,8 +154,8 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
   //       type: 'user'
   //     };
 
-      
-      
+
+
   //     // Check if last message is selected-text and concatenate if needed
   //     let promptText = newMessage.text;
   //     if (messages && messages.length > 0) {
@@ -166,7 +174,7 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
   //     }
 
   //     setAiResponseLoading(true);
-      
+
   //     const response = await AskOpenAIAssistant({
   //       prompt: promptText,
   //       chapterId: 12 // chapterInfo.chapterId
@@ -199,8 +207,8 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
         type: 'user'
       };
 
-      
-      
+
+
       // Check if last message is selected-text and concatenate if needed
       let promptText = newMessage.text;
       if (messages && messages.length > 0) {
@@ -219,29 +227,89 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
       }
 
       setAiResponseLoading(true);
-      
-      const response = await AskOpenAIAssistant({
-        prompt: promptText,
-        chapterId: 12 // chapterInfo.chapterId
-      }).then((response) => {
-        setAiResponseLoading(false);
-        if (response.responseStatus === 'DATA_FOUND') {
-          setAIReply({
-            id: (Date.now() + 1).toString(),
-            text: response.data.response,
-            isUser: false,
-            timestamp: new Date(),
-            type: 'ai'
-          });
-        }
-      }).catch((error) => {
-        setAiResponseLoading(false);
-        console.log(error);
-        dangerToaster(error.message);
-      });
+
+      handleAsk(promptText);
+      // const response = await AskOpenAIAssistant({
+      //   prompt: promptText,
+      //   chapterId: 12 // chapterInfo.chapterId
+      // }).then((response) => {
+      //   setAiResponseLoading(false);
+      //   if (response.responseStatus === 'DATA_FOUND') {
+      //     setAIReply({
+      //       id: (Date.now() + 1).toString(),
+      //       text: response.data.response,
+      //       isUser: false,
+      //       timestamp: new Date(),
+      //       type: 'ai'
+      //     });
+      //   }
+      // }).catch((error) => {
+      //   setAiResponseLoading(false);
+      //   console.log(error);
+      //   dangerToaster(error.message);
+      // });
     }
   };
-  
+
+  /* ================= ASK ================= */
+  const handleAsk = (query: string) => {
+    if (!query.trim()) return;
+
+
+    resetTranscript();
+    setAiResponseLoading(true);
+
+    const ws = new WebSocket("wss://padai.app/services/ws/vectorchat");
+    (wsRef as any).current = ws;
+
+    let aiText = "";
+
+    ws.onopen = () => ws.send(JSON.stringify({ text: query }));
+
+    ws.onmessage = (e) => {
+      setAiResponseLoading(false);
+      if (typeof e.data === "string") {
+        aiText += e.data.replace("text:", "");
+        // setMessages((m) => {
+        //   const last = m[m.length - 1];
+        //   if (last?.role === "ai") {
+        //     return [...m.slice(0, -1), { role: "ai", text: aiText }];
+        //   }
+        //   return [...m, { role: "ai", text: aiText }];
+        // })
+
+
+        updateLastAIReply({
+          id: (Date.now() + 1).toString(),
+          text: aiText,
+          isUser: false,
+          timestamp: new Date(),
+          type: 'ai'
+        });
+      }
+    };
+
+    ws.onclose = () => {
+      playTTS();
+    };
+
+  };
+
+  /* ================= AUDIO CONTROLS ================= */
+  const playTTS = () => {
+    audioRef.current.src =
+      "https://d1rb72t9cnnyis.cloudfront.net/common/AI+Buddy+Teaching.mp4";
+    audioRef.current.play();
+    setPlayingAudio(true);
+    setAudioPaused(false);
+
+    audioRef.current.onended = () => {
+      setPlayingAudio(false);
+      setAudioPaused(false);
+      SpeechRecognition.startListening({ continuous: true, language: "en-IN" });
+    };
+  };
+
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
@@ -393,7 +461,7 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
               <div className='input-area-buttons'>
                 <IonButton
                   fill="solid"
-                  onClick={() => {handleTextareaFocus(); handleSendMessage()}}
+                  onClick={() => { handleTextareaFocus(); handleSendMessage() }}
                   disabled={!inputText.trim()}
                   className="send-button"
                 >
@@ -408,9 +476,9 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
                 onClick={handleVoiceToggle}
               >
                 {listening ? (
-                  <img 
-                    src={audioIcon} 
-                    alt="Listening" 
+                  <img
+                    src={audioIcon}
+                    alt="Listening"
                     className="audio-wave-gif"
                   />
                 ) : (

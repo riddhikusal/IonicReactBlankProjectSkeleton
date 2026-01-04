@@ -11,6 +11,7 @@ import { Board, Class, getLanguages, Language } from '../../../api/loginApi'; //
 import { getUserProfile } from '../../../utils/profileStorage';
 import { signupUser } from '../../../services/loginService';
 import { getBoards, getClasses } from '../../../api/contentApi/contentApi';
+import { useIonRouter } from '@ionic/react';
 
 type Props = {
   setStep: (s: 'phone' | 'login' | 'signup' | 'profile') => void;
@@ -21,7 +22,7 @@ type Props = {
 
 const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm, FROM_PROFILE = false }) => {
   const { presentAlert } = useAlert();
-
+  const navigate = useIonRouter();
   // form fields
   const [name, setName] = useState<string>('');
   const [emailId, setEmailId] = useState<string>('');
@@ -51,7 +52,7 @@ const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm, FR
       console.error('Failed to fetch classes', e);
     }
   }
-  const getAllBoards = async (langMedium: string, board: string) => {
+  const getAllBoards = async (langMedium: string, boardId: number) => {
     try {
       const boardsResp = await getBoards({
         language: langMedium,
@@ -59,8 +60,8 @@ const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm, FR
       if (boardsResp.data?.length > 0) {
         setBoards(boardsResp.data);
 
-        if (board) {
-          let boardId: number = boardsResp.data.find((b: Board) => b.code === board)?.boardId || 0;
+        console.log('boardId', boardId);
+        if (boardId) {
           getAllClasses(boardId, langMedium);
         }
       }
@@ -74,14 +75,15 @@ const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm, FR
     (async () => {
       // 1) prefill from saved profile if any
       const prof = await getUserProfile();
-      let boardSelectd = (loginForm as any)?.board || prof?.board || '';
+      let boardSelectd = (loginForm as any)?.boardId || prof?.boardId || '';
+      console.log('boardSelectd', boardSelectd);
 
       // 2) then overlay loginForm values if present
       setMobileNo(loginForm?.phone_no || prof?.['mobileNo'] || '');
       setName(loginForm?.['full_name'] || prof?.name || '');
       setEmailId((loginForm as any)?.emailId || prof?.emailId || '');
-      setBoard((loginForm as any)?.board || prof?.board || '');
-      setStudentClass((loginForm as any)?.class || prof?.class || '');
+      setBoard((loginForm as any)?.boardId || prof?.boardId || '');
+      setStudentClass((loginForm as any)?.classId || prof?.classId || '');
 
       // 3) load languages from API
       try {
@@ -175,11 +177,13 @@ const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm, FR
         name: name.trim(),
         mobile: mobileNo.trim(),
         emailId: emailId.trim() || '',
-        board,
-        class: studentClass,
+        // board,
+        // class: studentClass,
+        boardId: boardId || undefined,
+        classId: classId || undefined,
         langMedium,
         langNative,
-      });
+      }, boardId, classId);
 
       if (resp?.status === 'UPDATED') {
         await presentAlert({
@@ -216,14 +220,14 @@ const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm, FR
 
   const renderBoardOptions = () =>
     boards.map((b) => (
-      <IonSelectOption key={b.boardId} value={b.code}>
+      <IonSelectOption key={b.boardId} value={b.boardId}>
         {b.code}
       </IonSelectOption>
     ));
 
   const renderClassOptions = () =>
     classes.map((c) => (
-      <IonSelectOption key={c.classId} value={c.code}>
+      <IonSelectOption key={c.classId} value={c.classId}>
         {c.code}
       </IonSelectOption>
     ));
@@ -268,8 +272,7 @@ const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm, FR
               value={board}
               onIonChange={(e) => {
                 setBoard(e.detail.value);
-                let boardId: number = boards.find((b: Board) => b.code === e.detail.value)?.boardId || 0;
-                getAllClasses(boardId , langMedium);
+                getAllClasses(e.detail.value , langMedium);
               }}
             >
               {renderBoardOptions()}
@@ -325,6 +328,9 @@ const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm, FR
               onClick={(e) => {
                 e.preventDefault();
                 setStep(FROM_PROFILE ? 'profile' : 'phone');
+                if (FROM_PROFILE) {
+                  navigate.push('/home', 'forward', 'replace');
+                }
               }}
               color='warning'
               size='large'
