@@ -59,6 +59,7 @@ import PadAIAudioReaderHTMLContentScreen from './pages/ContentViewScreens/AudioR
 import PadAIQuestionAnswerDetailsScreen from './pages/ContentViewScreens/QuestionAnswerContentScreen/QuestionAnswerDetailsScreen/QuestionAnswerDetailsScreen';
 import ReelNewScreen from './pages/ReelScreen/ReelScreenNew';
 import ReelsForChapterScreen from './pages/ReelScreen/ReeeScreenForChapter';
+import AudioSpeakScreen from './pages/AudioSpeakScreen/AudioSpeakScreen';
 
 
 setupIonicReact();
@@ -214,6 +215,10 @@ const App: React.FC = () => {
             {/* Question Answer Details Screen */}
             <Route path="/question-answer-details" exact={true}>
               <PadAIQuestionAnswerDetailsScreen />
+            </Route>
+            {/* Audio Speak Screen */}
+            <Route path="/audio-speak" exact={true}>
+              <AudioSpeakScreen />
             </Route>
             {/* Catch-all route - redirect any invalid route to home */}
             {/* <Route path="*">

@@ -85,7 +85,7 @@ const PadAIHomeScreen: React.FC = () => {
         console.log("UserProfile ===>", userProfile);
         console.log("Platform ===>", getPlatform().code);
         setUserProfile(userProfile);
-        getAllSubjects(userProfile?.langMedium || '', userProfile?.langNative || '', Number(userProfile?.class) || 0);
+        getAllSubjects(userProfile?.langMedium || '', userProfile?.langNative || '', Number(userProfile?.classId) || 0);
     }
 
     useEffect(() => {

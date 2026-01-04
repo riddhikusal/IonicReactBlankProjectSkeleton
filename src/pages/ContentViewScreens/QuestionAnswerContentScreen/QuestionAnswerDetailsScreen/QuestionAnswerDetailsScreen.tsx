@@ -90,6 +90,12 @@ const PadAIQuestionAnswerDetailsScreen = () => {
         }
         return '';
     }
+    // get Video Url
+    const getVideoUrl = (url:string | undefined):string=>{
+        const baseUrl = "https://d1rb72t9cnnyis.cloudfront.net/";
+        if(!url) return '';
+        return `${baseUrl}${url}`;
+    }
 
     // Check if image exists
     const hasImage = (contentFor:'question' | 'shortAnswer' | 'longAnswer'):boolean=>{
@@ -209,7 +215,7 @@ const PadAIQuestionAnswerDetailsScreen = () => {
                                 video={{
                                     id: currentQuestion.id?.toString() || String(currentIndex),
                                     title: questionText,
-                                    url: currentQuestion.ExplainerVideo || '',
+                                    url: getVideoUrl(currentQuestion.ExplainerVideo) || '',
                                     thumbnail: currentQuestion.videoThumbnail || currentQuestion.image || '',
                                     duration: '',
                                     description: questionText,
