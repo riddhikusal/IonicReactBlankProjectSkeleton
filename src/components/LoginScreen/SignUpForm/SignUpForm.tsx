@@ -148,6 +148,16 @@ const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm, FR
       await presentAlert({ header: 'Invalid phone', message: 'Please enter a valid 10-digit mobile number.', buttonsActions: [() => { }, () => { }] });
       return;
     }
+
+    if (!board) {
+      await presentAlert({ header: 'Required', message: 'Please select your board.', buttonsActions: [() => { }, () => { }] });
+      return;
+    }
+    if (!studentClass) {
+      await presentAlert({ header: 'Required', message: 'Please select your class.', buttonsActions: [() => { }, () => { }] });
+      return;
+    }
+
     if (!langMedium) {
       await presentAlert({ header: 'Required', message: 'Please select your study/medium language.', buttonsActions: [() => { }, () => { }] });
       return;
@@ -157,18 +167,18 @@ const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm, FR
       return;
     }
 
-    let boardId: number = boards.find((b: Board) => b.code === board)?.boardId || 0;
-    let classId: number = classes.find((c: Class) => c.code === studentClass)?.classId || 0;
+    // let boardId: number = boards.find((b: Board) => b.code === board)?.boardId || 0;
+    // let classId: number = classes.find((c: Class) => c.code === studentClass)?.classId || 0;
 
-    const payload = {
-      name: name.trim(),
-      emailId: emailId.trim() || undefined,
-      mobileNo: mobileNo.trim(),
-      board: boardId || undefined,
-      class: classId || undefined,
-      langMedium,
-      langNative,
-    };
+    // const payload = {
+    //   name: name.trim(),
+    //   emailId: emailId.trim() || undefined,
+    //   mobileNo: mobileNo.trim(),
+    //   board: boardId || undefined,
+    //   class: classId || undefined,
+    //   langMedium,
+    //   langNative,
+    // };
 
     try {
       setLoading(true);
@@ -179,17 +189,29 @@ const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm, FR
         emailId: emailId.trim() || '',
         // board,
         // class: studentClass,
-        boardId: boardId || undefined,
-        classId: classId || undefined,
+        board: parseInt(board),
+        class: parseInt(studentClass),
         langMedium,
         langNative,
-      }, boardId, classId);
+      });
 
       if (resp?.status === 'UPDATED') {
         await presentAlert({
           header: 'Success',
           message: resp?.msg || 'Account created! Please log in with your new credentials.',
-          buttonsActions: [() => { }, () => { }],
+          buttonsActions: [() => {
+            if (FROM_PROFILE) {
+              navigate.push('/home', 'forward', 'replace');
+            } else {
+              setStep(FROM_PROFILE ? 'profile' : 'phone');
+            }
+          }, () => {
+            if (FROM_PROFILE) {
+              navigate.push('/home', 'forward', 'replace');
+            } else {
+              setStep(FROM_PROFILE ? 'profile' : 'phone');
+            }
+          }],
         });
         // go to home
       } else {
@@ -272,7 +294,7 @@ const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm, FR
               value={board}
               onIonChange={(e) => {
                 setBoard(e.detail.value);
-                getAllClasses(e.detail.value , langMedium);
+                getAllClasses(e.detail.value, langMedium);
               }}
             >
               {renderBoardOptions()}
@@ -330,6 +352,8 @@ const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm, FR
                 setStep(FROM_PROFILE ? 'profile' : 'phone');
                 if (FROM_PROFILE) {
                   navigate.push('/home', 'forward', 'replace');
+                } else {
+                  setStep(FROM_PROFILE ? 'profile' : 'phone');
                 }
               }}
               color='warning'
