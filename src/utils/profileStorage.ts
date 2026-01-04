@@ -5,8 +5,8 @@ import { getPlatform } from '../utils/platform';
 export type UserProfile = {
   name?: string;
   emailId?: string;
-  // board?: string;
-  // class?: string;
+  // board?: number;
+  // class?: number;
   langMedium?: string;
   langNative?: string;
   mobileNo?: string;
@@ -68,7 +68,7 @@ export const getUserProfile = async (): Promise<UserProfile> => {
     if (!raw) return {};
     const parsed = JSON.parse(raw);
     const {
-      name, emailId, boardId, classId, langMedium, langNative, mobileNo,
+      name, emailId,classId,  boardId, langMedium, langNative, mobileNo,
     } = parsed as UserProfile;
     return {
       name,

@@ -56,7 +56,7 @@ export const validateOtp = async (mobileno: string, password: string) => {
   return (otpResponse.data);
 };
 
-export const signupUser = async (payload: RegisterUserRequest, board?: number, classId?: number) => {
+export const signupUser = async (payload: RegisterUserRequest) => {
   const signupResp = await registerUser(payload);
   const d = signupResp.data;
 
@@ -65,8 +65,8 @@ export const signupUser = async (payload: RegisterUserRequest, board?: number, c
       name: payload?.name,
       mobileNo: payload?.mobile,
       emailId: payload?.emailId,
-      boardId: payload?.boardId,
-      classId: payload?.classId,
+      boardId: payload?.board,
+      classId: payload?.class,
       langMedium: payload?.langMedium,
       langNative: payload?.langNative,
     });
