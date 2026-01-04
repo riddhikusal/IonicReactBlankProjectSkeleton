@@ -365,7 +365,7 @@
 /* Input Area */
 .input-area {
   display: flex;
-  align-items: flex-end;
+  flex-direction: column;
   padding: 16px;
   padding-bottom: max(16px, calc(env(safe-area-inset-bottom, 0px) + 16px));
   gap: 12px;
@@ -382,7 +382,7 @@
   --padding-end: 16px;
   --padding-top: 12px;
   --padding-bottom: 12px;
-  border: none !important; 
+  border: none !important;
   font-size: 14px;
   max-height: 120px;
 }
@@ -430,7 +430,7 @@
   --padding-top: 12px;
   --padding-bottom: 12px;
   height: 44px;
-  width: 44px;
+  width: 50px;
   margin: 0;
   min-width: 44px;
   transition: all 0.2s ease;
@@ -487,6 +487,7 @@
   justify-content: flex-start;
   width: 100%;
 }
+
 .ai-message-loading .message-bubble {
   background: #f1f3f4;
   color: #333;
@@ -499,6 +500,7 @@
   border-radius: 20px;
   padding: 3px;
   display: flex;
+  align-items: flex-end;
 }
 
 .input-area-buttons {
@@ -506,4 +508,195 @@
   justify-content: flex-end;
   gap: 9px;
   padding: 5px 8px;
+}
+
+/* Chips Row */
+.chips-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  gap: 12px;
+  flex-wrap: nowrap;
+}
+
+.voice-chip {
+  --background: #ffffff;
+  --color: #424242;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin: 0;
+  border: 1px solid #e0e0e0;
+  font-size: 15px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  width: max-content;
+  min-height: 44px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.voice-chip:hover {
+  --background: #e3f2fd;
+  --color: #1976d2;
+  border-color: #1976d2;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(25, 118, 210, 0.2);
+}
+
+.voice-chip:active {
+  transform: translateY(0);
+}
+
+.voice-chip.listening {
+  --background: #2563eb;
+  --color: #ffffff;
+  border-color: #2563eb;
+  position: relative;
+  animation: listeningGlow 2s ease-in-out infinite;
+}
+
+.voice-chip.listening ion-icon,
+.voice-chip.listening ion-text {
+  color: #ffffff;
+}
+
+.pulsing-icon {
+  animation: iconPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes iconPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+}
+
+@keyframes listeningGlow {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(37, 99, 235, 0);
+  }
+}
+
+.voice-wave {
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.6);
+  pointer-events: none;
+  z-index: -1;
+}
+
+.voice-wave.wave-1 {
+  animation: voicePulse 1.5s ease-out infinite;
+}
+
+.voice-wave.wave-2 {
+  animation: voicePulse 1.5s ease-out infinite 0.5s;
+}
+
+.voice-wave.wave-3 {
+  animation: voicePulse 1.5s ease-out infinite 1s;
+}
+
+@keyframes voicePulse {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1.8);
+    opacity: 0;
+  }
+}
+
+.voice-chip ion-icon {
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+.audio-wave-gif {
+  width: 50px;
+  height: 30px;
+  flex-shrink: 0;
+  object-fit: contain;
+}
+
+.voice-chip ion-text {
+  font-size: 15px;
+  padding: 0;
+  white-space: nowrap;
+}
+
+.action-chips {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.action-chip {
+  --background: white;
+  --color: #424242;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin: 0;
+  border: 1px solid #e0e0e0;
+  font-size: 15px;
+  font-weight: 500;
+  width: max-content;
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  padding: 10px 16px;
+  min-height: 44px;
+  box-sizing: border-box;
+}
+
+.action-chip:hover {
+  --background: #e3f2fd;
+  --color: #1976d2;
+  border-color: #1976d2;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(25, 118, 210, 0.2);
+}
+
+.action-chip:active {
+  transform: translateY(0);
+}
+
+.action-chip ion-icon {
+  font-size: 20px;
+}
+
+.action-chip ion-text {
+  font-size: 15px;
+  padding: 0;
+}
+
+.clear-chip {
+  padding: 10px;
+}
+
+.clear-chip ion-icon {
+
+  color: #dc3545;
+  font-size: 20px;
+  margin: 0px;
+}
+
+.clear-chip:hover {
+  --background: #fee;
+  border-color: #dc3545;
+}
+
+.clear-chip:hover ion-icon {
+  color: #c82333;
 }

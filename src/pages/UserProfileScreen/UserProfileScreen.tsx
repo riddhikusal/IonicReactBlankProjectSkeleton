@@ -39,7 +39,7 @@ const UserProfileScreen: React.FC = () => {
     const [isLoading, setIsLoading] = useState<boolean>(true);
     const navigate = useIonRouter();
 
-    const [editProfileTabActive, setEditProfileTabActive] = useState<boolean>(false);
+    const [editProfileTabActive, setEditProfileTabActive] = useState<boolean>(true);
 
     const getUserProfileData = async () => {
         try {
@@ -108,7 +108,7 @@ const UserProfileScreen: React.FC = () => {
                     </div>}
 
                     {/* Menu Items */}
-                    {!editProfileTabActive && <div className="userProfile-menu" >
+                    {/* {!editProfileTabActive && <div className="userProfile-menu" >
                         {menuItems.map((item, index) => (
                             <IonItem 
                                 key={index} 
@@ -136,7 +136,7 @@ const UserProfileScreen: React.FC = () => {
                                 )}
                             </IonItem>
                         ))}
-                    </div>}
+                    </div>} */}
                     {editProfileTabActive && <div className="userProfile-menu">
                         <PadAISignUpForm 
                             setStep={(step)=>{

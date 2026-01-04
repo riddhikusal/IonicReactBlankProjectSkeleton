@@ -62,7 +62,7 @@ const PadAIPhoneNoValidation = ({ setStep, loginForm, setLoginForm }: PhoneNoVal
                     // presentAlert({ message: loginRes.msg, header: 'Login', buttonsActions: [() => { }] });
                     successToaster(loginRes.msg || 'Login successful');
                     // check if user profile is set or not
-                    if (loginRes.name && loginRes.name.trim() !== '' && loginRes.board && loginRes.board.trim() !== '' && loginRes.class && loginRes.class.trim() !== '') {
+                    if (loginRes.name && loginRes.name.trim() !== '' && loginRes.boardId && loginRes.boardId!== 0 && loginRes.classId && loginRes.classId!== 0) {
                         // redirect to home page
                         navigate.push('/home', 'forward', 'replace');
                         // setStep('signup');
