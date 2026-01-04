@@ -33,8 +33,8 @@ export const validateLogin = async (mobileno: string, password: string) => {
   await saveUserProfile({
     name: d?.name,
     emailId: d?.emailId,
-    board: d?.board,
-    class: d?.class,
+    boardId: d?.boardId,
+    classId: d?.classId,
     langMedium: d?.langMedium,
     langNative: d?.langNative,
     mobileNo: mobileno,
@@ -56,16 +56,17 @@ export const validateOtp = async (mobileno: string, password: string) => {
   return (otpResponse.data);
 };
 
-export const signupUser = async (payload: RegisterUserRequest) => {
+export const signupUser = async (payload: RegisterUserRequest, board?: number, classId?: number) => {
   const signupResp = await registerUser(payload);
   const d = signupResp.data;
 
   if (d?.status && d?.status === 'UPDATED') {
     await saveUserProfile({
       name: payload?.name,
+      mobileNo: payload?.mobile,
       emailId: payload?.emailId,
-      board: payload?.board,
-      class: payload?.class,
+      boardId: payload?.boardId,
+      classId: payload?.classId,
       langMedium: payload?.langMedium,
       langNative: payload?.langNative,
     });

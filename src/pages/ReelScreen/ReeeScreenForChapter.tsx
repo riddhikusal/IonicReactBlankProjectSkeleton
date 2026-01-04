@@ -386,6 +386,9 @@ const ReelsForChapterScreen: React.FC = () => {
                 clearInterval(colorInterval);
             };
         }
+        
+        // Return empty cleanup function if no current video
+        return () => {};
     }, [currentIndex, reelVideos.length, isPaused]);
 
     // Handle scroll/gesture navigation

@@ -361,21 +361,41 @@ mark.custom-highlight {
 
 /* Resource Cards Container - OTT Style */
 .resource-cards-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  display: flex;
+  flex-direction: row;
   gap: 15px;
   padding: 15px;
   overflow-x: auto;
+  overflow-y: hidden;
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
   padding-bottom: 10px !important;
   background: #ffffff;
+  scrollbar-width: thin;
+  scrollbar-color: #c0c0c0 transparent;
+}
+
+.resource-cards-container::-webkit-scrollbar {
+  height: 6px;
+}
+
+.resource-cards-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.resource-cards-container::-webkit-scrollbar-thumb {
+  background: #c0c0c0;
+  border-radius: 3px;
+}
+
+.resource-cards-container::-webkit-scrollbar-thumb:hover {
+  background: #a0a0a0;
 }
 
 .resource-card {
   flex-shrink: 0;
-  width: 100%;
-  min-width: 140px;
+  width: calc((100% - 60px) / 3);
+  min-width: calc((100% - 60px) / 3);
   height: 200px;
   border-radius: 5px;
   overflow: hidden;
@@ -448,13 +468,13 @@ mark.custom-highlight {
 /* Responsive Design for Resource Cards */
 @media (max-width: 768px) {
   .resource-cards-container {
-      grid-template-columns: repeat(auto-fill, minmax(97px, 1fr));
       gap: 13px;
-      padding: 0px;
+      padding: 10px;
   }
 
   .resource-card {
-      min-width: 120px;
+      width: calc((100% - 52px) / 3);
+      min-width: calc((100% - 52px) / 3);
       height: 180px;
   }
 
@@ -470,13 +490,13 @@ mark.custom-highlight {
 
 @media (max-width: 480px) {
   .resource-cards-container {
-      grid-template-columns: repeat(auto-fill, minmax(97px, 1fr));
       gap: 10px;
       padding: 10px;
   }
 
   .resource-card {
-      min-width: 32px;
+      width: calc((100% - 40px) / 3);
+      min-width: calc((100% - 40px) / 3);
       height: 165px;
   }
 

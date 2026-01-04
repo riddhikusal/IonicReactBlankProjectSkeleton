@@ -7,9 +7,11 @@ import {
 import PadaiButton from '../../Common/Buttons/Button';
 import { LoginForm } from '../../../pages/LoginScreen/LoginScreen.interface';
 import { useAlert } from '../../../hooks/alertHooks/useAlert';
-import { getLanguages, Language } from '../../../api/loginApi'; // <-- uses your POST API
+import { Board, Class, getLanguages, Language } from '../../../api/loginApi'; // <-- uses your POST API
 import { getUserProfile } from '../../../utils/profileStorage';
 import { signupUser } from '../../../services/loginService';
+import { getBoards, getClasses } from '../../../api/contentApi/contentApi';
+import { useIonRouter } from '@ionic/react';
 
 type Props = {
   setStep: (s: 'phone' | 'login' | 'signup' | 'profile') => void;
@@ -20,7 +22,7 @@ type Props = {
 
 const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm, FROM_PROFILE = false }) => {
   const { presentAlert } = useAlert();
-
+  const navigate = useIonRouter();
   // form fields
   const [name, setName] = useState<string>('');
   const [emailId, setEmailId] = useState<string>('');
@@ -31,45 +33,86 @@ const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm, FR
   const [langNative, setLangNative] = useState<string>(''); // code
 
   const [languages, setLanguages] = useState<Language[]>([]);
+  const [boards, setBoards] = useState<Board[]>([]);
+  const [classes, setClasses] = useState<Class[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+
+  const getAllClasses = async (board: number, langMedium: string) => {
+    try {
+      if (board && langMedium) {
+        const classesResp = await getClasses({
+          boardId: board,
+          language: langMedium,
+        });
+        if (classesResp.data?.length) {
+          setClasses(classesResp.data);
+        }
+      }
+    } catch (e) {
+      console.error('Failed to fetch classes', e);
+    }
+  }
+  const getAllBoards = async (langMedium: string, boardId: number) => {
+    try {
+      const boardsResp = await getBoards({
+        language: langMedium,
+      });
+      if (boardsResp.data?.length > 0) {
+        setBoards(boardsResp.data);
+
+        console.log('boardId', boardId);
+        if (boardId) {
+          getAllClasses(boardId, langMedium);
+        }
+      }
+    } catch (e) {
+      console.error('Failed to fetch boards', e);
+    }
+  }
 
   // Prefill + languages
   useEffect(() => {
     (async () => {
       // 1) prefill from saved profile if any
       const prof = await getUserProfile();
+      let boardSelectd = (loginForm as any)?.boardId || prof?.boardId || '';
+      console.log('boardSelectd', boardSelectd);
 
       // 2) then overlay loginForm values if present
       setMobileNo(loginForm?.phone_no || prof?.['mobileNo'] || '');
       setName(loginForm?.['full_name'] || prof?.name || '');
       setEmailId((loginForm as any)?.emailId || prof?.emailId || '');
-      setBoard((loginForm as any)?.board || prof?.board || '');
-      setStudentClass((loginForm as any)?.class || prof?.class || '');
+      setBoard((loginForm as any)?.boardId || prof?.boardId || '');
+      setStudentClass((loginForm as any)?.classId || prof?.classId || '');
 
       // 3) load languages from API
       try {
         const resp = await getLanguages();
+        let mediumLanguageCode = '';
+        let nativeLanguageCode = '';
         if (resp.data?.languages?.length) {
           setLanguages(resp.data.languages);
 
-        const mediumLanguage = (loginForm as any)?.langMedium || prof?.langMedium || '';
-        const nativeLanguage = (loginForm as any)?.langNative || prof?.langNative || '';
-        let mediumLanguageCode = '';
-        let nativeLanguageCode = '';
-        console.log('mediumLanguage', mediumLanguage);
-        console.log('nativeLanguage', nativeLanguage);
-        console.log('resp.data', resp.data);
-        if (mediumLanguage && resp.data && resp.data.languages && resp.data.languages.length > 0) {
-          mediumLanguageCode = resp.data.languages.find((l) => l.code.toLowerCase() === mediumLanguage.toLowerCase())?.code || '';
+          const mediumLanguage = (loginForm as any)?.langMedium || prof?.langMedium || '';
+          const nativeLanguage = (loginForm as any)?.langNative || prof?.langNative || '';
+
+          console.log('mediumLanguage', mediumLanguage);
+          console.log('nativeLanguage', nativeLanguage);
+          console.log('resp.data', resp.data);
+          if (mediumLanguage && resp.data && resp.data.languages && resp.data.languages.length > 0) {
+            mediumLanguageCode = resp.data.languages.find((l) => l.code.toLowerCase() === mediumLanguage.toLowerCase())?.code || '';
+          }
+          if (nativeLanguage && resp.data && resp.data.languages && resp.data.languages.length > 0) {
+            nativeLanguageCode = resp.data.languages.find((l) => l.code.toLowerCase() === nativeLanguage.toLowerCase())?.code || '';
+          }
+          // console.log('mediumLanguageCode', mediumLanguageCode);
+          // console.log('nativeLanguageCode', nativeLanguageCode);
+          setLangMedium(mediumLanguageCode);
+          setLangNative(nativeLanguageCode);
         }
-        if (nativeLanguage && resp.data && resp.data.languages && resp.data.languages.length > 0) {
-          nativeLanguageCode = resp.data.languages.find((l) => l.code.toLowerCase() === nativeLanguage.toLowerCase())?.code || '';
-        }
-        console.log('mediumLanguageCode', mediumLanguageCode);
-        console.log('nativeLanguageCode', nativeLanguageCode);
-        setLangMedium(mediumLanguageCode);
-        setLangNative(nativeLanguageCode);
-        }
+
+        // boards and classes
+        getAllBoards(mediumLanguageCode, boardSelectd);
       } catch (e) {
         console.error('Failed to fetch languages', e);
       }
@@ -114,12 +157,15 @@ const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm, FR
       return;
     }
 
+    let boardId: number = boards.find((b: Board) => b.code === board)?.boardId || 0;
+    let classId: number = classes.find((c: Class) => c.code === studentClass)?.classId || 0;
+
     const payload = {
       name: name.trim(),
       emailId: emailId.trim() || undefined,
       mobileNo: mobileNo.trim(),
-      board: board || undefined,
-      class: studentClass || undefined,
+      board: boardId || undefined,
+      class: classId || undefined,
       langMedium,
       langNative,
     };
@@ -131,11 +177,13 @@ const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm, FR
         name: name.trim(),
         mobile: mobileNo.trim(),
         emailId: emailId.trim() || '',
-        board,
-        class: studentClass,
+        // board,
+        // class: studentClass,
+        boardId: boardId || undefined,
+        classId: classId || undefined,
         langMedium,
         langNative,
-      });
+      }, boardId, classId);
 
       if (resp?.status === 'UPDATED') {
         await presentAlert({
@@ -167,6 +215,20 @@ const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm, FR
     languages.map((l) => (
       <IonSelectOption key={l.code} value={l.code}>
         {l.languageText || l.name}
+      </IonSelectOption>
+    ));
+
+  const renderBoardOptions = () =>
+    boards.map((b) => (
+      <IonSelectOption key={b.boardId} value={b.boardId}>
+        {b.code}
+      </IonSelectOption>
+    ));
+
+  const renderClassOptions = () =>
+    classes.map((c) => (
+      <IonSelectOption key={c.classId} value={c.classId}>
+        {c.code}
       </IonSelectOption>
     ));
 
@@ -208,10 +270,12 @@ const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm, FR
               interface="popover"
               placeholder="Select board"
               value={board}
-              onIonChange={(e) => setBoard(e.detail.value)}
+              onIonChange={(e) => {
+                setBoard(e.detail.value);
+                getAllClasses(e.detail.value , langMedium);
+              }}
             >
-              <IonSelectOption value="CBSE">CBSE</IonSelectOption>
-              <IonSelectOption value="ICSE">ICSE</IonSelectOption>
+              {renderBoardOptions()}
             </IonSelect>
           </IonItem>
 
@@ -222,24 +286,21 @@ const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm, FR
               placeholder="Select class"
               value={studentClass}
               onIonChange={(e) => setStudentClass(e.detail.value)}
+              disabled={!board}
             >
-              {[...Array(13)].map((_, i) => (
-                <IonSelectOption key={i + 1} value={(i + 1).toString()}>
-                  {i + 1}
-                </IonSelectOption>
-              ))}
+              {renderClassOptions()}
             </IonSelect>
           </IonItem>
 
           <IonItem lines="full" className="padAI-login-input">
-            <IonLabel position="stacked">Preferred Language (Medium) {langMedium}</IonLabel>
+            <IonLabel position="stacked">Preferred Language (Medium)</IonLabel>
             <IonSelect interface="popover" placeholder="Select language" value={langMedium} onIonChange={(e) => setLangMedium(e.detail.value)}>
               {renderLangOptions()}
             </IonSelect>
           </IonItem>
 
           <IonItem lines="full" className="padAI-login-input">
-            <IonLabel position="stacked">Native Language {langNative}</IonLabel>
+            <IonLabel position="stacked">Native Language</IonLabel>
             <IonSelect interface="popover" placeholder="Select language" value={langNative} onIonChange={(e) => setLangNative(e.detail.value)}>
               {renderLangOptions()}
             </IonSelect>
@@ -267,6 +328,9 @@ const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm, FR
               onClick={(e) => {
                 e.preventDefault();
                 setStep(FROM_PROFILE ? 'profile' : 'phone');
+                if (FROM_PROFILE) {
+                  navigate.push('/home', 'forward', 'replace');
+                }
               }}
               color='warning'
               size='large'
