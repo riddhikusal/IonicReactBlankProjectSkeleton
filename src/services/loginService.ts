@@ -65,8 +65,8 @@ export const signupUser = async (payload: RegisterUserRequest) => {
       name: payload?.name,
       mobileNo: payload?.mobile,
       emailId: payload?.emailId,
-      boardId: payload?.board,
-      classId: payload?.class,
+      boardId: payload?.boardId,
+      classId: payload?.classId,
       langMedium: payload?.langMedium,
       langNative: payload?.langNative,
     });

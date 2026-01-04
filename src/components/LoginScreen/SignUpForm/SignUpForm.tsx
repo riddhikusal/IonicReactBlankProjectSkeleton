@@ -189,8 +189,8 @@ const PadAISignUpForm: React.FC<Props> = ({ setStep, loginForm, setLoginForm, FR
         emailId: emailId.trim() || '',
         // board,
         // class: studentClass,
-        board: parseInt(board),
-        class: parseInt(studentClass),
+        boardId: parseInt(board),
+        classId: parseInt(studentClass),
         langMedium,
         langNative,
       });

@@ -121,8 +121,8 @@ export interface RegisterUserRequest {
   emailId?: string;
   boardId?: number;
   classId?: number;
-  board: number;
-  class: number;
+  // board?: number;
+  // class?: number;
   langMedium: string;
   langNative: string;
 }
