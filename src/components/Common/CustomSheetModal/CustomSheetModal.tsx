@@ -820,9 +820,14 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
             {/* Chip Buttons Row */}
             <div className="chips-row">
               <div className="display-flex">
-                <IonChip
+                <IonButton
                   className={`voice-chip ${listening ? 'listening' : ''}`}
                   onClick={handleVoiceToggle}
+                  style={
+                    {
+                      padding: '0px',
+                      borderRadius: '16px'
+                    }}
                 >
                   {listening ? (
                     <img
@@ -841,7 +846,7 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
                     <span className="voice-wave wave-3"></span>
                   </>
                 )} */}
-                </IonChip>
+                </IonButton>
                 {predefinedChips.filter(chip => chip.text == 'Translate').map((chip, index) => (
                   <IonChip
                     key={index}
