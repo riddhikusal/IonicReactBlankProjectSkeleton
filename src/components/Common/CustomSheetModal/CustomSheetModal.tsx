@@ -140,6 +140,8 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
   const currentAudioMessageIdRef = useRef<string | null>(null);
   const videoRefs = useRef<Record<string, HTMLVideoElement | null>>({});
 
+  const [ speechToTextBrowserSupported, setSpeechToTextBrowserSupported] = useState(true);
+  const [speechRecognitionError, setSpeechRecognitionError] = useState<string | null>(null);
   const { dangerToaster } = useToaster();
   const [isExpanded, setIsExpanded] = useState(false);
   const [isCustomSheetOpen, setIsCustomSheetOpen] = useState(false);
@@ -150,8 +152,12 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [aiResponseLoading, setAiResponseLoading] = useState(false);
 
-  // Speech Recognition
+  // Speech Recognition - configure for mobile compatibility
   const { finalTranscript, listening, resetTranscript, browserSupportsSpeechRecognition } = useSpeechRecognition();
+
+  // Detect mobile device (needs to be before useEffects that use it)
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
 
   // Predefined text chips with icons
   const predefinedChips = [
@@ -206,6 +212,30 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
       setInputText(finalTranscript);
     }
   }, [finalTranscript]);
+
+  // Handle mobile browser speech recognition initialization
+  useEffect(() => {
+    if (!browserSupportsSpeechRecognition) {
+      return;
+    }
+
+    // For mobile browsers, check if we need to request permissions
+    const checkPermissions = async () => {
+      if (isMobile && navigator.permissions) {
+        try {
+          const result = await navigator.permissions.query({ name: 'microphone' as PermissionName });
+          if (result.state === 'denied') {
+            setSpeechToTextBrowserSupported(false);
+          }
+        } catch (error) {
+          // Permissions API might not be available, that's okay
+          console.log('Permissions API not available');
+        }
+      }
+    };
+
+    checkPermissions();
+  }, [browserSupportsSpeechRecognition, isMobile]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -338,19 +368,42 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
 
 
 
-
   /* ---------------- MIC CONTROLS ---------------- */
   const startMic = () => {
     micEnabledRef.current = true;
     if (browserSupportsSpeechRecognition) {
-      SpeechRecognition.startListening({ continuous: true, language });
+      try {
+        // Mobile browsers need different options
+        const options: any = {
+          language: language,
+          continuous: !isMobile, // iOS doesn't support continuous mode well
+          interimResults: true,
+        };
+        
+        // For iOS, we need to be more careful
+        if (isIOS) {
+          options.continuous = false;
+        }
+        
+        SpeechRecognition.startListening(options);
+        setSpeechRecognitionError(null);
+      } catch (error: any) {
+        console.error('Error starting speech recognition:', error);
+        const errorMsg = 'Failed to start speech recognition. Please check microphone permissions.';
+        setSpeechRecognitionError(errorMsg);
+        dangerToaster(errorMsg);
+      }
     }
   };
 
   const stopMic = () => {
     micEnabledRef.current = false;
     if (browserSupportsSpeechRecognition) {
-      SpeechRecognition.stopListening();
+      try {
+        SpeechRecognition.stopListening();
+      } catch (error) {
+        console.error('Error stopping speech recognition:', error);
+      }
     }
   };
 
@@ -513,10 +566,13 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
         audioRef.current.onended = () => {
           setPlayingAudio(false);
           setAudioPaused(false);
-          if (browserSupportsSpeechRecognition) {
-            resetTranscript();
+        if (browserSupportsSpeechRecognition && micEnabledRef.current) {
+          resetTranscript();
+          // Small delay for mobile browsers
+          setTimeout(() => {
             startMic();
-          }
+          }, isMobile ? 500 : 100);
+        }
         };
       } else {
         // Audio readout enabled - handle per-message audio
@@ -633,15 +689,62 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
     }
   };
 
-  const handleVoiceToggle = () => {
+  const handleVoiceToggle = async () => {
+    // Clear any previous errors
+    setSpeechRecognitionError(null);
+    
     if (!browserSupportsSpeechRecognition) {
-      dangerToaster('Speech recognition is not supported in your browser');
+      setSpeechToTextBrowserSupported(false);
+      const errorMsg = 'Speech recognition is not supported in your browser';
+      setSpeechRecognitionError(errorMsg);
+      dangerToaster(errorMsg);
       return;
     }
+
+    // Request microphone permission on mobile
+    if (isMobile && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      try {
+        await navigator.mediaDevices.getUserMedia({ audio: true });
+      } catch (error: any) {
+        console.error('Microphone permission denied:', error);
+        const errorMsg = 'Microphone permission is required for speech recognition. Please enable it in your browser settings.';
+        setSpeechRecognitionError(errorMsg);
+        dangerToaster('Microphone permission is required for speech recognition');
+        return;
+      }
+    }
+
     if (listening) {
-      SpeechRecognition.stopListening();
+      try {
+        SpeechRecognition.stopListening();
+        setSpeechRecognitionError(null);
+      } catch (error: any) {
+        console.error('Error stopping speech recognition:', error);
+        const errorMsg = 'Error stopping speech recognition. Please try again.';
+        setSpeechRecognitionError(errorMsg);
+      }
     } else {
-      SpeechRecognition.startListening({ continuous: true, language: 'en-IN' });
+      try {
+        // Mobile browsers need different options
+        const options: any = {
+          language: language,
+          continuous: !isMobile, // iOS doesn't support continuous mode well
+          interimResults: true,
+        };
+        
+        // For iOS, we need to be more careful
+        if (isIOS) {
+          options.continuous = false;
+        }
+        
+        SpeechRecognition.startListening(options);
+        setSpeechRecognitionError(null);
+      } catch (error: any) {
+        console.error('Error starting speech recognition:', error);
+        const errorMsg = error.message || 'Failed to start speech recognition. Please check your microphone permissions and try again.';
+        setSpeechRecognitionError(errorMsg);
+        dangerToaster(errorMsg);
+      }
     }
   };
 
@@ -666,6 +769,19 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
         {/* Header */}
         <div className="modal-header">
           <div className="modal-handle" />
+          {speechRecognitionError && (
+            <div className="speech-recognition-error-banner">
+              <IonText className="error-text">{speechRecognitionError}</IonText>
+              <IonButton
+                fill="clear"
+                size="small"
+                onClick={() => setSpeechRecognitionError(null)}
+                className="error-close-button"
+              >
+                <IonIcon icon={close} />
+              </IonButton>
+            </div>
+          )}
           <div className="modal-actions">
             <IonButton
               fill="clear"
@@ -792,6 +908,12 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
           </IonContent>
 
 
+          {/* Speech to text browser supported */}
+          {!speechToTextBrowserSupported && (
+            <div className="speech-to-text-browser-supported">
+              <IonText>Speech to text is not supported in your browser</IonText>
+            </div>
+          )}
 
           {/* Input Area */}
           <div className="input-area">
@@ -898,3 +1020,4 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
 };
 
 export default CustomSheetModal;
+
