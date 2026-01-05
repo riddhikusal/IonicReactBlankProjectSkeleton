@@ -19,7 +19,6 @@ export interface NewPadAIVideoPlayerProps {
   const [speed, setSpeed] = useState(1);
   const [showSpeedMenu, setShowSpeedMenu] = useState(false);
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const autoHideTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Initialize player once - this will run on mount and after refresh
   useEffect(() => {
@@ -138,27 +137,8 @@ export interface NewPadAIVideoPlayerProps {
             setBuffered(player.buffered().end(player.buffered().length - 1));
           }
         });
-        player.on("play", () => {
-          setPlaying(true);
-          // Auto-hide controls after 4.5 seconds when video starts playing
-          if (autoHideTimeoutRef.current) {
-            clearTimeout(autoHideTimeoutRef.current);
-          }
-          autoHideTimeoutRef.current = setTimeout(() => {
-            setHover(false);
-            autoHideTimeoutRef.current = null;
-          }, 1000); // 4.5 seconds
-        });
-        player.on("pause", () => {
-          setPlaying(false);
-          // Clear auto-hide timeout when paused and keep controls visible
-          if (autoHideTimeoutRef.current) {
-            clearTimeout(autoHideTimeoutRef.current);
-            autoHideTimeoutRef.current = null;
-          }
-          // Keep controls visible when paused
-          setHover(true);
-        });
+        player.on("play", () => setPlaying(true));
+        player.on("pause", () => setPlaying(false));
         player.on("error", (e: any) => {
           console.error('VideoJS error:', e);
         });
@@ -194,10 +174,6 @@ export interface NewPadAIVideoPlayerProps {
         clearTimeout(hoverTimeoutRef.current);
         hoverTimeoutRef.current = null;
       }
-      if (autoHideTimeoutRef.current) {
-        clearTimeout(autoHideTimeoutRef.current);
-        autoHideTimeoutRef.current = null;
-      }
       // Only dispose on unmount, not on re-render
       if (playerRef.current && !playerRef.current.isDisposed()) {
         try {
@@ -211,16 +187,12 @@ export interface NewPadAIVideoPlayerProps {
     };
   }, [videoUrl]); // Re-run when videoUrl changes
 
-  // Cleanup timeouts on unmount
+  // Cleanup hover timeout on unmount
   useEffect(() => {
     return () => {
       if (hoverTimeoutRef.current) {
         clearTimeout(hoverTimeoutRef.current);
         hoverTimeoutRef.current = null;
-      }
-      if (autoHideTimeoutRef.current) {
-        clearTimeout(autoHideTimeoutRef.current);
-        autoHideTimeoutRef.current = null;
       }
     };
   }, []);
@@ -240,19 +212,10 @@ export interface NewPadAIVideoPlayerProps {
     }
   }, [videoUrl]);
 
-  const handlePlayPause = (e?: React.MouseEvent | React.TouchEvent) => {
-    if (e) {
-      e.stopPropagation();
-      e.preventDefault();
-    }
+  const handlePlayPause = () => {
     if (!playerRef.current || playerRef.current.isDisposed()) return;
-    
-    // Use a small delay to prevent rapid double-clicks
-    const currentState = playerRef.current.paused();
-    if (currentState) {
-      playerRef.current.play().catch((error: any) => {
-        console.error('Error playing video:', error);
-      });
+    if (playerRef.current.paused()) {
+      playerRef.current.play();
     } else {
       playerRef.current.pause();
     }
@@ -326,13 +289,10 @@ export interface NewPadAIVideoPlayerProps {
         setHover(true);
       }}
       onMouseLeave={() => {
-        // If playing, controls will auto-hide via play event handler (after 4.5 seconds)
-        if (playing) {
-          return;
-        }
-        // When paused, keep controls visible - don't auto-hide
-        // User can manually hide by moving mouse away for a longer time if needed
-        // But by default, keep visible when paused
+        // Delay hiding controls to allow clicking
+        hoverTimeoutRef.current = setTimeout(() => {
+          setHover(false);
+        }, 2000);
       }}
       onMouseDown={() => {
         if (hoverTimeoutRef.current) {
@@ -351,29 +311,12 @@ export interface NewPadAIVideoPlayerProps {
     >
       <div 
         data-vjs-player 
-        onClick={(e: React.MouseEvent) => {
-          // Only handle click on video area if not clicking on controls
-          // Check if click target is the video container itself, not a control
-          const target = e.target as HTMLElement;
-          const isControlClick = target.closest('[style*="z-index: 1000"], [style*="z-index: 1001"]');
-          if (!isControlClick && !hover) {
-            handlePlayPause(e);
-          }
-        }}
-        onTouchEnd={(e: React.TouchEvent) => {
-          // Handle touch on video area if not touching controls
-          const target = e.target as HTMLElement;
-          const isControlClick = target.closest('[style*="z-index: 1000"], [style*="z-index: 1001"]');
-          if (!isControlClick && !hover) {
-            handlePlayPause(e);
-          }
-        }}
         style={{ 
           width: "100%", 
           height: "100%", 
           position: "relative",
           minHeight: "400px",
-          pointerEvents: "auto"
+          pointerEvents: hover ? "none" : "auto"
         }}
       >
         <video
@@ -399,21 +342,9 @@ export interface NewPadAIVideoPlayerProps {
         <>
           {/* Central Play/Pause with skip buttons close by */}
           <div
-            onMouseEnter={() => {
-              if (hoverTimeoutRef.current) {
-                clearTimeout(hoverTimeoutRef.current);
-                hoverTimeoutRef.current = null;
-              }
-              setHover(true);
-            }}
-            onMouseLeave={() => {
-              // Don't hide immediately when leaving controls area
-              // Let the auto-hide or main container handle it
-            }}
-            onMouseDown={(e) => {
-              e.stopPropagation();
-              setHover(true);
-            }}
+            onMouseEnter={() => setHover(true)}
+            onMouseLeave={() => setHover(false)}
+            onMouseDown={() => setHover(true)}
             style={{
               position: "absolute",
               top: "50%",
@@ -428,7 +359,7 @@ export interface NewPadAIVideoPlayerProps {
           >
             <CircularArrowButton onClick={() => handleSkip(-10)} label="10s" direction="left" size={45} />
             <CircularButton
-              onClick={(e: React.MouseEvent | React.TouchEvent) => handlePlayPause(e)}
+              onClick={handlePlayPause}
               label={playing ? "❚❚" : "▶️"}
               size={90} // bigger button
               color="#fff" // deep white
@@ -593,17 +524,11 @@ function CircularButton({ onClick, label, size = 50, color = "#fff" }: any) {
     <div
       onClick={(e) => {
         e.stopPropagation();
-        e.preventDefault();
-        onClick(e);
+        onClick();
       }}
-      onMouseDown={(e) => {
+      onTouchStart={(e) => {
         e.stopPropagation();
-        e.preventDefault();
-      }}
-      onTouchEnd={(e) => {
-        e.stopPropagation();
-        e.preventDefault();
-        onClick(e);
+        onClick();
       }}
       style={{
         width: size,
