@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { IonButton, IonIcon, IonContent, IonTextarea, IonText, IonChip } from '@ionic/react';
-import { close, expand, contract, mic, send, bulbOutline, languageOutline, closeOutline, trashOutline, arrowUp, cloudUploadOutline, play, pause } from 'ionicons/icons';
+import { close, expand, contract, mic, send, bulbOutline, languageOutline, closeOutline, trashOutline } from 'ionicons/icons';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import './CustomSheetModal.css';
 import { useChatsStore } from '../../../services/store/chats.store';
@@ -52,8 +52,6 @@ interface Message {
   timestamp: Date;
   type: 'ai' | 'user' | 'selected-text';
   isSelectedTextHTML?: boolean;
-  hasAudioReadout?: boolean;
-  audioId?: string;
 }
 
 interface CustomSheetModalProps {
@@ -62,83 +60,19 @@ interface CustomSheetModalProps {
   trigger?: string;
   selectedText?: string;
 }
-
-interface AudioReadoutControlsProps {
-  messageId: string;
-  audioState?: { playing: boolean; paused: boolean; audioRef: HTMLAudioElement | null };
-  onTogglePlayPause: (messageId: string) => void;
-  videoRefs: React.MutableRefObject<Record<string, HTMLVideoElement | null>>;
-}
-
-const AudioReadoutControls: React.FC<AudioReadoutControlsProps> = ({
-  messageId,
-  audioState,
-  onTogglePlayPause,
-  videoRefs
-}) => {
-  // Sync video with audio playback
-  useEffect(() => {
-    const video = videoRefs.current[messageId];
-    if (!video) return;
-
-    if (audioState?.playing && !audioState.paused) {
-      video.play().catch(() => { });
-    } else {
-      video.pause();
-    }
-  }, [messageId, audioState?.playing, audioState?.paused, videoRefs]);
-
-  return (
-    <div className="audio-readout-controls">
-      <video
-        ref={(el) => {
-          if (el) {
-            videoRefs.current[messageId] = el;
-          }
-        }}
-        src="https://d1rb72t9cnnyis.cloudfront.net/common/AI+Buddy+Teaching.mp4"
-        loop
-        muted
-        playsInline
-        className="audio-readout-video"
-        style={{
-          display: audioState?.playing ? 'block' : 'none'
-        }}
-      />
-      <IonButton
-        fill="clear"
-        size="small"
-        onClick={() => onTogglePlayPause(messageId)}
-        className="audio-toggle-button"
-      >
-        <IonIcon
-          icon={audioState?.playing && !audioState.paused ? pause : play}
-        />
-      </IonButton>
-    </div>
-  );
-};
 const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, trigger, selectedText }) => {
-  /* ---------------- REFS ---------------- */
-  const wsRef = useRef(null);
-  const audioRef = useRef(new Audio());
-  const mediaSourceRef = useRef(null);
-  const sourceBufferRef = useRef(null);
-  const transcriptRef = useRef(null);
-  const lastFinalRef = useRef("");
-  const micEnabledRef = useRef(true);
+    /* ---------------- REFS ---------------- */
+    const wsRef = useRef(null);
+    const audioRef = useRef(new Audio());
+    const mediaSourceRef = useRef(null);
+    const sourceBufferRef = useRef(null);
+    const transcriptRef = useRef(null);
+    const lastFinalRef = useRef("");
+    const micEnabledRef = useRef(true);
 
 
   const [playingAudio, setPlayingAudio] = useState(false);
   const [audioPaused, setAudioPaused] = useState(false);
-  const [language, setLanguage] = useState("en-IN");
-  const [voice, setVoice] = useState("female");
-  const [memoryTranscript, setMemoryTranscript] = useState("");
-
-  // Track audio state per message
-  const [messageAudioStates, setMessageAudioStates] = useState<Record<string, { playing: boolean; paused: boolean; audioRef: HTMLAudioElement | null }>>({});
-  const currentAudioMessageIdRef = useRef<string | null>(null);
-  const videoRefs = useRef<Record<string, HTMLVideoElement | null>>({});
 
   const { dangerToaster } = useToaster();
   const [isExpanded, setIsExpanded] = useState(false);
@@ -186,13 +120,10 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
     } else {
       document.body.style.overflow = 'unset';
       setIsInitialAppear(false);
-      // Cleanup when modal closes
-      stopEverything();
     }
 
     return () => {
       document.body.style.overflow = 'unset';
-      stopEverything();
     };
   }, [isCustomSheetOpen]);
 
@@ -215,17 +146,8 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
     setIsExpanded(!isExpanded);
   };
 
-  const stopEverything = () => {
-    stopMic();
-    (wsRef as any).current?.close();
-    audioRef.current.pause();
-    setPlayingAudio(false);
-    setAiResponseLoading(false);
-  };
-
   const handleClose = () => {
     setIsExpanded(false);
-    stopEverything();
     onClose();
   };
 
@@ -282,7 +204,7 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
   //   }
   // };
 
-  const handleSendMessage = async (defaultText: string = '', audioReadOut: boolean = false) => {
+  const handleSendMessage = async (defaultText: string = '') => {
     if (defaultText.trim() || inputText.trim()) {
       const newMessage: Message = {
         id: Date.now().toString(),
@@ -313,7 +235,7 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
 
       setAiResponseLoading(true);
 
-      handleAsk(promptText, audioReadOut);
+      handleAsk(promptText);
       // const response = await AskOpenAIAssistant({
       //   prompt: promptText,
       //   chapterId: 12 // chapterInfo.chapterId
@@ -342,265 +264,71 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
   /* ---------------- MIC CONTROLS ---------------- */
   const startMic = () => {
     micEnabledRef.current = true;
-    if (browserSupportsSpeechRecognition) {
-      SpeechRecognition.startListening({ continuous: true, language });
-    }
+    SpeechRecognition.startListening({ continuous: true, language });
   };
 
   const stopMic = () => {
     micEnabledRef.current = false;
-    if (browserSupportsSpeechRecognition) {
-      SpeechRecognition.stopListening();
-    }
+    SpeechRecognition.stopListening();
   };
 
   /* ================= ASK ================= */
-  const handleAsk = (query: string, audioReadOut: boolean = false) => {
+  const handleAsk = (query: string) => {
     if (!query.trim()) return;
 
-    stopMic();
+
+    resetTranscript();
     setAiResponseLoading(true);
-    lastFinalRef.current = "";
-
-    // Create a unique message ID for this response
-    const messageId = (Date.now() + 1).toString();
-    currentAudioMessageIdRef.current = audioReadOut ? messageId : null;
-
-    // If audio readout is enabled, create a new audio element for this message
-    let messageAudioRef: HTMLAudioElement | null = null;
-    if (audioReadOut) {
-      messageAudioRef = new Audio();
-      setMessageAudioStates(prev => ({
-        ...prev,
-        [messageId]: { playing: false, paused: false, audioRef: messageAudioRef }
-      }));
-    }
-
-    // Clear previous audio (only if not per-message audio)
-    if (!audioReadOut) {
-      audioRef.current.pause();
-      audioRef.current.src = "";
-    }
-
-    const mediaSource = new MediaSource();
-    (mediaSourceRef as any).current = mediaSource;
-    const audioQueue: ArrayBuffer[] = [];
-    let sourceBufferReady = false;
-
-    mediaSource.addEventListener("sourceopen", () => {
-      try {
-        // Try different MIME types for better browser compatibility
-        let mimeType = "audio/mpeg";
-        if (!MediaSource.isTypeSupported("audio/mpeg")) {
-          // Try alternative formats
-          if (MediaSource.isTypeSupported("audio/mp4")) {
-            mimeType = "audio/mp4";
-          } else if (MediaSource.isTypeSupported("audio/webm")) {
-            mimeType = "audio/webm";
-          } else {
-            console.warn("MediaSource may not support the audio format");
-          }
-        }
-
-        (sourceBufferRef as any).current = mediaSource.addSourceBuffer(mimeType);
-        sourceBufferReady = true;
-
-        // Process queued audio chunks
-        const processQueue = () => {
-          if (audioQueue.length > 0 && sourceBufferReady) {
-            const chunk = audioQueue.shift();
-            if (chunk) {
-              appendAudio(chunk);
-              // Process next chunk after a small delay
-              setTimeout(processQueue, 10);
-            }
-          }
-        };
-        processQueue();
-      } catch (error) {
-        console.error("Error creating source buffer:", error);
-      }
-    });
-
-    // Use message-specific audio ref if audioReadOut is enabled
-    const targetAudioRef = audioReadOut && messageAudioRef ? messageAudioRef : audioRef.current;
-    targetAudioRef.src = URL.createObjectURL(mediaSource);
 
     const ws = new WebSocket("wss://padai.app/services/ws/vectorchat");
-    ws.binaryType = "arraybuffer";
     (wsRef as any).current = ws;
 
     let aiText = "";
 
-    ws.onopen = () => {
-      ws.send(JSON.stringify({ text: query + "" + memoryTranscript, language, voice }));
-    };
+    ws.onopen = () => ws.send(JSON.stringify({ text: query }));
 
-    ws.onmessage = (event: any) => {
+    ws.onmessage = (e) => {
       setAiResponseLoading(false);
+      if (typeof e.data === "string") {
+        aiText += e.data.replace("text:", "");
+        // setMessages((m) => {
+        //   const last = m[m.length - 1];
+        //   if (last?.role === "ai") {
+        //     return [...m.slice(0, -1), { role: "ai", text: aiText }];
+        //   }
+        //   return [...m, { role: "ai", text: aiText }];
+        // })
 
-      if (typeof event.data === "string") {
-        const textChunk = event.data.replace("text:", "");
-        aiText += textChunk;
 
         updateLastAIReply({
-          id: messageId,
+          id: (Date.now() + 1).toString(),
           text: aiText,
           isUser: false,
           timestamp: new Date(),
-          type: 'ai',
-          hasAudioReadout: audioReadOut,
-          audioId: audioReadOut ? messageId : undefined
+          type: 'ai'
         });
-
-        // ✅ persistent transcript (never cleared)
-        setMemoryTranscript(prev => prev + textChunk);
-      } else {
-
-        // if user want audio read out then append audio to the source buffer
-        if (audioReadOut) {
-          // Queue audio if sourceBuffer not ready, otherwise append directly
-          if (sourceBufferReady && (sourceBufferRef as any).current) {
-            appendAudio(event.data);
-          } else {
-            audioQueue.push(event.data);
-          }
-        }
       }
     };
 
     ws.onclose = () => {
-      setAiResponseLoading(false);
-
-      if (!audioReadOut) {
-        // Original behavior for non-audio messages
-        const finishAndPlay = () => {
-          const sourceBuffer = (sourceBufferRef as any).current;
-          const mediaSource = (mediaSourceRef as any).current;
-
-          if (sourceBuffer && sourceBuffer.updating) {
-            sourceBuffer.addEventListener("updateend", finishAndPlay, { once: true });
-            return;
-          }
-
-          if (mediaSource && mediaSource.readyState === "open") {
-            try {
-              mediaSource.endOfStream();
-            } catch (error) {
-              console.error("Error ending stream:", error);
-            }
-          }
-
-          const tryPlay = () => {
-            const audio = audioRef.current;
-            if (audio.readyState >= 2) {
-              audio.play().then(() => {
-                setPlayingAudio(true);
-              }).catch((error) => {
-                console.error("Error playing audio:", error);
-                setTimeout(tryPlay, 500);
-              });
-            } else {
-              setTimeout(tryPlay, 100);
-            }
-          };
-
-          setTimeout(tryPlay, 100);
-        };
-
-        setTimeout(finishAndPlay, 100);
-
-        audioRef.current.onended = () => {
-          setPlayingAudio(false);
-          setAudioPaused(false);
-          if (browserSupportsSpeechRecognition) {
-            resetTranscript();
-            startMic();
-          }
-        };
-      } else {
-        // Audio readout enabled - handle per-message audio
-        const finishAndPlay = () => {
-          const sourceBuffer = (sourceBufferRef as any).current;
-          const mediaSource = (mediaSourceRef as any).current;
-
-          if (sourceBuffer && sourceBuffer.updating) {
-            sourceBuffer.addEventListener("updateend", finishAndPlay, { once: true });
-            return;
-          }
-
-          if (mediaSource && mediaSource.readyState === "open") {
-            try {
-              mediaSource.endOfStream();
-            } catch (error) {
-              console.error("Error ending stream:", error);
-            }
-          }
-
-          const tryPlay = () => {
-            if (messageAudioRef && messageAudioRef.readyState >= 2) {
-              messageAudioRef.play().then(() => {
-                setMessageAudioStates(prev => ({
-                  ...prev,
-                  [messageId]: { playing: true, paused: false, audioRef: messageAudioRef }
-                }));
-              }).catch((error) => {
-                console.error("Error playing audio:", error);
-                setTimeout(tryPlay, 500);
-              });
-            } else if (messageAudioRef) {
-              setTimeout(tryPlay, 100);
-            }
-          };
-
-          setTimeout(tryPlay, 100);
-        };
-
-        setTimeout(finishAndPlay, 100);
-
-        if (messageAudioRef) {
-          messageAudioRef.onended = () => {
-            setMessageAudioStates(prev => ({
-              ...prev,
-              [messageId]: { playing: false, paused: false, audioRef: messageAudioRef }
-            }));
-          };
-        }
-      }
+      playTTS();
     };
-  };
 
-  /* ---------------- AUDIO ---------------- */
-  const appendAudio = (data: ArrayBuffer) => {
-    const sourceBuffer = (sourceBufferRef as any).current;
-    if (!sourceBuffer) {
-      console.warn("SourceBuffer not ready");
-      return;
-    }
-
-    const append = () => {
-      if (!sourceBuffer || sourceBuffer.updating) {
-        setTimeout(append, 25);
-      } else {
-        try {
-          sourceBuffer.appendBuffer(new Uint8Array(data));
-        } catch (error) {
-          console.error("Error appending audio buffer:", error);
-        }
-      }
-    };
-    append();
   };
 
   /* ================= AUDIO CONTROLS ================= */
-  const toggleAudio = () => {
-    if (!audioRef.current) return;
+  const playTTS = () => {
+    audioRef.current.src =
+      "https://d1rb72t9cnnyis.cloudfront.net/common/AI+Buddy+Teaching.mp4";
+    audioRef.current.play();
+    setPlayingAudio(true);
+    setAudioPaused(false);
 
-    audioRef.current.paused
-      ? audioRef.current.play()
-      : audioRef.current.pause();
-
-    setAudioPaused(!audioPaused);
+    audioRef.current.onended = () => {
+      setPlayingAudio(false);
+      setAudioPaused(false);
+      SpeechRecognition.startListening({ continuous: true, language: "en-IN" });
+    };
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -619,12 +347,6 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
     if (chipText === 'Clear') {
       clearChat();
       setInputText('');
-      setMemoryTranscript('');
-      lastFinalRef.current = "";
-      (wsRef as any).current?.close();
-      audioRef.current.pause();
-      setPlayingAudio(false);
-      setAiResponseLoading(false);
       if (browserSupportsSpeechRecognition) {
         resetTranscript();
       }
@@ -672,12 +394,6 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
               onClick={() => {
                 clearChat();
                 setInputText('');
-                setMemoryTranscript('');
-                lastFinalRef.current = "";
-                (wsRef as any).current?.close();
-                audioRef.current.pause();
-                setPlayingAudio(false);
-                setAiResponseLoading(false);
                 if (browserSupportsSpeechRecognition) {
                   resetTranscript();
                 }
@@ -747,35 +463,6 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
                           minute: '2-digit'
                         })}
                       </div>
-                      {/* Audio readout video and controls for AI messages */}
-                      {message.type === 'ai' && message.hasAudioReadout && message.audioId && (
-                        <AudioReadoutControls
-                          messageId={message.audioId}
-                          audioState={messageAudioStates[message.audioId]}
-                          onTogglePlayPause={(messageId) => {
-                            const audioState = messageAudioStates[messageId];
-                            const audioRef = audioState?.audioRef;
-
-                            if (audioRef) {
-                              if (audioState?.playing && !audioState.paused) {
-                                audioRef.pause();
-                                setMessageAudioStates(prev => ({
-                                  ...prev,
-                                  [messageId]: { ...prev[messageId], paused: true }
-                                }));
-                              } else {
-                                audioRef.play().then(() => {
-                                  setMessageAudioStates(prev => ({
-                                    ...prev,
-                                    [messageId]: { ...prev[messageId], playing: true, paused: false }
-                                  }));
-                                }).catch(() => { });
-                              }
-                            }
-                          }}
-                          videoRefs={videoRefs}
-                        />
-                      )}
                     </div>
                   )}
                 </div>
@@ -806,7 +493,7 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
                 rows={1}
                 autoGrow={true}
               />
-              {/* <div className='input-area-buttons'>
+              <div className='input-area-buttons'>
                 <IonButton
                   fill="solid"
                   onClick={() => { handleTextareaFocus(); handleSendMessage() }}
@@ -815,34 +502,34 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
                 >
                   <IonIcon icon={send} />
                 </IonButton>
-              </div> */}
+              </div>
             </div>
             {/* Chip Buttons Row */}
             <div className="chips-row">
-              <div className="display-flex">
-                <IonChip
-                  className={`voice-chip ${listening ? 'listening' : ''}`}
-                  onClick={handleVoiceToggle}
-                >
-                  {listening ? (
-                    <img
-                      src={audioIcon}
-                      alt="Listening"
-                      className="audio-wave-gif"
-                    />
-                  ) : (
-                    <IonIcon icon={mic} />
-                  )}
-                  <IonText>Voice</IonText>
-                  {/* {listening && (
+              <IonChip
+                className={`voice-chip ${listening ? 'listening' : ''}`}
+                onClick={handleVoiceToggle}
+              >
+                {listening ? (
+                  <img
+                    src={audioIcon}
+                    alt="Listening"
+                    className="audio-wave-gif"
+                  />
+                ) : (
+                  <IonIcon icon={mic} />
+                )}
+                <IonText>Voice</IonText>
+                {/* {listening && (
                   <>
                     <span className="voice-wave wave-1"></span>
                     <span className="voice-wave wave-2"></span>
                     <span className="voice-wave wave-3"></span>
                   </>
                 )} */}
-                </IonChip>
-                {predefinedChips.filter(chip => chip.text == 'Translate').map((chip, index) => (
+              </IonChip>
+              <div className="action-chips">
+                {predefinedChips.map((chip, index) => (
                   <IonChip
                     key={index}
                     className={`action-chip ${chip.text === 'Clear' ? 'clear-chip' : ''}`}
@@ -852,37 +539,6 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
                     {chip.text !== 'Clear' && <IonText>{chip.text}</IonText>}
                   </IonChip>
                 ))}
-
-              </div>
-
-              <div className="action-chips">
-
-                <IonButton
-                  fill="solid"
-                  onClick={() => { handleTextareaFocus(); handleSendMessage() }}
-                  disabled={!inputText.trim()}
-                  className="send-button"
-                >
-                  <IonIcon icon={arrowUp} />
-                </IonButton>
-                <IonButton
-                  fill="outline"
-                  onClick={() => { handleTextareaFocus(); handleSendMessage('', true) }}
-                  disabled={!inputText.trim()}
-                  className="send-button"
-                >
-                  <IonIcon icon={cloudUploadOutline} />
-                </IonButton>
-                {/* {predefinedChips.map((chip, index) => (
-                  <IonChip
-                    key={index}
-                    className={`action-chip ${chip.text === 'Clear' ? 'clear-chip' : ''}`}
-                    onClick={() => handleChipClick(chip.text)}
-                  >
-                    <IonIcon icon={chip.icon} />
-                    {chip.text !== 'Clear' && <IonText>{chip.text}</IonText>}
-                  </IonChip>
-                ))} */}
               </div>
             </div>
           </div>
