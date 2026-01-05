@@ -9,7 +9,6 @@ import { getPlatform } from '../../../utils/platform';
             <IonImg src={`${import.meta.env.BASE_URL}assets/images/landingScreens/footer.png`} alt="logo" className='padAIFooterLogo'/>
             <div className='padAIFooterText-container'>
                 <p>© 2026 Padai</p>
-                <p>{getPlatform().code}</p>
             </div>
         </div>
     );
