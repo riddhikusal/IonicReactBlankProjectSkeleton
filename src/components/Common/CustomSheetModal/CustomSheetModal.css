@@ -443,7 +443,34 @@
   --padding-bottom: 12px;
   border: none !important;
   font-size: 14px;
-  max-height: 120px;
+  line-height: 1.5;
+  min-height: 48px;
+  max-height: 90px; /* Approximately 3 lines (48px base + ~42px for 2 more lines) */
+  overflow-y: auto;
+  resize: none;
+}
+
+/* Custom scrollbar for message input */
+.message-input textarea {
+  overflow-y: auto !important;
+  max-height: 90px;
+}
+
+.message-input textarea::-webkit-scrollbar {
+  width: 4px;
+}
+
+.message-input textarea::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.message-input textarea::-webkit-scrollbar-thumb {
+  background: #c0c0c0;
+  border-radius: 2px;
+}
+
+.message-input textarea::-webkit-scrollbar-thumb:hover {
+  background: #a0a0a0;
 }
 
 .message-input:focus-within {

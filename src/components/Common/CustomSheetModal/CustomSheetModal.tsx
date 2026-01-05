@@ -624,6 +624,12 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
         }
       }
     };
+
+    ws.onerror = (event: any) => {
+      console.error('WebSocket error:', event);
+      setSpeechRecognitionError('WebSocket error. Please check your internet connection.');
+      dangerToaster('WebSocket error. Please check your internet connection.');
+    };
   };
 
   /* ---------------- AUDIO ---------------- */
