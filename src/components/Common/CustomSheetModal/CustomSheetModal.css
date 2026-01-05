@@ -67,13 +67,13 @@
 /* Header */
 .modal-header {
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column;
   padding: 12px 16px 8px;
   padding-top: max(12px, env(safe-area-inset-top, 0px));
   border-bottom: 1px solid #e0e0e0;
   position: relative;
   flex-shrink: 0;
+  gap: 8px;
 }
 
 /* Add extra padding for expanded state on iOS */
@@ -96,6 +96,65 @@
   display: flex;
   gap: 8px;
   margin-left: auto;
+  align-items: center;
+}
+
+/* Speech Recognition Error Banner */
+.speech-recognition-error-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #fee;
+  border: 1px solid #fcc;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin: 0 0 4px 0;
+  width: 100%;
+  box-sizing: border-box;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.speech-recognition-error-banner .error-text {
+  color: #c82333;
+  font-size: 13px;
+  font-weight: 500;
+  flex: 1;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.error-close-button {
+  --color: #c82333;
+  --background: transparent;
+  --border-radius: 50%;
+  --padding-start: 4px;
+  --padding-end: 4px;
+  --padding-top: 4px;
+  --padding-bottom: 4px;
+  margin: 0;
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  flex-shrink: 0;
+}
+
+.error-close-button ion-icon {
+  font-size: 18px;
+}
+
+.error-close-button:hover {
+  --background: rgba(200, 35, 51, 0.1);
 }
 
 .expand-button,
