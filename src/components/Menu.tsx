@@ -19,6 +19,7 @@ import './Menu.css';
 import { getUserProfile, UserProfile, clearUserProfile } from '../utils/profileStorage';
 import { useEffect, useState } from 'react';
 import { useIonRouter } from '@ionic/react';
+import { useUserProfileStore } from '../services/store/userProfile.store';
 
 interface AppPage {
   url: string;
@@ -103,6 +104,7 @@ const Menu: React.FC = () => {
   const location = useLocation();
   const navigate = useIonRouter();
   const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const userProfileInStore = useUserProfileStore((state) => state.userProfile);
 
 
   const getUserProfileData = async () => {
@@ -112,7 +114,7 @@ const Menu: React.FC = () => {
 
   useEffect(() => {
     getUserProfileData();
-  }, []);
+  }, [userProfileInStore]);
 
   const handleLogout = () => {
     clearUserProfile();

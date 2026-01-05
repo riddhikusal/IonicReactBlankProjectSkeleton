@@ -9,6 +9,7 @@ import PadAIVideoPlayer from "../../../../components/ContentView/VideoPlayer/Vid
 import './QuestionAnswerDetailsScreen.css'
 import PadAIContentAIPanel from "../../../../components/ContentView/ContentAIPanel/ContentAIPanel"
 import { useChatsStore } from "../../../../services/store/chats.store";
+import NewPadAIVideoPlayer from "../../../../components/ContentView/VideoPlayer/NewPadAIVideo"
 
 const PadAIQuestionAnswerDetailsScreen = () => {
     const setSelectedText = useChatsStore((state: any) => state.setSelectedText);;
@@ -211,7 +212,7 @@ const PadAIQuestionAnswerDetailsScreen = () => {
                                     <IonIcon icon={close} />
                                 </IonButton>
                             </div>
-                            <PadAIVideoPlayer
+                            {/* <PadAIVideoPlayer
                                 video={{
                                     id: currentQuestion.id?.toString() || String(currentIndex),
                                     title: questionText,
@@ -221,7 +222,9 @@ const PadAIQuestionAnswerDetailsScreen = () => {
                                     description: questionText,
                                     contentType: 'video'
                                 }}
-                            />
+                            /> */}
+
+                            <NewPadAIVideoPlayer videoUrl={getVideoUrl(currentQuestion.ExplainerVideo)} />
                         </div>
                     )}
 

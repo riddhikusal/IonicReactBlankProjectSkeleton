@@ -12,6 +12,7 @@ import React from 'react';
 import { useChapterStore } from '../../services/store/chapter.store';
 import { chatbubbleOutline, homeOutline, personOutline, videocamOutline } from 'ionicons/icons';
 import { getPlatform } from '../../utils/platform';
+import { useUserProfileStore } from '../../services/store/userProfile.store';
 
 const PadAIHomeScreen: React.FC = () => {
     // chapterInfo store
@@ -19,6 +20,7 @@ const PadAIHomeScreen: React.FC = () => {
     const setContentLoading = useChapterStore((state) => state.setContentLoading);
     const setContentLoaded = useChapterStore((state) => state.setContentLoaded);
     const setAudioIsPlaying = useChapterStore((state) => state.setAudioIsPlaying);
+    const setUserProfileInStore = useUserProfileStore((state) => state.setUserProfileInStore);
 
     const { dangerToaster } = useToaster();
     const navigate = useIonRouter();
@@ -86,6 +88,7 @@ const PadAIHomeScreen: React.FC = () => {
         console.log("Platform ===>", getPlatform().code);
         setUserProfile(userProfile);
         getAllSubjects(userProfile?.langMedium || '', userProfile?.langNative || '', userProfile?.classId || 0);
+        setUserProfileInStore(userProfile);
     }
 
     useEffect(() => {
