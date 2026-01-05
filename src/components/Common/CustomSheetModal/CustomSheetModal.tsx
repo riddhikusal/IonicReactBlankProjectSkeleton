@@ -140,6 +140,7 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
   const currentAudioMessageIdRef = useRef<string | null>(null);
   const videoRefs = useRef<Record<string, HTMLVideoElement | null>>({});
 
+  const [ speechToTextBrowserSupported, setSpeechToTextBrowserSupported] = useState(true);
   const { dangerToaster } = useToaster();
   const [isExpanded, setIsExpanded] = useState(false);
   const [isCustomSheetOpen, setIsCustomSheetOpen] = useState(false);
@@ -635,6 +636,7 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
 
   const handleVoiceToggle = () => {
     if (!browserSupportsSpeechRecognition) {
+      setSpeechToTextBrowserSupported(false);
       dangerToaster('Speech recognition is not supported in your browser');
       return;
     }
@@ -792,6 +794,12 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
           </IonContent>
 
 
+          {/* Speech to text browser supported */}
+          {!speechToTextBrowserSupported && (
+            <div className="speech-to-text-browser-supported">
+              <IonText>Speech to text is not supported in your browser</IonText>
+            </div>
+          )}
 
           {/* Input Area */}
           <div className="input-area">
