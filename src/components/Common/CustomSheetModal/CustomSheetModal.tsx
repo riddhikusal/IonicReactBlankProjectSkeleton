@@ -1487,6 +1487,22 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
       dangerToaster(errorMsg);
       return;
     }
+    
+    // Check if native recognition is already running
+    const existingRecognition = (window as any).__androidRecognition;
+    if (existingRecognition) {
+      try {
+        addWorkFlowLog('handleVoiceToggle - Stopping existing native recognition before starting new one');
+        existingRecognition.stop();
+        existingRecognition.abort();
+        (window as any).__androidRecognition = null;
+        // Wait a bit for cleanup
+        await new Promise(resolve => setTimeout(resolve, 200));
+      } catch (e: any) {
+        addWorkFlowLog(`handleVoiceToggle - Error stopping existing recognition: ${e?.message || e}`);
+        (window as any).__androidRecognition = null;
+      }
+    }
 
     // Request microphone permission on mobile
     if (isMobile && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
@@ -1610,6 +1626,13 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
               recognition.onerror = (event: any) => {
                 addWorkFlowLog(`handleVoiceToggle - Native recognition onerror: error="${event.error}", message="${event.message || 'N/A'}"`);
                 
+                // Handle 'aborted' error - this happens when recognition is stopped/restarted
+                if (event.error === 'aborted') {
+                  addWorkFlowLog('handleVoiceToggle - Recognition aborted (likely due to restart or stop). This is normal.');
+                  // Don't auto-restart on abort - let the onend handler or manual restart handle it
+                  return;
+                }
+                
                 // On Android, 'no-speech' error is common and shouldn't disable recognition
                 // It just means no speech was detected in that session, but we should keep trying
                 const isAndroid = isMobile && !isIOS;
@@ -1636,6 +1659,12 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
               recognition.onend = () => {
                 addWorkFlowLog('handleVoiceToggle - Native recognition onend event');
                 
+                // Check if this recognition instance is still the active one
+                if ((window as any).__androidRecognition !== recognition) {
+                  addWorkFlowLog('handleVoiceToggle - Recognition instance is no longer active (replaced by new instance), not auto-restarting');
+                  return;
+                }
+                
                 // Check if we got any results from native recognition
                 if (!nativeRecognitionHasResults) {
                   addWorkFlowLog('handleVoiceToggle - WARNING: Recognition ended without any results. This may indicate audio capture issue.');
@@ -1659,23 +1688,38 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
                 }
                 
                 // Auto-restart ONLY if mic is still enabled, we're in continuous mode, AND we didn't get results
+                // Also verify this instance is still active
                 if (micEnabledRef.current && recognition.continuous && !nativeRecognitionHasResults) {
-                  setTimeout(() => {
-                    try {
-                      addWorkFlowLog('handleVoiceToggle - Attempting to restart native recognition (no results, will continue listening)...');
-                      recognition.start();
-                      addWorkFlowLog('handleVoiceToggle - Native recognition restarted successfully');
-                      // Reset the flag for the new session
-                      nativeRecognitionHasResults = false;
-                      nativeRecognitionText = '';
-                    } catch (e: any) {
-                      addWorkFlowLog(`handleVoiceToggle - Error restarting native recognition: ${e?.message || e}`);
-                      // If restart fails, try to reinitialize
-                      if (e?.message?.includes('already started') || e?.message?.includes('aborted')) {
-                        addWorkFlowLog('handleVoiceToggle - Recognition may be in bad state, will need manual restart');
+                  // Double-check the instance is still active before scheduling restart
+                  if ((window as any).__androidRecognition === recognition) {
+                    setTimeout(() => {
+                      // Triple-check the instance is still active before restarting
+                      if ((window as any).__androidRecognition !== recognition) {
+                        addWorkFlowLog('handleVoiceToggle - Recognition instance changed during delay, not restarting');
+                        return;
                       }
-                    }
-                  }, 500); // Increased delay for Android
+                      
+                      try {
+                        addWorkFlowLog('handleVoiceToggle - Attempting to restart native recognition (no results, will continue listening)...');
+                        recognition.start();
+                        addWorkFlowLog('handleVoiceToggle - Native recognition restarted successfully');
+                        // Reset the flag for the new session
+                        nativeRecognitionHasResults = false;
+                        nativeRecognitionText = '';
+                      } catch (e: any) {
+                        addWorkFlowLog(`handleVoiceToggle - Error restarting native recognition: ${e?.message || e}`);
+                        // If restart fails, clear the instance to prevent loops
+                        if (e?.message?.includes('already started') || e?.message?.includes('aborted')) {
+                          addWorkFlowLog('handleVoiceToggle - Recognition in bad state, clearing instance to prevent loops');
+                          if ((window as any).__androidRecognition === recognition) {
+                            (window as any).__androidRecognition = null;
+                          }
+                        }
+                      }
+                    }, 1000); // Increased delay to prevent rapid restart loops
+                  } else {
+                    addWorkFlowLog('handleVoiceToggle - Recognition instance is no longer active, not scheduling restart');
+                  }
                 } else {
                   addWorkFlowLog(`handleVoiceToggle - Not auto-restarting (micEnabled: ${micEnabledRef.current}, continuous: ${recognition.continuous}, hasResults: ${nativeRecognitionHasResults})`);
                   // If we're in continuous mode but micEnabledRef is false, log why
