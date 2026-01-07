@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { IonButton, IonIcon, IonContent, IonTextarea, IonText, IonChip } from '@ionic/react';
-import { close, expand, contract, mic, send, bulbOutline, languageOutline, closeOutline, trashOutline, arrowUp, cloudUploadOutline, play, pause } from 'ionicons/icons';
+import { close, expand, contract, mic, send, bulbOutline, languageOutline, closeOutline, trashOutline, arrowUp, cloudUploadOutline, play, pause, copyOutline } from 'ionicons/icons';
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import './CustomSheetModal.css';
 import { useChatsStore } from '../../../services/store/chats.store';
@@ -142,7 +142,7 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
 
   const [ speechToTextBrowserSupported, setSpeechToTextBrowserSupported] = useState(true);
   const [speechRecognitionError, setSpeechRecognitionError] = useState<string | null>(null);
-  const { dangerToaster } = useToaster();
+  const { dangerToaster, successToaster } = useToaster();
   const [isExpanded, setIsExpanded] = useState(false);
   const [isCustomSheetOpen, setIsCustomSheetOpen] = useState(false);
   const [isInitialAppear, setIsInitialAppear] = useState(false);
@@ -570,13 +570,26 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
               
               recognition.onerror = (event: any) => {
                 addWorkFlowLog(`startMic - Native recognition onerror: error="${event.error}", message="${event.message || 'N/A'}"`);
+                
+                // On Android, 'no-speech' error is common and shouldn't disable recognition
+                // It just means no speech was detected in that session, but we should keep trying
+                const isAndroid = isMobile && !isIOS;
+                if (event.error === 'no-speech' && isAndroid) {
+                  addWorkFlowLog('startMic - No-speech error on Android (normal, will continue)');
+                  // Don't show error or disable mic for no-speech on Android
+                  return;
+                }
+                
                 const errorMsg = `Speech recognition error: ${event.error}. Please try again.`;
                 setSpeechRecognitionError(errorMsg);
                 dangerToaster(errorMsg);
                 
-                // Don't auto-restart on certain errors
-                if (event.error === 'not-allowed' || event.error === 'no-speech') {
-                  addWorkFlowLog('startMic - Critical error, not auto-restarting');
+                // Don't auto-restart on certain critical errors (but allow no-speech on Android)
+                if (event.error === 'not-allowed') {
+                  addWorkFlowLog('startMic - Critical error (not-allowed), disabling mic');
+                  micEnabledRef.current = false;
+                } else if (event.error === 'no-speech' && !isAndroid) {
+                  addWorkFlowLog('startMic - No-speech error (non-Android), disabling mic');
                   micEnabledRef.current = false;
                 }
               };
@@ -588,6 +601,16 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
                 const hasResults = finalTranscript || interimTranscript;
                 if (!hasResults) {
                   addWorkFlowLog('startMic - WARNING: Recognition ended without any results. This may indicate audio capture issue.');
+                }
+                
+                // For Android, ensure micEnabledRef stays true for continuous mode
+                const isAndroid = isMobile && !isIOS;
+                if (isAndroid && recognition.continuous) {
+                  // On Android, keep micEnabledRef true to allow auto-restart
+                  if (!micEnabledRef.current) {
+                    addWorkFlowLog('startMic - Android: Re-enabling micEnabledRef for continuous mode');
+                    micEnabledRef.current = true;
+                  }
                 }
                 
                 // Auto-restart if mic is still enabled and we're in continuous mode
@@ -607,6 +630,10 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
                   }, 500); // Increased delay for Android
                 } else {
                   addWorkFlowLog('startMic - Not auto-restarting (micEnabled: ' + micEnabledRef.current + ', continuous: ' + recognition.continuous + ')');
+                  // If we're in continuous mode but micEnabledRef is false, log why
+                  if (recognition.continuous && !micEnabledRef.current) {
+                    addWorkFlowLog('startMic - WARNING: Continuous mode but micEnabledRef is false. This may prevent auto-restart.');
+                  }
                 }
               };
               
@@ -1597,13 +1624,26 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
               
               recognition.onerror = (event: any) => {
                 addWorkFlowLog(`handleVoiceToggle - Native recognition onerror: error="${event.error}", message="${event.message || 'N/A'}"`);
+                
+                // On Android, 'no-speech' error is common and shouldn't disable recognition
+                // It just means no speech was detected in that session, but we should keep trying
+                const isAndroid = isMobile && !isIOS;
+                if (event.error === 'no-speech' && isAndroid) {
+                  addWorkFlowLog('handleVoiceToggle - No-speech error on Android (normal, will continue)');
+                  // Don't show error or disable mic for no-speech on Android
+                  return;
+                }
+                
                 const errorMsg = `Speech recognition error: ${event.error}. Please try again.`;
                 setSpeechRecognitionError(errorMsg);
                 dangerToaster(errorMsg);
                 
-                // Don't auto-restart on certain errors
-                if (event.error === 'not-allowed' || event.error === 'no-speech') {
-                  addWorkFlowLog('handleVoiceToggle - Critical error, not auto-restarting');
+                // Don't auto-restart on certain critical errors (but allow no-speech on Android)
+                if (event.error === 'not-allowed') {
+                  addWorkFlowLog('handleVoiceToggle - Critical error (not-allowed), disabling mic');
+                  micEnabledRef.current = false;
+                } else if (event.error === 'no-speech' && !isAndroid) {
+                  addWorkFlowLog('handleVoiceToggle - No-speech error (non-Android), disabling mic');
                   micEnabledRef.current = false;
                 }
               };
@@ -1615,6 +1655,16 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
                 const hasResults = finalTranscript || interimTranscript;
                 if (!hasResults) {
                   addWorkFlowLog('handleVoiceToggle - WARNING: Recognition ended without any results. This may indicate audio capture issue.');
+                }
+                
+                // For Android, ensure micEnabledRef stays true for continuous mode
+                const isAndroid = isMobile && !isIOS;
+                if (isAndroid && recognition.continuous) {
+                  // On Android, keep micEnabledRef true to allow auto-restart
+                  if (!micEnabledRef.current) {
+                    addWorkFlowLog('handleVoiceToggle - Android: Re-enabling micEnabledRef for continuous mode');
+                    micEnabledRef.current = true;
+                  }
                 }
                 
                 // Auto-restart if mic is still enabled and we're in continuous mode
@@ -1634,6 +1684,10 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
                   }, 500); // Increased delay for Android
                 } else {
                   addWorkFlowLog('handleVoiceToggle - Not auto-restarting (micEnabled: ' + micEnabledRef.current + ', continuous: ' + recognition.continuous + ')');
+                  // If we're in continuous mode but micEnabledRef is false, log why
+                  if (recognition.continuous && !micEnabledRef.current) {
+                    addWorkFlowLog('handleVoiceToggle - WARNING: Continuous mode but micEnabledRef is false. This may prevent auto-restart.');
+                  }
                 }
               };
               
@@ -1857,17 +1911,56 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
               </IonText>
               <div className="workflow-log-actions">
                 {workFlow.length > 0 && (
-                  <IonButton
-                    fill="clear"
-                    size="small"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setWorkFlow([]);
-                    }}
-                    className="workflow-clear-button"
-                  >
-                    <IonIcon icon={trashOutline} />
-                  </IonButton>
+                  <>
+                    <IonButton
+                      fill="clear"
+                      size="small"
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        try {
+                          const logText = workFlow.join('\n');
+                          await navigator.clipboard.writeText(logText);
+                          addWorkFlowLog('Workflow log copied to clipboard');
+                          successToaster('Workflow log copied to clipboard');
+                        } catch (error: any) {
+                          console.error('Failed to copy workflow log:', error);
+                          addWorkFlowLog(`Failed to copy workflow log: ${error?.message || error}`);
+                          // Fallback for older browsers
+                          try {
+                            const textArea = document.createElement('textarea');
+                            textArea.value = workFlow.join('\n');
+                            textArea.style.position = 'fixed';
+                            textArea.style.left = '-999999px';
+                            document.body.appendChild(textArea);
+                            textArea.select();
+                            document.execCommand('copy');
+                            document.body.removeChild(textArea);
+                            addWorkFlowLog('Workflow log copied to clipboard (fallback method)');
+                            successToaster('Workflow log copied to clipboard');
+                          } catch (fallbackError) {
+                            addWorkFlowLog(`Failed to copy workflow log (fallback): ${fallbackError}`);
+                            dangerToaster('Failed to copy workflow log');
+                          }
+                        }
+                      }}
+                      className="workflow-copy-button"
+                      title="Copy all logs to clipboard"
+                    >
+                      <IonIcon icon={copyOutline} />
+                    </IonButton>
+                    <IonButton
+                      fill="clear"
+                      size="small"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setWorkFlow([]);
+                      }}
+                      className="workflow-clear-button"
+                      title="Clear all logs"
+                    >
+                      <IonIcon icon={trashOutline} />
+                    </IonButton>
+                  </>
                 )}
                 <IonIcon 
                   icon={showWorkFlowLog ? contract : expand} 
