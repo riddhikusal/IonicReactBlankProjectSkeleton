@@ -175,6 +175,23 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
   const updateLastAIReply = useChatsStore((state: any) => state.updateLastAIReply);
   const setUserMessage = useChatsStore((state: any) => state.setUserMessage);
   const clearChat = useChatsStore((state: any) => state.clearChat);
+  const [workFlow, setWorkFlow] = useState<string[]>([]);
+  const [showWorkFlowLog, setShowWorkFlowLog] = useState(false);
+  const workFlowRef = useRef<HTMLDivElement>(null);
+
+  // Helper function to add workflow log with timestamp
+  const addWorkFlowLog = (message: string) => {
+    const timestamp = new Date().toLocaleTimeString();
+    const logMessage = `[${timestamp}] ${message}`;
+    setWorkFlow(prev => [...prev, logMessage]);
+    // Auto-scroll to bottom after a short delay
+    setTimeout(() => {
+      workFlowRef.current?.scrollTo({
+        top: workFlowRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
+    }, 100);
+  };
   useEffect(() => {
     setMessages(chatInfo.messages);
     setIsCustomSheetOpen(chatInfo.isChatOpen);
@@ -427,25 +444,34 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
 
   /* ================= ASK ================= */
   const handleAsk = (query: string, audioReadOut: boolean = false) => {
-    if (!query.trim()) return;
+    addWorkFlowLog(`handleAsk called - query: "${query.substring(0, 50)}...", audioReadOut: ${audioReadOut}`);
+    if (!query.trim()) {
+      addWorkFlowLog('handleAsk - Query is empty, returning');
+      return;
+    }
 
+    addWorkFlowLog('handleAsk - Stopping mic');
     stopMic();
     setAiResponseLoading(true);
     lastFinalRef.current = "";
+    addWorkFlowLog('handleAsk - Set loading state to true');
 
     // Create a unique message ID for this response
     const messageId = (Date.now() + 1).toString();
+    addWorkFlowLog(`handleAsk - Created messageId: ${messageId}`);
     currentAudioMessageIdRef.current = audioReadOut ? messageId : null;
 
     // If audio readout is enabled, create a new audio element for this message
     let messageAudioRef: HTMLAudioElement | null = null;
     if (audioReadOut) {
+      addWorkFlowLog('handleAsk - Creating audio element for audioReadout');
       messageAudioRef = new Audio();
       // Initialize audio state immediately
       setMessageAudioStates(prev => ({
         ...prev,
         [messageId]: { playing: false, paused: false, audioRef: messageAudioRef }
       }));
+      addWorkFlowLog(`handleAsk - Audio element created for messageId: ${messageId}`);
       console.log('Created audio element for message with audioReadout:', messageId);
     }
 
@@ -455,12 +481,14 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
       audioRef.current.src = "";
     }
 
+    addWorkFlowLog('handleAsk - Creating MediaSource');
     const mediaSource = new MediaSource();
     (mediaSourceRef as any).current = mediaSource;
     const audioQueue: ArrayBuffer[] = [];
     let sourceBufferReady = false;
 
     mediaSource.addEventListener("sourceopen", () => {
+      addWorkFlowLog('MediaSource - sourceopen event fired');
       try {
         // Try different MIME types for better browser compatibility
         let mimeType = "audio/mpeg";
@@ -472,11 +500,14 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
             mimeType = "audio/webm";
           } else {
             console.warn("MediaSource may not support the audio format");
+            addWorkFlowLog('MediaSource - Warning: No supported audio format found');
           }
         }
 
+        addWorkFlowLog(`MediaSource - Using MIME type: ${mimeType}`);
         (sourceBufferRef as any).current = mediaSource.addSourceBuffer(mimeType);
         sourceBufferReady = true;
+        addWorkFlowLog('MediaSource - SourceBuffer created and ready');
 
         // Process queued audio chunks
         const processQueue = () => {
@@ -498,90 +529,249 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
     // Use message-specific audio ref if audioReadOut is enabled
     const targetAudioRef = audioReadOut && messageAudioRef ? messageAudioRef : audioRef.current;
     targetAudioRef.src = URL.createObjectURL(mediaSource);
+    addWorkFlowLog('handleAsk - Set audio source URL');
 
-    const ws = new WebSocket("wss://padai.app/services/ws/vectorchat");
-    ws.binaryType = "arraybuffer";
-    (wsRef as any).current = ws;
+    // Create WebSocket connection with iOS-specific handling
+    let ws: WebSocket | null = null;
+    let connectionTimeout: NodeJS.Timeout | null = null;
+    let hasReceivedData = false;
 
-    let aiText = "";
+    try {
+      // iOS Safari requires WebSocket to be created in response to user interaction
+      // This should already be the case since handleAsk is called from a button click
+      addWorkFlowLog(`Creating WebSocket connection... (isIOS: ${isIOS}, isMobile: ${isMobile})`);
+      console.log('Creating WebSocket connection...', { isIOS, isMobile });
+      
+      ws = new WebSocket("wss://padai.app/services/ws/vectorchat");
+      ws.binaryType = "arraybuffer";
+      (wsRef as any).current = ws;
+      addWorkFlowLog(`WebSocket created - readyState: ${ws.readyState} (CONNECTING=${WebSocket.CONNECTING})`);
 
-    ws.onopen = () => {
-      ws.send(JSON.stringify({ text: query + "" + memoryTranscript, language, voice }));
-    };
+      // Set connection timeout for iOS (30 seconds)
+      addWorkFlowLog('WebSocket - Setting connection timeout (30s)');
+      connectionTimeout = setTimeout(() => {
+        if (ws && ws.readyState === WebSocket.CONNECTING) {
+          addWorkFlowLog('WebSocket - Connection timeout!');
+          console.error('WebSocket connection timeout', { readyState: ws.readyState, isIOS });
+          ws.close();
+          setAiResponseLoading(false);
+          const errorMsg = isIOS
+            ? 'Connection timeout on iOS. Please check your internet connection and try again.'
+            : 'Connection timeout. Please check your internet connection and try again.';
+          setSpeechRecognitionError(errorMsg);
+          dangerToaster(errorMsg);
+        }
+      }, 30000);
 
-    ws.onmessage = (event: any) => {
-      setAiResponseLoading(false);
+      // Log WebSocket state changes for debugging
+      const logState = () => {
+        if (ws) {
+          console.log('WebSocket state:', {
+            readyState: ws.readyState,
+            CONNECTING: WebSocket.CONNECTING,
+            OPEN: WebSocket.OPEN,
+            CLOSING: WebSocket.CLOSING,
+            CLOSED: WebSocket.CLOSED,
+            isIOS
+          });
+        }
+      };
+      
+      // Log initial state
+      setTimeout(logState, 100);
 
-      if (typeof event.data === "string") {
-        const textChunk = event.data.replace("text:", "");
-        aiText += textChunk;
+      let aiText = "";
 
-        updateLastAIReply({
-          id: messageId,
-          text: aiText,
-          isUser: false,
-          timestamp: new Date(),
-          type: 'ai',
-          hasAudioReadout: audioReadOut,
-          audioId: audioReadOut ? messageId : undefined
+      ws.onopen = () => {
+        addWorkFlowLog('WebSocket - onopen event fired! Connection established');
+        console.log('WebSocket connected successfully', { isIOS, isMobile });
+        if (connectionTimeout) {
+          clearTimeout(connectionTimeout);
+          connectionTimeout = null;
+          addWorkFlowLog('WebSocket - Cleared connection timeout');
+        }
+        try {
+          const messagePayload = { text: query + "" + memoryTranscript, language, voice };
+          addWorkFlowLog(`WebSocket - Sending message (length: ${messagePayload.text.length})`);
+          ws?.send(JSON.stringify(messagePayload));
+          addWorkFlowLog('WebSocket - Message sent successfully');
+          console.log('Message sent to WebSocket', { messageLength: messagePayload.text.length, isIOS });
+        } catch (error) {
+          addWorkFlowLog(`WebSocket - Error sending message: ${error}`);
+          console.error('Error sending message to WebSocket:', error, { isIOS });
+          setAiResponseLoading(false);
+          const errorMsg = isIOS
+            ? 'Failed to send message on iOS. Please try again.'
+            : 'Failed to send message. Please try again.';
+          setSpeechRecognitionError(errorMsg);
+          dangerToaster(errorMsg);
+        }
+      };
+
+      ws.onmessage = (event: any) => {
+        hasReceivedData = true;
+        setAiResponseLoading(false);
+        const dataType = typeof event.data;
+        const isString = typeof event.data === "string";
+        const isArrayBuffer = event.data instanceof ArrayBuffer;
+        addWorkFlowLog(`WebSocket - onmessage received! Type: ${dataType}, isString: ${isString}, isArrayBuffer: ${isArrayBuffer}`);
+        console.log('WebSocket message received', { 
+          dataType, 
+          isString,
+          isArrayBuffer,
+          isIOS 
         });
 
-        // ✅ persistent transcript (never cleared)
-        setMemoryTranscript(prev => prev + textChunk);
-      } else {
+        if (typeof event.data === "string") {
+          const textChunk = event.data.replace("text:", "");
+          aiText += textChunk;
+          addWorkFlowLog(`WebSocket - Text chunk received (chunk: ${textChunk.length} chars, total: ${aiText.length} chars)`);
+          console.log('Text chunk received', { chunkLength: textChunk.length, totalLength: aiText.length, isIOS });
 
-        // if user want audio read out then append audio to the source buffer
-        if (audioReadOut) {
-          // Queue audio if sourceBuffer not ready, otherwise append directly
-          if (sourceBufferReady && (sourceBufferRef as any).current) {
-            appendAudio(event.data);
+          updateLastAIReply({
+            id: messageId,
+            text: aiText,
+            isUser: false,
+            timestamp: new Date(),
+            type: 'ai',
+            hasAudioReadout: audioReadOut,
+            audioId: audioReadOut ? messageId : undefined
+          });
+
+          // ✅ persistent transcript (never cleared)
+          setMemoryTranscript(prev => prev + textChunk);
+        } else {
+          // if user want audio read out then append audio to the source buffer
+          if (audioReadOut) {
+            addWorkFlowLog(`WebSocket - Binary audio data received (audioReadOut: true, sourceBufferReady: ${sourceBufferReady})`);
+            // Queue audio if sourceBuffer not ready, otherwise append directly
+            if (sourceBufferReady && (sourceBufferRef as any).current) {
+              addWorkFlowLog('WebSocket - Appending audio directly to sourceBuffer');
+              appendAudio(event.data);
+            } else {
+              addWorkFlowLog(`WebSocket - Queuing audio (queue length: ${audioQueue.length})`);
+              audioQueue.push(event.data);
+            }
           } else {
-            audioQueue.push(event.data);
+            addWorkFlowLog('WebSocket - Binary data received but audioReadOut is false, ignoring');
           }
         }
-      }
-    };
+      };
 
-    ws.onclose = () => {
-      setAiResponseLoading(false);
+      ws.onerror = (error: Event) => {
+        addWorkFlowLog(`WebSocket - onerror event fired! Error: ${error}`);
+        console.error('WebSocket error:', error);
+        if (connectionTimeout) {
+          clearTimeout(connectionTimeout);
+          connectionTimeout = null;
+        }
+        setAiResponseLoading(false);
+        const errorMsg = isIOS 
+          ? 'WebSocket connection failed on iOS. Please check your internet connection and try again.'
+          : 'WebSocket connection error. Please try again.';
+        setSpeechRecognitionError(errorMsg);
+        dangerToaster(errorMsg);
+      };
 
-      if (!audioReadOut) {
-        // Original behavior for non-audio messages
-        const finishAndPlay = () => {
-          const sourceBuffer = (sourceBufferRef as any).current;
-          const mediaSource = (mediaSourceRef as any).current;
+      ws.onclose = (event: CloseEvent) => {
+        addWorkFlowLog(`WebSocket - onclose event fired! Code: ${event.code}, Reason: ${event.reason}, hasReceivedData: ${hasReceivedData}`);
+        console.log('WebSocket closed:', event.code, event.reason);
+        if (connectionTimeout) {
+          clearTimeout(connectionTimeout);
+          connectionTimeout = null;
+        }
+        setAiResponseLoading(false);
 
-          if (sourceBuffer && sourceBuffer.updating) {
-            sourceBuffer.addEventListener("updateend", finishAndPlay, { once: true });
-            return;
-          }
+        // If connection closed without receiving data and it wasn't a normal closure, show error
+        if (!hasReceivedData && event.code !== 1000 && event.code !== 1001) {
+          addWorkFlowLog(`WebSocket - Closed without receiving data! Code: ${event.code}`);
+          const errorMsg = isIOS
+            ? 'Connection closed unexpectedly on iOS. Please check your internet connection.'
+            : 'Connection closed unexpectedly. Please try again.';
+          setSpeechRecognitionError(errorMsg);
+          dangerToaster(errorMsg);
+        } else {
+          addWorkFlowLog('WebSocket - Closed normally or after receiving data');
+        }
 
-          if (mediaSource && mediaSource.readyState === "open") {
-            try {
-              mediaSource.endOfStream();
-            } catch (error) {
-              console.error("Error ending stream:", error);
+        if (!audioReadOut) {
+          addWorkFlowLog('WebSocket onclose - Handling non-audio message');
+          // Original behavior for non-audio messages
+          const finishAndPlay = () => {
+            addWorkFlowLog('finishAndPlay - Starting');
+            const sourceBuffer = (sourceBufferRef as any).current;
+            const mediaSource = (mediaSourceRef as any).current;
+
+            if (sourceBuffer && sourceBuffer.updating) {
+              addWorkFlowLog('finishAndPlay - SourceBuffer updating, waiting...');
+              sourceBuffer.addEventListener("updateend", finishAndPlay, { once: true });
+              return;
             }
-          }
 
-          const tryPlay = () => {
-            const audio = audioRef.current;
-            if (audio.readyState >= 2) {
-              audio.play().then(() => {
-                setPlayingAudio(true);
-              }).catch((error) => {
-                console.error("Error playing audio:", error);
-                setTimeout(tryPlay, 500);
-              });
-            } else {
-              setTimeout(tryPlay, 100);
+            if (mediaSource && mediaSource.readyState === "open") {
+              try {
+                addWorkFlowLog('finishAndPlay - Ending MediaSource stream');
+                mediaSource.endOfStream();
+              } catch (error) {
+                addWorkFlowLog(`finishAndPlay - Error ending stream: ${error}`);
+                console.error("Error ending stream:", error);
+              }
             }
+
+            let lastLoggedState = -1;
+            let retryCount = 0;
+            const MAX_RETRIES = 2;
+            const tryPlay = () => {
+              const audio = audioRef.current;
+              
+              // Check if max retries reached
+              if (retryCount >= MAX_RETRIES) {
+                addWorkFlowLog(`tryPlay - Max retries (${MAX_RETRIES}) reached. Failed to play audio.`);
+                const errorMsg = 'Failed to play audio after multiple attempts. Please try again.';
+                setSpeechRecognitionError(errorMsg);
+                dangerToaster(errorMsg);
+                return;
+              }
+              
+              // Only log when state changes
+              if (audio.readyState !== lastLoggedState) {
+                addWorkFlowLog(`tryPlay - Audio readyState: ${audio.readyState} (retry: ${retryCount}/${MAX_RETRIES})`);
+                lastLoggedState = audio.readyState;
+              }
+              retryCount++;
+              
+              if (audio.readyState >= 2) {
+                audio.play().then(() => {
+                  addWorkFlowLog('tryPlay - Audio playing successfully');
+                  setPlayingAudio(true);
+                }).catch((error) => {
+                  addWorkFlowLog(`tryPlay - Error playing audio: ${error} (retry: ${retryCount}/${MAX_RETRIES})`);
+                  console.error("Error playing audio:", error);
+                  if (retryCount < MAX_RETRIES) {
+                    setTimeout(tryPlay, 500);
+                  } else {
+                    addWorkFlowLog(`tryPlay - Max retries reached. Failed to play audio.`);
+                    const errorMsg = 'Failed to play audio after multiple attempts. Please try again.';
+                    setSpeechRecognitionError(errorMsg);
+                    dangerToaster(errorMsg);
+                  }
+                });
+              } else {
+                if (retryCount < MAX_RETRIES) {
+                  setTimeout(tryPlay, 100);
+                } else {
+                  addWorkFlowLog(`tryPlay - Max retries reached. Audio not ready (state: ${audio.readyState}).`);
+                  const errorMsg = 'Audio not ready after multiple attempts. Please try again.';
+                  setSpeechRecognitionError(errorMsg);
+                  dangerToaster(errorMsg);
+                }
+              }
+            };
+
+            setTimeout(tryPlay, 100);
           };
 
-          setTimeout(tryPlay, 100);
-        };
-
-        setTimeout(finishAndPlay, 100);
+          setTimeout(finishAndPlay, 100);
 
         audioRef.current.onended = () => {
           setPlayingAudio(false);
@@ -595,43 +785,83 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
         }
         };
       } else {
+        addWorkFlowLog('WebSocket onclose - Handling audioReadout message');
         // Audio readout enabled - handle per-message audio
         const finishAndPlay = () => {
+          addWorkFlowLog('finishAndPlay (audioReadout) - Starting');
           const sourceBuffer = (sourceBufferRef as any).current;
           const mediaSource = (mediaSourceRef as any).current;
 
           if (sourceBuffer && sourceBuffer.updating) {
+            addWorkFlowLog('finishAndPlay (audioReadout) - SourceBuffer updating, waiting...');
             sourceBuffer.addEventListener("updateend", finishAndPlay, { once: true });
             return;
           }
 
           if (mediaSource && mediaSource.readyState === "open") {
             try {
+              addWorkFlowLog('finishAndPlay (audioReadout) - Ending MediaSource stream');
               mediaSource.endOfStream();
             } catch (error) {
+              addWorkFlowLog(`finishAndPlay (audioReadout) - Error ending stream: ${error}`);
               console.error("Error ending stream:", error);
             }
           }
 
+          let lastLoggedStateAudioReadout = -1;
+          let retryCountAudioReadout = 0;
+          const MAX_RETRIES_AUDIO_READOUT = 2;
           const tryPlay = () => {
             if (messageAudioRef) {
+              // Check if max retries reached
+              if (retryCountAudioReadout >= MAX_RETRIES_AUDIO_READOUT) {
+                addWorkFlowLog(`tryPlay (audioReadout) - Max retries (${MAX_RETRIES_AUDIO_READOUT}) reached. Failed to play audio.`);
+                const errorMsg = 'Failed to play audio readout after multiple attempts.';
+                setSpeechRecognitionError(errorMsg);
+                dangerToaster(errorMsg);
+                return;
+              }
+              
+              // Only log when state changes
+              if (messageAudioRef.readyState !== lastLoggedStateAudioReadout) {
+                addWorkFlowLog(`tryPlay (audioReadout) - Audio readyState: ${messageAudioRef.readyState} (retry: ${retryCountAudioReadout}/${MAX_RETRIES_AUDIO_READOUT})`);
+                lastLoggedStateAudioReadout = messageAudioRef.readyState;
+              }
+              retryCountAudioReadout++;
+              
               // Check if audio has enough data to play
               if (messageAudioRef.readyState >= 2) { // HAVE_CURRENT_DATA or higher
                 messageAudioRef.play().then(() => {
+                  addWorkFlowLog(`tryPlay (audioReadout) - Audio playing successfully for messageId: ${messageId}`);
                   console.log('Audio readout started playing for message:', messageId);
                   setMessageAudioStates(prev => ({
                     ...prev,
                     [messageId]: { playing: true, paused: false, audioRef: messageAudioRef }
                   }));
                 }).catch((error: any) => {
+                  addWorkFlowLog(`tryPlay (audioReadout) - Error playing audio: ${error} (retry: ${retryCountAudioReadout}/${MAX_RETRIES_AUDIO_READOUT})`);
                   console.error("Error playing audio readout:", error);
-                  // Try again after a delay
-                  setTimeout(tryPlay, 500);
+                  if (retryCountAudioReadout < MAX_RETRIES_AUDIO_READOUT) {
+                    setTimeout(tryPlay, 500);
+                  } else {
+                    addWorkFlowLog(`tryPlay (audioReadout) - Max retries reached. Failed to play audio.`);
+                    const errorMsg = 'Failed to play audio readout after multiple attempts.';
+                    setSpeechRecognitionError(errorMsg);
+                    dangerToaster(errorMsg);
+                  }
                 });
               } else {
-                // Wait for more data
-                setTimeout(tryPlay, 100);
+                if (retryCountAudioReadout < MAX_RETRIES_AUDIO_READOUT) {
+                  setTimeout(tryPlay, 100);
+                } else {
+                  addWorkFlowLog(`tryPlay (audioReadout) - Max retries reached. Audio not ready (state: ${messageAudioRef.readyState}).`);
+                  const errorMsg = 'Audio readout not ready after multiple attempts.';
+                  setSpeechRecognitionError(errorMsg);
+                  dangerToaster(errorMsg);
+                }
               }
+            } else {
+              addWorkFlowLog('tryPlay (audioReadout) - messageAudioRef is null!');
             }
           };
 
@@ -644,6 +874,7 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
 
         if (messageAudioRef) {
           messageAudioRef.onended = () => {
+            addWorkFlowLog(`Audio readout - onended event for messageId: ${messageId}`);
             console.log('Audio readout finished for message:', messageId);
             setMessageAudioStates(prev => ({
               ...prev,
@@ -652,6 +883,7 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
           };
           
           messageAudioRef.onerror = (error) => {
+            addWorkFlowLog(`Audio readout - onerror event for messageId: ${messageId}, error: ${error}`);
             console.error('Audio readout error:', error);
             setMessageAudioStates(prev => ({
               ...prev,
@@ -660,19 +892,28 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
           };
         }
       }
-    };
+      };
 
-    ws.onerror = (event: any) => {
-      console.error('WebSocket error:', event);
-      setSpeechRecognitionError('WebSocket error. Please check your internet connection.');
-      dangerToaster('WebSocket error. Please check your internet connection.');
-    };
+    } catch (error: any) {
+      addWorkFlowLog(`ERROR - Failed to create WebSocket: ${error.message || error}`);
+      console.error('Error creating WebSocket:', error);
+      if (connectionTimeout) {
+        clearTimeout(connectionTimeout);
+      }
+      setAiResponseLoading(false);
+      const errorMsg = isIOS
+        ? 'Failed to create WebSocket connection on iOS. Please check your internet connection and try again.'
+        : 'Failed to create WebSocket connection. Please try again.';
+      setSpeechRecognitionError(errorMsg);
+      dangerToaster(errorMsg);
+    }
   };
 
   /* ---------------- AUDIO ---------------- */
   const appendAudio = (data: ArrayBuffer) => {
     const sourceBuffer = (sourceBufferRef as any).current;
     if (!sourceBuffer) {
+      addWorkFlowLog('appendAudio - SourceBuffer not ready');
       console.warn("SourceBuffer not ready");
       return;
     }
@@ -682,8 +923,10 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
         setTimeout(append, 25);
       } else {
         try {
+          addWorkFlowLog(`appendAudio - Appending buffer (size: ${data.byteLength} bytes)`);
           sourceBuffer.appendBuffer(new Uint8Array(data));
         } catch (error) {
+          addWorkFlowLog(`appendAudio - Error appending buffer: ${error}`);
           console.error("Error appending audio buffer:", error);
         }
       }
@@ -950,6 +1193,49 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
             </div>
           </IonContent>
 
+          {/* Workflow Log Section */}
+          <div className="workflow-log-section">
+            <div 
+              className="workflow-log-header"
+              onClick={() => setShowWorkFlowLog(!showWorkFlowLog)}
+            >
+              <IonText className="workflow-log-title">
+                Workflow Log {workFlow.length > 0 && `(${workFlow.length})`}
+              </IonText>
+              <div className="workflow-log-actions">
+                {workFlow.length > 0 && (
+                  <IonButton
+                    fill="clear"
+                    size="small"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setWorkFlow([]);
+                    }}
+                    className="workflow-clear-button"
+                  >
+                    <IonIcon icon={trashOutline} />
+                  </IonButton>
+                )}
+                <IonIcon 
+                  icon={showWorkFlowLog ? contract : expand} 
+                  className="workflow-toggle-icon"
+                />
+              </div>
+            </div>
+            {showWorkFlowLog && (
+              <div className="workflow-log-container" ref={workFlowRef}>
+                {workFlow.length === 0 ? (
+                  <IonText className="workflow-log-empty">No logs yet. Actions will appear here.</IonText>
+                ) : (
+                  workFlow.map((log, index) => (
+                    <div key={index} className="workflow-log-item">
+                      <IonText className="workflow-log-text">{log}</IonText>
+                    </div>
+                  ))
+                )}
+              </div>
+            )}
+          </div>
 
           {/* Speech to text browser supported */}
           {!speechToTextBrowserSupported && (
