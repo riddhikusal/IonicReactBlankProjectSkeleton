@@ -1550,16 +1550,26 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
               const recognition = new SpeechRecognitionNative();
               recognition.continuous = true;
               recognition.interimResults = true;
-              recognition.lang = language;
+              // For Android, 'en-IN' might not be well supported - try 'en-US' which is more universally supported
+              const androidLanguage = language === 'en-IN' ? 'en-US' : language;
+              recognition.lang = androidLanguage;
               recognition.maxAlternatives = 1;
+              addWorkFlowLog(`handleVoiceToggle - Using language: ${androidLanguage} (original: ${language}) for Android`);
               
               // Add comprehensive event handlers for debugging
               recognition.onstart = () => {
                 addWorkFlowLog('handleVoiceToggle - Native recognition onstart event');
-                // Verify microphone access
+                // Verify microphone access and check audio levels
                 navigator.mediaDevices.getUserMedia({ audio: true })
                   .then(stream => {
-                    addWorkFlowLog('handleVoiceToggle - Microphone stream active, tracks: ' + stream.getAudioTracks().length);
+                    const tracks = stream.getAudioTracks();
+                    addWorkFlowLog(`handleVoiceToggle - Microphone stream active, tracks: ${tracks.length}`);
+                    if (tracks.length > 0) {
+                      const track = tracks[0];
+                      addWorkFlowLog(`handleVoiceToggle - Track settings: ${JSON.stringify(track.getSettings())}`);
+                      addWorkFlowLog(`handleVoiceToggle - Track constraints: ${JSON.stringify(track.getConstraints())}`);
+                      addWorkFlowLog(`handleVoiceToggle - Track enabled: ${track.enabled}, muted: ${track.muted}, readyState: ${track.readyState}`);
+                    }
                     // Don't stop the stream, let recognition use it
                   })
                   .catch(err => {
@@ -1576,7 +1586,7 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
               };
               
               recognition.onsoundstart = () => {
-                addWorkFlowLog('handleVoiceToggle - Native recognition onsoundstart - Sound detected');
+                addWorkFlowLog('handleVoiceToggle - Native recognition onsoundstart - Sound detected (GOOD!)');
               };
               
               recognition.onsoundend = () => {
@@ -1584,7 +1594,7 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
               };
               
               recognition.onspeechstart = () => {
-                addWorkFlowLog('handleVoiceToggle - Native recognition onspeechstart - Speech detected');
+                addWorkFlowLog('handleVoiceToggle - Native recognition onspeechstart - Speech detected (GOOD!)');
               };
               
               recognition.onspeechend = () => {
@@ -1592,7 +1602,9 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
               };
               
               recognition.onnomatch = () => {
-                addWorkFlowLog('handleVoiceToggle - Native recognition onnomatch - No speech match found');
+                addWorkFlowLog('handleVoiceToggle - Native recognition onnomatch - Audio captured but not recognized as speech');
+                addWorkFlowLog(`handleVoiceToggle - Current settings: lang=${recognition.lang}, continuous=${recognition.continuous}, interimResults=${recognition.interimResults}`);
+                addWorkFlowLog('handleVoiceToggle - TIP: If this persists, the language might not match your speech or audio format may be incompatible');
               };
               
               recognition.onresult = (event: any) => {
