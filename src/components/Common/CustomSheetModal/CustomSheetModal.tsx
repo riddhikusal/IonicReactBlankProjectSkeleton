@@ -1512,35 +1512,15 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
       }
     } else {
       try {
-        // Request microphone permission on mobile (especially important for Android)
+        // For Android, try native API first - don't request getUserMedia separately
+        // The native recognition will handle microphone access itself
+        // Requesting it separately might create a conflicting stream
         const isAndroid = isMobile && !isIOS;
-        if (isMobile && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-          addWorkFlowLog(`handleVoiceToggle - Requesting microphone permission (isAndroid: ${isAndroid})`);
-          try {
-            await navigator.mediaDevices.getUserMedia({ audio: true });
-            addWorkFlowLog('handleVoiceToggle - Microphone permission granted');
-          } catch (error: any) {
-            console.error('Microphone permission denied:', error);
-            addWorkFlowLog(`handleVoiceToggle - Microphone permission denied: ${error?.message || error}`);
-            const errorMsg = 'Microphone permission is required. Please enable it in your browser settings.';
-            setSpeechRecognitionError(errorMsg);
-            dangerToaster(errorMsg);
-            return;
-          }
-        }
-        
-        // Mobile browsers need different options
-        // For Android, try continuous mode as it may work better for capturing audio
-        const options: any = {
-          language: language,
-          continuous: isAndroid ? true : false, // Android may need continuous mode to capture audio
-          interimResults: true, // Important for real-time updates
-        };
         
         // For Android, add a small delay and try to access native API directly
         if (isAndroid) {
-          addWorkFlowLog(`handleVoiceToggle - Android detected, adding delay before starting`);
-          await new Promise(resolve => setTimeout(resolve, 500)); // Increased delay for Android
+          addWorkFlowLog(`handleVoiceToggle - Android detected, trying native API (will not request getUserMedia separately)`);
+          await new Promise(resolve => setTimeout(resolve, 300)); // Small delay for Android
           
           // Try to access native SpeechRecognition API for better Android support
           const SpeechRecognitionNative = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
@@ -1559,22 +1539,8 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
               // Add comprehensive event handlers for debugging
               recognition.onstart = () => {
                 addWorkFlowLog('handleVoiceToggle - Native recognition onstart event');
-                // Verify microphone access and check audio levels
-                navigator.mediaDevices.getUserMedia({ audio: true })
-                  .then(stream => {
-                    const tracks = stream.getAudioTracks();
-                    addWorkFlowLog(`handleVoiceToggle - Microphone stream active, tracks: ${tracks.length}`);
-                    if (tracks.length > 0) {
-                      const track = tracks[0];
-                      addWorkFlowLog(`handleVoiceToggle - Track settings: ${JSON.stringify(track.getSettings())}`);
-                      addWorkFlowLog(`handleVoiceToggle - Track constraints: ${JSON.stringify(track.getConstraints())}`);
-                      addWorkFlowLog(`handleVoiceToggle - Track enabled: ${track.enabled}, muted: ${track.muted}, readyState: ${track.readyState}`);
-                    }
-                    // Don't stop the stream, let recognition use it
-                  })
-                  .catch(err => {
-                    addWorkFlowLog(`handleVoiceToggle - WARNING: Could not verify microphone stream: ${err.message}`);
-                  });
+                // Don't request getUserMedia here - let the recognition handle it
+                // Requesting it separately might interfere with the recognition's own stream
               };
               
               recognition.onaudiostart = () => {
@@ -1717,10 +1683,33 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
           }
         }
         
-        addWorkFlowLog(`handleVoiceToggle - Starting speech recognition (continuous: ${options.continuous}, language: ${options.language}, isAndroid: ${isAndroid})`);
+        // Fallback: Request permission and use library if native API not available or failed
+        if (isMobile && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+          addWorkFlowLog(`handleVoiceToggle - Requesting microphone permission for library fallback`);
+          try {
+            await navigator.mediaDevices.getUserMedia({ audio: true });
+            addWorkFlowLog('handleVoiceToggle - Microphone permission granted for library');
+          } catch (error: any) {
+            console.error('Microphone permission denied:', error);
+            addWorkFlowLog(`handleVoiceToggle - Microphone permission denied: ${error?.message || error}`);
+            const errorMsg = 'Microphone permission is required. Please enable it in your browser settings.';
+            setSpeechRecognitionError(errorMsg);
+            dangerToaster(errorMsg);
+            return;
+          }
+        }
+        
+        // Mobile browsers need different options
+        const options: any = {
+          language: language,
+          continuous: isAndroid ? true : false,
+          interimResults: true,
+        };
+        
+        addWorkFlowLog(`handleVoiceToggle - Starting speech recognition library (continuous: ${options.continuous}, language: ${options.language}, isAndroid: ${isAndroid})`);
         SpeechRecognition.startListening(options);
         setSpeechRecognitionError(null);
-        addWorkFlowLog('handleVoiceToggle - Speech recognition started successfully');
+        addWorkFlowLog('handleVoiceToggle - Speech recognition library started successfully');
         
         // Monitor for transcript updates on Android
         if (isAndroid) {
