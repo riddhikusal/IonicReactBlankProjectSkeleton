@@ -1536,12 +1536,35 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
         // For Android, add a small delay and try to access native API directly
         if (isAndroid) {
           addWorkFlowLog(`handleVoiceToggle - Android detected, trying native API (will not request getUserMedia separately)`);
-          await new Promise(resolve => setTimeout(resolve, 300)); // Small delay for Android
           
           // Try to access native SpeechRecognition API for better Android support
           const SpeechRecognitionNative = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
           if (SpeechRecognitionNative) {
             addWorkFlowLog('handleVoiceToggle - Native SpeechRecognition API available');
+            
+            // Android Web Speech API has a known limitation: the recognition engine needs to "warm up"
+            // before it can detect sound/speech. This requires multiple start/stop cycles.
+            // We'll try to pre-initialize it with a quick warm-up attempt.
+            addWorkFlowLog('handleVoiceToggle - Attempting to warm up Android recognition engine...');
+            try {
+              const warmupRecognition = new SpeechRecognitionNative();
+              const androidLanguage = language === 'en-IN' ? 'en-US' : language;
+              warmupRecognition.lang = androidLanguage;
+              warmupRecognition.continuous = false;
+              warmupRecognition.interimResults = false;
+              
+              // Start and immediately stop to "prime" the recognition engine
+              warmupRecognition.start();
+              await new Promise(resolve => setTimeout(resolve, 200));
+              warmupRecognition.stop();
+              warmupRecognition.abort();
+              addWorkFlowLog('handleVoiceToggle - Warm-up attempt completed');
+              await new Promise(resolve => setTimeout(resolve, 300)); // Brief delay after warm-up
+            } catch (warmupError: any) {
+              addWorkFlowLog(`handleVoiceToggle - Warm-up failed (this is okay, will continue): ${warmupError?.message || warmupError}`);
+              await new Promise(resolve => setTimeout(resolve, 300)); // Delay even if warm-up fails
+            }
+            
             try {
               const recognition = new SpeechRecognitionNative();
               // Try non-continuous mode first on Android - it might work better initially
@@ -1553,6 +1576,7 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
               recognition.lang = androidLanguage;
               recognition.maxAlternatives = 1;
               addWorkFlowLog(`handleVoiceToggle - Using language: ${androidLanguage} (original: ${language}) for Android, continuous: ${recognition.continuous}`);
+              addWorkFlowLog('handleVoiceToggle - NOTE: Android recognition may need several attempts to initialize. This is a known limitation.');
               
               // Track if we got any results from native recognition
               let nativeRecognitionHasResults = false;
@@ -1577,7 +1601,11 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
               };
               
               recognition.onsoundstart = () => {
-                addWorkFlowLog('handleVoiceToggle - Native recognition onsoundstart - Sound detected (GOOD!)');
+                addWorkFlowLog('handleVoiceToggle - Native recognition onsoundstart - Sound detected (GOOD! Recognition engine is working!)');
+                // Reset restart count when sound is detected - means engine is working
+                if (restartCount > 0) {
+                  addWorkFlowLog(`handleVoiceToggle - Sound detected after ${restartCount} restart(s). Recognition engine is now active.`);
+                }
               };
               
               recognition.onsoundend = () => {
@@ -1585,7 +1613,11 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
               };
               
               recognition.onspeechstart = () => {
-                addWorkFlowLog('handleVoiceToggle - Native recognition onspeechstart - Speech detected (GOOD!)');
+                addWorkFlowLog('handleVoiceToggle - Native recognition onspeechstart - Speech detected (GOOD! Recognition engine is working!)');
+                // Reset restart count when speech is detected - means engine is working
+                if (restartCount > 0) {
+                  addWorkFlowLog(`handleVoiceToggle - Speech detected after ${restartCount} restart(s). Recognition engine is now active.`);
+                }
               };
               
               recognition.onspeechend = () => {
@@ -1593,9 +1625,17 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
               };
               
               recognition.onnomatch = () => {
-                addWorkFlowLog('handleVoiceToggle - Native recognition onnomatch - Audio captured but not recognized as speech');
+                addWorkFlowLog(`handleVoiceToggle - Native recognition onnomatch - Audio captured but not recognized as speech (attempt #${restartCount + 1})`);
                 addWorkFlowLog(`handleVoiceToggle - Current settings: lang=${recognition.lang}, continuous=${recognition.continuous}, interimResults=${recognition.interimResults}`);
-                addWorkFlowLog('handleVoiceToggle - TIP: If this persists, the language might not match your speech or audio format may be incompatible');
+                
+                // On Android, onnomatch without onsoundstart/onspeechstart means the recognition engine hasn't initialized yet
+                // This is a known Android Web Speech API limitation - it needs multiple attempts to "warm up"
+                if (restartCount < 5) {
+                  addWorkFlowLog('handleVoiceToggle - Android recognition engine may still be initializing. This is normal and may take a few attempts.');
+                  addWorkFlowLog('handleVoiceToggle - NOTE: Android Web Speech API requires the recognition engine to "warm up" before it can detect sound/speech.');
+                } else {
+                  addWorkFlowLog('handleVoiceToggle - TIP: If this persists, the language might not match your speech or audio format may be incompatible');
+                }
               };
               
               recognition.onresult = (event: any) => {
