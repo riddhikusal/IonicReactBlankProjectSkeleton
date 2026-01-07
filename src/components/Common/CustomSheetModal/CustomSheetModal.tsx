@@ -1544,17 +1544,22 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
             addWorkFlowLog('handleVoiceToggle - Native SpeechRecognition API available');
             try {
               const recognition = new SpeechRecognitionNative();
-              recognition.continuous = true;
+              // Try non-continuous mode first on Android - it might work better initially
+              // After getting results, we can switch to continuous if needed
+              recognition.continuous = false; // Start with non-continuous for better reliability
               recognition.interimResults = true;
               // For Android, 'en-IN' might not be well supported - try 'en-US' which is more universally supported
               const androidLanguage = language === 'en-IN' ? 'en-US' : language;
               recognition.lang = androidLanguage;
               recognition.maxAlternatives = 1;
-              addWorkFlowLog(`handleVoiceToggle - Using language: ${androidLanguage} (original: ${language}) for Android`);
+              addWorkFlowLog(`handleVoiceToggle - Using language: ${androidLanguage} (original: ${language}) for Android, continuous: ${recognition.continuous}`);
               
               // Track if we got any results from native recognition
               let nativeRecognitionHasResults = false;
               let nativeRecognitionText = '';
+              let restartCount = 0;
+              const MAX_RESTARTS = 10; // Limit restarts to prevent infinite loops
+              let shouldUseContinuous = false; // Flag to switch to continuous after first success
               
               // Add comprehensive event handlers for debugging
               recognition.onstart = () => {
@@ -1618,6 +1623,12 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
                   addWorkFlowLog(`handleVoiceToggle - Native recognition transcript: final="${finalTranscript.trim()}", interim="${interimTranscript.trim()}", combined="${combined}"`);
                   setInputText(combined);
                   addWorkFlowLog(`handleVoiceToggle - Text set to textarea: "${combined}"`);
+                  
+                  // After first successful recognition, switch to continuous mode for better experience
+                  if (!shouldUseContinuous && combined.trim().length > 0) {
+                    shouldUseContinuous = true;
+                    addWorkFlowLog('handleVoiceToggle - First successful recognition! Will switch to continuous mode after this session.');
+                  }
                 } else {
                   addWorkFlowLog('handleVoiceToggle - WARNING: onresult fired but no transcript found');
                 }
@@ -1677,21 +1688,42 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
                   return;
                 }
                 
-                // For Android, ensure micEnabledRef stays true for continuous mode
+                // For Android, ensure micEnabledRef stays true
                 const isAndroid = isMobile && !isIOS;
-                if (isAndroid && recognition.continuous) {
+                if (isAndroid) {
                   // On Android, keep micEnabledRef true to allow auto-restart
                   if (!micEnabledRef.current) {
-                    addWorkFlowLog('handleVoiceToggle - Android: Re-enabling micEnabledRef for continuous mode');
+                    addWorkFlowLog('handleVoiceToggle - Android: Re-enabling micEnabledRef');
                     micEnabledRef.current = true;
                   }
                 }
                 
-                // Auto-restart ONLY if mic is still enabled, we're in continuous mode, AND we didn't get results
-                // Also verify this instance is still active
-                if (micEnabledRef.current && recognition.continuous && !nativeRecognitionHasResults) {
+                // If we got results and should switch to continuous, do it now
+                if (nativeRecognitionHasResults && shouldUseContinuous && !recognition.continuous) {
+                  addWorkFlowLog('handleVoiceToggle - Switching to continuous mode after successful recognition');
+                  recognition.continuous = true;
+                }
+                
+                // Auto-restart ONLY if mic is still enabled, AND we didn't get results
+                // Also verify this instance is still active and we haven't exceeded max restarts
+                // For non-continuous mode, we still want to restart to keep listening
+                if (micEnabledRef.current && !nativeRecognitionHasResults) {
+                  // Check restart count
+                  if (restartCount >= MAX_RESTARTS) {
+                    addWorkFlowLog(`handleVoiceToggle - Max restarts (${MAX_RESTARTS}) reached. Stopping auto-restart. User can manually restart.`);
+                    const errorMsg = 'Speech recognition is having trouble detecting speech. Please try speaking louder or closer to the microphone.';
+                    setSpeechRecognitionError(errorMsg);
+                    dangerToaster(errorMsg);
+                    return;
+                  }
+                  
                   // Double-check the instance is still active before scheduling restart
                   if ((window as any).__androidRecognition === recognition) {
+                    // Increase delay based on restart count - first few restarts need more time to initialize
+                    // Longer delays help the recognition engine "warm up"
+                    const delay = restartCount < 2 ? 3000 : (restartCount < 4 ? 2500 : (restartCount < 6 ? 2000 : 1500));
+                    restartCount++;
+                    
                     setTimeout(() => {
                       // Triple-check the instance is still active before restarting
                       if ((window as any).__androidRecognition !== recognition) {
@@ -1700,7 +1732,7 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
                       }
                       
                       try {
-                        addWorkFlowLog('handleVoiceToggle - Attempting to restart native recognition (no results, will continue listening)...');
+                        addWorkFlowLog(`handleVoiceToggle - Attempting to restart native recognition (restart #${restartCount}/${MAX_RESTARTS}, delay: ${delay}ms, continuous: ${recognition.continuous}, no results, will continue listening)...`);
                         recognition.start();
                         addWorkFlowLog('handleVoiceToggle - Native recognition restarted successfully');
                         // Reset the flag for the new session
@@ -1716,25 +1748,28 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
                           }
                         }
                       }
-                    }, 1000); // Increased delay to prevent rapid restart loops
+                    }, delay); // Variable delay - longer for first few restarts to allow initialization
                   } else {
                     addWorkFlowLog('handleVoiceToggle - Recognition instance is no longer active, not scheduling restart');
                   }
                 } else {
-                  addWorkFlowLog(`handleVoiceToggle - Not auto-restarting (micEnabled: ${micEnabledRef.current}, continuous: ${recognition.continuous}, hasResults: ${nativeRecognitionHasResults})`);
-                  // If we're in continuous mode but micEnabledRef is false, log why
-                  if (recognition.continuous && !micEnabledRef.current) {
-                    addWorkFlowLog('handleVoiceToggle - WARNING: Continuous mode but micEnabledRef is false. This may prevent auto-restart.');
+                  addWorkFlowLog(`handleVoiceToggle - Not auto-restarting (micEnabled: ${micEnabledRef.current}, continuous: ${recognition.continuous}, hasResults: ${nativeRecognitionHasResults}, restartCount: ${restartCount})`);
+                  // If micEnabledRef is false, log why
+                  if (!micEnabledRef.current) {
+                    addWorkFlowLog('handleVoiceToggle - WARNING: micEnabledRef is false. This may prevent auto-restart.');
                   }
                 }
               };
               
               recognition.start();
-              addWorkFlowLog('handleVoiceToggle - Native SpeechRecognition started directly');
+              addWorkFlowLog('handleVoiceToggle - Native SpeechRecognition started directly (initial attempt)');
               setSpeechRecognitionError(null);
               
               // Store recognition instance for cleanup
               (window as any).__androidRecognition = recognition;
+              
+              // Reset restart count when starting fresh
+              restartCount = 0;
               
               return; // Exit early, using native API
             } catch (nativeError: any) {
