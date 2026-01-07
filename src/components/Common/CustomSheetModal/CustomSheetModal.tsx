@@ -237,6 +237,55 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
     }
   }, [finalTranscript, interimTranscript]);
 
+  // Monitor listening state for Android - detect unexpected stops
+  const listeningRef = useRef(listening);
+  const listeningTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  useEffect(() => {
+    const isAndroid = isMobile && !isIOS;
+    
+    // Only monitor on Android
+    if (!isAndroid || !browserSupportsSpeechRecognition) {
+      return;
+    }
+
+    // Clear previous timeout
+    if (listeningTimeoutRef.current) {
+      clearTimeout(listeningTimeoutRef.current);
+    }
+
+    // If listening state changed from true to false unexpectedly
+    if (listeningRef.current === true && listening === false && micEnabledRef.current) {
+      addWorkFlowLog('Speech Recognition - WARNING: Listening stopped unexpectedly on Android');
+      // Don't auto-restart immediately, let user manually restart
+      // This prevents the continuous start/stop loop
+    }
+
+    // If we just started listening, set a timeout to check if it stops immediately
+    if (listening && !listeningRef.current) {
+      listeningTimeoutRef.current = setTimeout(() => {
+        if (!listening && micEnabledRef.current) {
+          addWorkFlowLog('Speech Recognition - ERROR: Speech recognition stopped immediately after starting (Android abort loop detected)');
+          const errorMsg = 'Speech recognition stopped immediately. This may be a browser limitation. Try stopping and starting again.';
+          setSpeechRecognitionError(errorMsg);
+          dangerToaster(errorMsg);
+          // Prevent auto-restart by setting micEnabledRef to false temporarily
+          micEnabledRef.current = false;
+          setTimeout(() => {
+            micEnabledRef.current = true;
+          }, 2000);
+        }
+      }, 500);
+    }
+
+    listeningRef.current = listening;
+
+    return () => {
+      if (listeningTimeoutRef.current) {
+        clearTimeout(listeningTimeoutRef.current);
+      }
+    };
+  }, [listening, isMobile, isIOS, browserSupportsSpeechRecognition]);
+
   // Handle mobile browser speech recognition initialization and request permissions
   useEffect(() => {
     if (!browserSupportsSpeechRecognition || !isCustomSheetOpen) {
@@ -435,19 +484,30 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
         const isAndroid = isMobile && !isIOS;
         const options: any = {
           language: language,
-          continuous: isAndroid ? true : !isMobile, // Android works better with continuous mode
-          interimResults: true, // Important for real-time updates on Android
+          continuous: false, // Both iOS and Android work better with non-continuous mode
+          interimResults: true, // Important for real-time updates
         };
         
-        // For iOS, we need to be more careful
-        if (isIOS) {
-          options.continuous = false;
+        // For Android, add a small delay to ensure permissions are fully processed
+        if (isAndroid) {
+          addWorkFlowLog(`startMic - Android detected, adding delay before starting`);
+          await new Promise(resolve => setTimeout(resolve, 300));
         }
         
         addWorkFlowLog(`startMic - Starting speech recognition (continuous: ${options.continuous}, language: ${options.language}, isAndroid: ${isAndroid})`);
         SpeechRecognition.startListening(options);
         setSpeechRecognitionError(null);
         addWorkFlowLog('startMic - Speech recognition started successfully');
+        
+        // Monitor for errors on Android
+        if (isAndroid) {
+          setTimeout(() => {
+            if (!listening) {
+              addWorkFlowLog('startMic - WARNING: Speech recognition stopped immediately after starting (Android)');
+              setSpeechRecognitionError('Speech recognition stopped unexpectedly. Please try again.');
+            }
+          }, 1000);
+        }
       } catch (error: any) {
         console.error('Error starting speech recognition:', error);
         addWorkFlowLog(`startMic - ERROR: ${error?.message || error}`);
@@ -1284,19 +1344,32 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
         // Mobile browsers need different options
         const options: any = {
           language: language,
-          continuous: isAndroid ? true : !isMobile, // Android works better with continuous mode
-          interimResults: true, // Important for real-time updates on Android
+          continuous: false, // Both iOS and Android work better with non-continuous mode to avoid abort loops
+          interimResults: true, // Important for real-time updates
         };
         
-        // For iOS, we need to be more careful
-        if (isIOS) {
-          options.continuous = false;
+        // For Android, add a small delay to ensure permissions are fully processed
+        if (isAndroid) {
+          addWorkFlowLog(`handleVoiceToggle - Android detected, adding delay before starting`);
+          await new Promise(resolve => setTimeout(resolve, 300));
         }
         
         addWorkFlowLog(`handleVoiceToggle - Starting speech recognition (continuous: ${options.continuous}, language: ${options.language}, isAndroid: ${isAndroid})`);
         SpeechRecognition.startListening(options);
         setSpeechRecognitionError(null);
         addWorkFlowLog('handleVoiceToggle - Speech recognition started successfully');
+        
+        // Monitor for errors on Android - check if it stops immediately
+        if (isAndroid) {
+          setTimeout(() => {
+            if (!listening) {
+              addWorkFlowLog('handleVoiceToggle - WARNING: Speech recognition stopped immediately after starting (Android)');
+              const errorMsg = 'Speech recognition stopped unexpectedly on Android. This may be due to browser limitations. Please try again.';
+              setSpeechRecognitionError(errorMsg);
+              dangerToaster(errorMsg);
+            }
+          }, 1000);
+        }
       } catch (error: any) {
         console.error('Error starting speech recognition:', error);
         addWorkFlowLog(`handleVoiceToggle - ERROR: ${error?.message || error}`);
