@@ -213,19 +213,34 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
     }
   }, [finalTranscript]);
 
-  // Handle mobile browser speech recognition initialization
+  // Handle mobile browser speech recognition initialization and request permissions
   useEffect(() => {
-    if (!browserSupportsSpeechRecognition) {
+    if (!browserSupportsSpeechRecognition || !isCustomSheetOpen) {
       return;
     }
 
-    // For mobile browsers, check if we need to request permissions
-    const checkPermissions = async () => {
+    // For mobile browsers (Android PWA and iOS), request microphone permission when modal opens
+    const requestMicrophonePermission = async () => {
+      if (isMobile && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+        try {
+          // Request permission proactively for Android PWA
+          await navigator.mediaDevices.getUserMedia({ audio: true });
+          console.log('Microphone permission granted');
+        } catch (error: any) {
+          console.error('Microphone permission error:', error);
+          // Don't show error immediately, let user try to use voice button
+          // Error will be shown when they actually try to use speech recognition
+        }
+      }
+      
+      // Also check permissions API if available
       if (isMobile && navigator.permissions) {
         try {
           const result = await navigator.permissions.query({ name: 'microphone' as PermissionName });
           if (result.state === 'denied') {
             setSpeechToTextBrowserSupported(false);
+            const errorMsg = 'Microphone permission is denied. Please enable it in your browser settings.';
+            setSpeechRecognitionError(errorMsg);
           }
         } catch (error) {
           // Permissions API might not be available, that's okay
@@ -234,8 +249,11 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
       }
     };
 
-    checkPermissions();
-  }, [browserSupportsSpeechRecognition, isMobile]);
+    // Request permission when modal opens on mobile
+    if (isMobile) {
+      requestMicrophonePermission();
+    }
+  }, [browserSupportsSpeechRecognition, isMobile, isCustomSheetOpen]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -423,10 +441,12 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
     let messageAudioRef: HTMLAudioElement | null = null;
     if (audioReadOut) {
       messageAudioRef = new Audio();
+      // Initialize audio state immediately
       setMessageAudioStates(prev => ({
         ...prev,
         [messageId]: { playing: false, paused: false, audioRef: messageAudioRef }
       }));
+      console.log('Created audio element for message with audioReadout:', messageId);
     }
 
     // Clear previous audio (only if not per-message audio)
@@ -594,28 +614,45 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
           }
 
           const tryPlay = () => {
-            if (messageAudioRef && messageAudioRef.readyState >= 2) {
-              messageAudioRef.play().then(() => {
-                setMessageAudioStates(prev => ({
-                  ...prev,
-                  [messageId]: { playing: true, paused: false, audioRef: messageAudioRef }
-                }));
-              }).catch((error) => {
-                console.error("Error playing audio:", error);
-                setTimeout(tryPlay, 500);
-              });
-            } else if (messageAudioRef) {
-              setTimeout(tryPlay, 100);
+            if (messageAudioRef) {
+              // Check if audio has enough data to play
+              if (messageAudioRef.readyState >= 2) { // HAVE_CURRENT_DATA or higher
+                messageAudioRef.play().then(() => {
+                  console.log('Audio readout started playing for message:', messageId);
+                  setMessageAudioStates(prev => ({
+                    ...prev,
+                    [messageId]: { playing: true, paused: false, audioRef: messageAudioRef }
+                  }));
+                }).catch((error: any) => {
+                  console.error("Error playing audio readout:", error);
+                  // Try again after a delay
+                  setTimeout(tryPlay, 500);
+                });
+              } else {
+                // Wait for more data
+                setTimeout(tryPlay, 100);
+              }
             }
           };
 
-          setTimeout(tryPlay, 100);
+          // Start trying to play after a short delay
+          setTimeout(tryPlay, 200);
         };
 
-        setTimeout(finishAndPlay, 100);
+        // Wait a bit for any remaining audio chunks to be processed
+        setTimeout(finishAndPlay, 200);
 
         if (messageAudioRef) {
           messageAudioRef.onended = () => {
+            console.log('Audio readout finished for message:', messageId);
+            setMessageAudioStates(prev => ({
+              ...prev,
+              [messageId]: { playing: false, paused: false, audioRef: messageAudioRef }
+            }));
+          };
+          
+          messageAudioRef.onerror = (error) => {
+            console.error('Audio readout error:', error);
             setMessageAudioStates(prev => ({
               ...prev,
               [messageId]: { playing: false, paused: false, audioRef: messageAudioRef }
