@@ -497,52 +497,116 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
               recognition.continuous = true;
               recognition.interimResults = true;
               recognition.lang = language;
+              recognition.maxAlternatives = 1;
               
-              // Add event handlers for debugging
+              // Add comprehensive event handlers for debugging
               recognition.onstart = () => {
                 addWorkFlowLog('startMic - Native recognition onstart event');
+                // Verify microphone access
+                navigator.mediaDevices.getUserMedia({ audio: true })
+                  .then(stream => {
+                    addWorkFlowLog('startMic - Microphone stream active, tracks: ' + stream.getAudioTracks().length);
+                    // Don't stop the stream, let recognition use it
+                  })
+                  .catch(err => {
+                    addWorkFlowLog(`startMic - WARNING: Could not verify microphone stream: ${err.message}`);
+                  });
+              };
+              
+              recognition.onaudiostart = () => {
+                addWorkFlowLog('startMic - Native recognition onaudiostart - Audio capture started');
+              };
+              
+              recognition.onaudioend = () => {
+                addWorkFlowLog('startMic - Native recognition onaudioend - Audio capture ended');
+              };
+              
+              recognition.onsoundstart = () => {
+                addWorkFlowLog('startMic - Native recognition onsoundstart - Sound detected');
+              };
+              
+              recognition.onsoundend = () => {
+                addWorkFlowLog('startMic - Native recognition onsoundend - Sound ended');
+              };
+              
+              recognition.onspeechstart = () => {
+                addWorkFlowLog('startMic - Native recognition onspeechstart - Speech detected');
+              };
+              
+              recognition.onspeechend = () => {
+                addWorkFlowLog('startMic - Native recognition onspeechend - Speech ended');
+              };
+              
+              recognition.onnomatch = () => {
+                addWorkFlowLog('startMic - Native recognition onnomatch - No speech match found');
               };
               
               recognition.onresult = (event: any) => {
-                addWorkFlowLog(`startMic - Native recognition onresult event (results: ${event.results.length})`);
+                addWorkFlowLog(`startMic - Native recognition onresult event (resultIndex: ${event.resultIndex}, results.length: ${event.results.length})`);
                 let interimTranscript = '';
                 let finalTranscript = '';
                 
                 for (let i = event.resultIndex; i < event.results.length; i++) {
-                  const transcript = event.results[i][0].transcript;
-                  if (event.results[i].isFinal) {
-                    finalTranscript += transcript;
+                  const result = event.results[i];
+                  const transcript = result[0].transcript;
+                  const confidence = result[0].confidence;
+                  addWorkFlowLog(`startMic - Result ${i}: transcript="${transcript}", isFinal=${result.isFinal}, confidence=${confidence}`);
+                  
+                  if (result.isFinal) {
+                    finalTranscript += transcript + ' ';
                   } else {
-                    interimTranscript += transcript;
+                    interimTranscript += transcript + ' ';
                   }
                 }
                 
                 if (finalTranscript || interimTranscript) {
-                  addWorkFlowLog(`startMic - Native recognition transcript: final="${finalTranscript}", interim="${interimTranscript}"`);
-                  const combined = finalTranscript + interimTranscript;
+                  addWorkFlowLog(`startMic - Native recognition transcript: final="${finalTranscript.trim()}", interim="${interimTranscript.trim()}"`);
+                  const combined = (finalTranscript + interimTranscript).trim();
                   setInputText(combined);
+                } else {
+                  addWorkFlowLog('startMic - WARNING: onresult fired but no transcript found');
                 }
               };
               
               recognition.onerror = (event: any) => {
-                addWorkFlowLog(`startMic - Native recognition onerror: ${event.error} (code: ${event.error})`);
+                addWorkFlowLog(`startMic - Native recognition onerror: error="${event.error}", message="${event.message || 'N/A'}"`);
                 const errorMsg = `Speech recognition error: ${event.error}. Please try again.`;
                 setSpeechRecognitionError(errorMsg);
                 dangerToaster(errorMsg);
+                
+                // Don't auto-restart on certain errors
+                if (event.error === 'not-allowed' || event.error === 'no-speech') {
+                  addWorkFlowLog('startMic - Critical error, not auto-restarting');
+                  micEnabledRef.current = false;
+                }
               };
               
               recognition.onend = () => {
                 addWorkFlowLog('startMic - Native recognition onend event');
-                // Auto-restart if mic is still enabled
-                if (micEnabledRef.current) {
+                
+                // Check if we got any results before ending
+                const hasResults = finalTranscript || interimTranscript;
+                if (!hasResults) {
+                  addWorkFlowLog('startMic - WARNING: Recognition ended without any results. This may indicate audio capture issue.');
+                }
+                
+                // Auto-restart if mic is still enabled and we're in continuous mode
+                if (micEnabledRef.current && recognition.continuous) {
                   setTimeout(() => {
                     try {
+                      addWorkFlowLog('startMic - Attempting to restart native recognition...');
                       recognition.start();
-                      addWorkFlowLog('startMic - Native recognition restarted');
-                    } catch (e) {
-                      addWorkFlowLog(`startMic - Error restarting native recognition: ${e}`);
+                      addWorkFlowLog('startMic - Native recognition restarted successfully');
+                    } catch (e: any) {
+                      addWorkFlowLog(`startMic - Error restarting native recognition: ${e?.message || e}`);
+                      // If restart fails, try to reinitialize
+                      if (e?.message?.includes('already started') || e?.message?.includes('aborted')) {
+                        addWorkFlowLog('startMic - Recognition may be in bad state, will need manual restart');
+                      }
                     }
-                  }, 100);
+                  }, 500); // Increased delay for Android
+                } else {
+                  addWorkFlowLog('startMic - Not auto-restarting (micEnabled: ' + micEnabledRef.current + ', continuous: ' + recognition.continuous + ')');
                 }
               };
               
@@ -1460,52 +1524,116 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
               recognition.continuous = true;
               recognition.interimResults = true;
               recognition.lang = language;
+              recognition.maxAlternatives = 1;
               
-              // Add event handlers for debugging
+              // Add comprehensive event handlers for debugging
               recognition.onstart = () => {
                 addWorkFlowLog('handleVoiceToggle - Native recognition onstart event');
+                // Verify microphone access
+                navigator.mediaDevices.getUserMedia({ audio: true })
+                  .then(stream => {
+                    addWorkFlowLog('handleVoiceToggle - Microphone stream active, tracks: ' + stream.getAudioTracks().length);
+                    // Don't stop the stream, let recognition use it
+                  })
+                  .catch(err => {
+                    addWorkFlowLog(`handleVoiceToggle - WARNING: Could not verify microphone stream: ${err.message}`);
+                  });
+              };
+              
+              recognition.onaudiostart = () => {
+                addWorkFlowLog('handleVoiceToggle - Native recognition onaudiostart - Audio capture started');
+              };
+              
+              recognition.onaudioend = () => {
+                addWorkFlowLog('handleVoiceToggle - Native recognition onaudioend - Audio capture ended');
+              };
+              
+              recognition.onsoundstart = () => {
+                addWorkFlowLog('handleVoiceToggle - Native recognition onsoundstart - Sound detected');
+              };
+              
+              recognition.onsoundend = () => {
+                addWorkFlowLog('handleVoiceToggle - Native recognition onsoundend - Sound ended');
+              };
+              
+              recognition.onspeechstart = () => {
+                addWorkFlowLog('handleVoiceToggle - Native recognition onspeechstart - Speech detected');
+              };
+              
+              recognition.onspeechend = () => {
+                addWorkFlowLog('handleVoiceToggle - Native recognition onspeechend - Speech ended');
+              };
+              
+              recognition.onnomatch = () => {
+                addWorkFlowLog('handleVoiceToggle - Native recognition onnomatch - No speech match found');
               };
               
               recognition.onresult = (event: any) => {
-                addWorkFlowLog(`handleVoiceToggle - Native recognition onresult event (results: ${event.results.length})`);
+                addWorkFlowLog(`handleVoiceToggle - Native recognition onresult event (resultIndex: ${event.resultIndex}, results.length: ${event.results.length})`);
                 let interimTranscript = '';
                 let finalTranscript = '';
                 
                 for (let i = event.resultIndex; i < event.results.length; i++) {
-                  const transcript = event.results[i][0].transcript;
-                  if (event.results[i].isFinal) {
-                    finalTranscript += transcript;
+                  const result = event.results[i];
+                  const transcript = result[0].transcript;
+                  const confidence = result[0].confidence;
+                  addWorkFlowLog(`handleVoiceToggle - Result ${i}: transcript="${transcript}", isFinal=${result.isFinal}, confidence=${confidence}`);
+                  
+                  if (result.isFinal) {
+                    finalTranscript += transcript + ' ';
                   } else {
-                    interimTranscript += transcript;
+                    interimTranscript += transcript + ' ';
                   }
                 }
                 
                 if (finalTranscript || interimTranscript) {
-                  addWorkFlowLog(`handleVoiceToggle - Native recognition transcript: final="${finalTranscript}", interim="${interimTranscript}"`);
-                  const combined = finalTranscript + interimTranscript;
+                  addWorkFlowLog(`handleVoiceToggle - Native recognition transcript: final="${finalTranscript.trim()}", interim="${interimTranscript.trim()}"`);
+                  const combined = (finalTranscript + interimTranscript).trim();
                   setInputText(combined);
+                } else {
+                  addWorkFlowLog('handleVoiceToggle - WARNING: onresult fired but no transcript found');
                 }
               };
               
               recognition.onerror = (event: any) => {
-                addWorkFlowLog(`handleVoiceToggle - Native recognition onerror: ${event.error} (code: ${event.error})`);
+                addWorkFlowLog(`handleVoiceToggle - Native recognition onerror: error="${event.error}", message="${event.message || 'N/A'}"`);
                 const errorMsg = `Speech recognition error: ${event.error}. Please try again.`;
                 setSpeechRecognitionError(errorMsg);
                 dangerToaster(errorMsg);
+                
+                // Don't auto-restart on certain errors
+                if (event.error === 'not-allowed' || event.error === 'no-speech') {
+                  addWorkFlowLog('handleVoiceToggle - Critical error, not auto-restarting');
+                  micEnabledRef.current = false;
+                }
               };
               
               recognition.onend = () => {
                 addWorkFlowLog('handleVoiceToggle - Native recognition onend event');
-                // Auto-restart if mic is still enabled
-                if (micEnabledRef.current) {
+                
+                // Check if we got any results before ending
+                const hasResults = finalTranscript || interimTranscript;
+                if (!hasResults) {
+                  addWorkFlowLog('handleVoiceToggle - WARNING: Recognition ended without any results. This may indicate audio capture issue.');
+                }
+                
+                // Auto-restart if mic is still enabled and we're in continuous mode
+                if (micEnabledRef.current && recognition.continuous) {
                   setTimeout(() => {
                     try {
+                      addWorkFlowLog('handleVoiceToggle - Attempting to restart native recognition...');
                       recognition.start();
-                      addWorkFlowLog('handleVoiceToggle - Native recognition restarted');
-                    } catch (e) {
-                      addWorkFlowLog(`handleVoiceToggle - Error restarting native recognition: ${e}`);
+                      addWorkFlowLog('handleVoiceToggle - Native recognition restarted successfully');
+                    } catch (e: any) {
+                      addWorkFlowLog(`handleVoiceToggle - Error restarting native recognition: ${e?.message || e}`);
+                      // If restart fails, try to reinitialize
+                      if (e?.message?.includes('already started') || e?.message?.includes('aborted')) {
+                        addWorkFlowLog('handleVoiceToggle - Recognition may be in bad state, will need manual restart');
+                      }
                     }
-                  }, 100);
+                  }, 500); // Increased delay for Android
+                } else {
+                  addWorkFlowLog('handleVoiceToggle - Not auto-restarting (micEnabled: ' + micEnabledRef.current + ', continuous: ' + recognition.continuous + ')');
                 }
               };
               
