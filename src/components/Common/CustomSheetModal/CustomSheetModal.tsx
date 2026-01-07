@@ -1536,6 +1536,10 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
               recognition.maxAlternatives = 1;
               addWorkFlowLog(`handleVoiceToggle - Using language: ${androidLanguage} (original: ${language}) for Android`);
               
+              // Track if we got any results from native recognition
+              let nativeRecognitionHasResults = false;
+              let nativeRecognitionText = '';
+              
               // Add comprehensive event handlers for debugging
               recognition.onstart = () => {
                 addWorkFlowLog('handleVoiceToggle - Native recognition onstart event');
@@ -1592,9 +1596,12 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
                 }
                 
                 if (finalTranscript || interimTranscript) {
-                  addWorkFlowLog(`handleVoiceToggle - Native recognition transcript: final="${finalTranscript.trim()}", interim="${interimTranscript.trim()}"`);
+                  nativeRecognitionHasResults = true;
                   const combined = (finalTranscript + interimTranscript).trim();
+                  nativeRecognitionText = combined;
+                  addWorkFlowLog(`handleVoiceToggle - Native recognition transcript: final="${finalTranscript.trim()}", interim="${interimTranscript.trim()}", combined="${combined}"`);
                   setInputText(combined);
+                  addWorkFlowLog(`handleVoiceToggle - Text set to textarea: "${combined}"`);
                 } else {
                   addWorkFlowLog('handleVoiceToggle - WARNING: onresult fired but no transcript found');
                 }
@@ -1629,10 +1636,16 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
               recognition.onend = () => {
                 addWorkFlowLog('handleVoiceToggle - Native recognition onend event');
                 
-                // Check if we got any results before ending
-                const hasResults = finalTranscript || interimTranscript;
-                if (!hasResults) {
+                // Check if we got any results from native recognition
+                if (!nativeRecognitionHasResults) {
                   addWorkFlowLog('handleVoiceToggle - WARNING: Recognition ended without any results. This may indicate audio capture issue.');
+                } else {
+                  addWorkFlowLog(`handleVoiceToggle - Recognition ended with results: "${nativeRecognitionText}". Will NOT auto-restart.`);
+                  // Reset the flag for next session
+                  nativeRecognitionHasResults = false;
+                  nativeRecognitionText = '';
+                  // Don't auto-restart if we got results - user can manually start again if needed
+                  return;
                 }
                 
                 // For Android, ensure micEnabledRef stays true for continuous mode
@@ -1645,13 +1658,16 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
                   }
                 }
                 
-                // Auto-restart if mic is still enabled and we're in continuous mode
-                if (micEnabledRef.current && recognition.continuous) {
+                // Auto-restart ONLY if mic is still enabled, we're in continuous mode, AND we didn't get results
+                if (micEnabledRef.current && recognition.continuous && !nativeRecognitionHasResults) {
                   setTimeout(() => {
                     try {
-                      addWorkFlowLog('handleVoiceToggle - Attempting to restart native recognition...');
+                      addWorkFlowLog('handleVoiceToggle - Attempting to restart native recognition (no results, will continue listening)...');
                       recognition.start();
                       addWorkFlowLog('handleVoiceToggle - Native recognition restarted successfully');
+                      // Reset the flag for the new session
+                      nativeRecognitionHasResults = false;
+                      nativeRecognitionText = '';
                     } catch (e: any) {
                       addWorkFlowLog(`handleVoiceToggle - Error restarting native recognition: ${e?.message || e}`);
                       // If restart fails, try to reinitialize
@@ -1661,7 +1677,7 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
                     }
                   }, 500); // Increased delay for Android
                 } else {
-                  addWorkFlowLog('handleVoiceToggle - Not auto-restarting (micEnabled: ' + micEnabledRef.current + ', continuous: ' + recognition.continuous + ')');
+                  addWorkFlowLog(`handleVoiceToggle - Not auto-restarting (micEnabled: ${micEnabledRef.current}, continuous: ${recognition.continuous}, hasResults: ${nativeRecognitionHasResults})`);
                   // If we're in continuous mode but micEnabledRef is false, log why
                   if (recognition.continuous && !micEnabledRef.current) {
                     addWorkFlowLog('handleVoiceToggle - WARNING: Continuous mode but micEnabledRef is false. This may prevent auto-restart.');
