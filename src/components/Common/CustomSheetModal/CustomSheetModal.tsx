@@ -482,31 +482,115 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
         
         // Mobile browsers need different options
         const isAndroid = isMobile && !isIOS;
+        
+        // For Android, try native API first for better compatibility
+        if (isAndroid) {
+          addWorkFlowLog(`startMic - Android detected, trying native SpeechRecognition API`);
+          await new Promise(resolve => setTimeout(resolve, 500)); // Increased delay for Android
+          
+          // Try to access native SpeechRecognition API for better Android support
+          const SpeechRecognitionNative = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+          if (SpeechRecognitionNative) {
+            addWorkFlowLog('startMic - Native SpeechRecognition API available');
+            try {
+              const recognition = new SpeechRecognitionNative();
+              recognition.continuous = true;
+              recognition.interimResults = true;
+              recognition.lang = language;
+              
+              // Add event handlers for debugging
+              recognition.onstart = () => {
+                addWorkFlowLog('startMic - Native recognition onstart event');
+              };
+              
+              recognition.onresult = (event: any) => {
+                addWorkFlowLog(`startMic - Native recognition onresult event (results: ${event.results.length})`);
+                let interimTranscript = '';
+                let finalTranscript = '';
+                
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                  const transcript = event.results[i][0].transcript;
+                  if (event.results[i].isFinal) {
+                    finalTranscript += transcript;
+                  } else {
+                    interimTranscript += transcript;
+                  }
+                }
+                
+                if (finalTranscript || interimTranscript) {
+                  addWorkFlowLog(`startMic - Native recognition transcript: final="${finalTranscript}", interim="${interimTranscript}"`);
+                  const combined = finalTranscript + interimTranscript;
+                  setInputText(combined);
+                }
+              };
+              
+              recognition.onerror = (event: any) => {
+                addWorkFlowLog(`startMic - Native recognition onerror: ${event.error} (code: ${event.error})`);
+                const errorMsg = `Speech recognition error: ${event.error}. Please try again.`;
+                setSpeechRecognitionError(errorMsg);
+                dangerToaster(errorMsg);
+              };
+              
+              recognition.onend = () => {
+                addWorkFlowLog('startMic - Native recognition onend event');
+                // Auto-restart if mic is still enabled
+                if (micEnabledRef.current) {
+                  setTimeout(() => {
+                    try {
+                      recognition.start();
+                      addWorkFlowLog('startMic - Native recognition restarted');
+                    } catch (e) {
+                      addWorkFlowLog(`startMic - Error restarting native recognition: ${e}`);
+                    }
+                  }, 100);
+                }
+              };
+              
+              recognition.start();
+              addWorkFlowLog('startMic - Native SpeechRecognition started directly');
+              setSpeechRecognitionError(null);
+              
+              // Store recognition instance for cleanup
+              (window as any).__androidRecognition = recognition;
+              
+              return; // Exit early, using native API
+            } catch (nativeError: any) {
+              addWorkFlowLog(`startMic - Failed to use native API, falling back to library: ${nativeError?.message || nativeError}`);
+            }
+          }
+        }
+        
         const options: any = {
           language: language,
-          continuous: false, // Both iOS and Android work better with non-continuous mode
+          continuous: isAndroid ? true : false, // Android may need continuous mode
           interimResults: true, // Important for real-time updates
         };
-        
-        // For Android, add a small delay to ensure permissions are fully processed
-        if (isAndroid) {
-          addWorkFlowLog(`startMic - Android detected, adding delay before starting`);
-          await new Promise(resolve => setTimeout(resolve, 300));
-        }
         
         addWorkFlowLog(`startMic - Starting speech recognition (continuous: ${options.continuous}, language: ${options.language}, isAndroid: ${isAndroid})`);
         SpeechRecognition.startListening(options);
         setSpeechRecognitionError(null);
         addWorkFlowLog('startMic - Speech recognition started successfully');
         
-        // Monitor for errors on Android
+        // Monitor for transcript updates on Android
         if (isAndroid) {
-          setTimeout(() => {
+          const checkInterval = setInterval(() => {
             if (!listening) {
-              addWorkFlowLog('startMic - WARNING: Speech recognition stopped immediately after starting (Android)');
-              setSpeechRecognitionError('Speech recognition stopped unexpectedly. Please try again.');
+              clearInterval(checkInterval);
+              addWorkFlowLog('startMic - Speech recognition stopped');
+            } else {
+              // Log if we're listening but no transcripts are coming
+              if (finalTranscript === '' && interimTranscript === '') {
+                addWorkFlowLog('startMic - WARNING: Listening but no transcripts received yet (Android)');
+              } else {
+                clearInterval(checkInterval); // Stop checking once we get transcripts
+              }
             }
-          }, 1000);
+          }, 2000);
+          
+          // Clear interval after 10 seconds
+          setTimeout(() => {
+            clearInterval(checkInterval);
+          }, 10000);
         }
       } catch (error: any) {
         console.error('Error starting speech recognition:', error);
@@ -522,9 +606,22 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
 
   const stopMic = () => {
     micEnabledRef.current = false;
+    
+    // Stop native Android recognition if it exists
+    if ((window as any).__androidRecognition) {
+      try {
+        (window as any).__androidRecognition.stop();
+        (window as any).__androidRecognition = null;
+        addWorkFlowLog('stopMic - Stopped native Android recognition');
+      } catch (error) {
+        console.error('Error stopping native recognition:', error);
+      }
+    }
+    
     if (browserSupportsSpeechRecognition) {
       try {
         SpeechRecognition.stopListening();
+        addWorkFlowLog('stopMic - Stopped library speech recognition');
       } catch (error) {
         console.error('Error stopping speech recognition:', error);
       }
@@ -1342,16 +1439,88 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
         }
         
         // Mobile browsers need different options
+        // For Android, try continuous mode as it may work better for capturing audio
         const options: any = {
           language: language,
-          continuous: false, // Both iOS and Android work better with non-continuous mode to avoid abort loops
+          continuous: isAndroid ? true : false, // Android may need continuous mode to capture audio
           interimResults: true, // Important for real-time updates
         };
         
-        // For Android, add a small delay to ensure permissions are fully processed
+        // For Android, add a small delay and try to access native API directly
         if (isAndroid) {
           addWorkFlowLog(`handleVoiceToggle - Android detected, adding delay before starting`);
-          await new Promise(resolve => setTimeout(resolve, 300));
+          await new Promise(resolve => setTimeout(resolve, 500)); // Increased delay for Android
+          
+          // Try to access native SpeechRecognition API for better Android support
+          const SpeechRecognitionNative = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+          if (SpeechRecognitionNative) {
+            addWorkFlowLog('handleVoiceToggle - Native SpeechRecognition API available');
+            try {
+              const recognition = new SpeechRecognitionNative();
+              recognition.continuous = true;
+              recognition.interimResults = true;
+              recognition.lang = language;
+              
+              // Add event handlers for debugging
+              recognition.onstart = () => {
+                addWorkFlowLog('handleVoiceToggle - Native recognition onstart event');
+              };
+              
+              recognition.onresult = (event: any) => {
+                addWorkFlowLog(`handleVoiceToggle - Native recognition onresult event (results: ${event.results.length})`);
+                let interimTranscript = '';
+                let finalTranscript = '';
+                
+                for (let i = event.resultIndex; i < event.results.length; i++) {
+                  const transcript = event.results[i][0].transcript;
+                  if (event.results[i].isFinal) {
+                    finalTranscript += transcript;
+                  } else {
+                    interimTranscript += transcript;
+                  }
+                }
+                
+                if (finalTranscript || interimTranscript) {
+                  addWorkFlowLog(`handleVoiceToggle - Native recognition transcript: final="${finalTranscript}", interim="${interimTranscript}"`);
+                  const combined = finalTranscript + interimTranscript;
+                  setInputText(combined);
+                }
+              };
+              
+              recognition.onerror = (event: any) => {
+                addWorkFlowLog(`handleVoiceToggle - Native recognition onerror: ${event.error} (code: ${event.error})`);
+                const errorMsg = `Speech recognition error: ${event.error}. Please try again.`;
+                setSpeechRecognitionError(errorMsg);
+                dangerToaster(errorMsg);
+              };
+              
+              recognition.onend = () => {
+                addWorkFlowLog('handleVoiceToggle - Native recognition onend event');
+                // Auto-restart if mic is still enabled
+                if (micEnabledRef.current) {
+                  setTimeout(() => {
+                    try {
+                      recognition.start();
+                      addWorkFlowLog('handleVoiceToggle - Native recognition restarted');
+                    } catch (e) {
+                      addWorkFlowLog(`handleVoiceToggle - Error restarting native recognition: ${e}`);
+                    }
+                  }, 100);
+                }
+              };
+              
+              recognition.start();
+              addWorkFlowLog('handleVoiceToggle - Native SpeechRecognition started directly');
+              setSpeechRecognitionError(null);
+              
+              // Store recognition instance for cleanup
+              (window as any).__androidRecognition = recognition;
+              
+              return; // Exit early, using native API
+            } catch (nativeError: any) {
+              addWorkFlowLog(`handleVoiceToggle - Failed to use native API, falling back to library: ${nativeError?.message || nativeError}`);
+            }
+          }
         }
         
         addWorkFlowLog(`handleVoiceToggle - Starting speech recognition (continuous: ${options.continuous}, language: ${options.language}, isAndroid: ${isAndroid})`);
@@ -1359,16 +1528,26 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
         setSpeechRecognitionError(null);
         addWorkFlowLog('handleVoiceToggle - Speech recognition started successfully');
         
-        // Monitor for errors on Android - check if it stops immediately
+        // Monitor for transcript updates on Android
         if (isAndroid) {
-          setTimeout(() => {
+          const checkInterval = setInterval(() => {
             if (!listening) {
-              addWorkFlowLog('handleVoiceToggle - WARNING: Speech recognition stopped immediately after starting (Android)');
-              const errorMsg = 'Speech recognition stopped unexpectedly on Android. This may be due to browser limitations. Please try again.';
-              setSpeechRecognitionError(errorMsg);
-              dangerToaster(errorMsg);
+              clearInterval(checkInterval);
+              addWorkFlowLog('handleVoiceToggle - Speech recognition stopped');
+            } else {
+              // Log if we're listening but no transcripts are coming
+              if (finalTranscript === '' && interimTranscript === '') {
+                addWorkFlowLog('handleVoiceToggle - WARNING: Listening but no transcripts received yet (Android)');
+              } else {
+                clearInterval(checkInterval); // Stop checking once we get transcripts
+              }
             }
-          }, 1000);
+          }, 2000);
+          
+          // Clear interval after 10 seconds
+          setTimeout(() => {
+            clearInterval(checkInterval);
+          }, 10000);
         }
       } catch (error: any) {
         console.error('Error starting speech recognition:', error);
