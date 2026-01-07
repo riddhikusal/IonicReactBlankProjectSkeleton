@@ -481,26 +481,96 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
       audioRef.current.src = "";
     }
 
-    addWorkFlowLog('handleAsk - Creating MediaSource');
-    const mediaSource = new MediaSource();
+    // Check MediaSource support (iOS Safari has limited support)
+    addWorkFlowLog(`handleAsk - Checking MediaSource support (isIOS: ${isIOS})`);
+    if (typeof MediaSource === 'undefined') {
+      const errorMsg = 'MediaSource API is not supported on this device. Audio streaming unavailable.';
+      addWorkFlowLog(`handleAsk - ERROR: ${errorMsg}`);
+      setSpeechRecognitionError(errorMsg);
+      dangerToaster(errorMsg);
+      setAiResponseLoading(false);
+      return;
+    }
+    addWorkFlowLog('handleAsk - MediaSource API is available');
+
+    addWorkFlowLog('handleAsk - Creating MediaSource instance');
+    let mediaSource: MediaSource;
+    try {
+      mediaSource = new MediaSource();
+      addWorkFlowLog(`handleAsk - MediaSource created successfully. readyState: ${mediaSource.readyState} (0=closed, 1=open, 2=ended)`);
+    } catch (error: any) {
+      const errorMsg = `Failed to create MediaSource: ${error?.message || error}`;
+      addWorkFlowLog(`handleAsk - ERROR creating MediaSource: ${errorMsg}`);
+      setSpeechRecognitionError(errorMsg);
+      dangerToaster(errorMsg);
+      setAiResponseLoading(false);
+      return;
+    }
+
     (mediaSourceRef as any).current = mediaSource;
     const audioQueue: ArrayBuffer[] = [];
     let sourceBufferReady = false;
 
+    // Add error handlers for MediaSource
+    mediaSource.addEventListener("error", (event) => {
+      const errorMsg = `MediaSource error: ${mediaSource.readyState}`;
+      addWorkFlowLog(`MediaSource - ERROR event: ${errorMsg}`);
+      console.error("MediaSource error:", event, mediaSource.readyState);
+      setSpeechRecognitionError(errorMsg);
+      dangerToaster(errorMsg);
+    });
+
+    mediaSource.addEventListener("sourceended", () => {
+      addWorkFlowLog('MediaSource - sourceended event fired');
+    });
+
+    mediaSource.addEventListener("sourceclose", () => {
+      addWorkFlowLog('MediaSource - sourceclose event fired');
+    });
+
+    // Set timeout to detect if sourceopen never fires (iOS issue)
+    let sourceOpenTimeout: NodeJS.Timeout | null = null;
+    sourceOpenTimeout = setTimeout(() => {
+      if (!sourceBufferReady) {
+        const errorMsg = isIOS 
+          ? 'MediaSource sourceopen event did not fire on iOS. This may indicate MediaSource is not fully supported.'
+          : 'MediaSource sourceopen event did not fire. Please try again.';
+        addWorkFlowLog(`MediaSource - TIMEOUT: ${errorMsg}`);
+        setSpeechRecognitionError(errorMsg);
+        dangerToaster(errorMsg);
+      }
+    }, 5000); // 5 second timeout
+
     mediaSource.addEventListener("sourceopen", () => {
       addWorkFlowLog('MediaSource - sourceopen event fired');
+      if (sourceOpenTimeout) {
+        clearTimeout(sourceOpenTimeout);
+        sourceOpenTimeout = null;
+      }
+      
       try {
         // Try different MIME types for better browser compatibility
+        addWorkFlowLog('MediaSource - Checking supported MIME types...');
         let mimeType = "audio/mpeg";
-        if (!MediaSource.isTypeSupported("audio/mpeg")) {
+        const mpegSupported = MediaSource.isTypeSupported("audio/mpeg");
+        const mp4Supported = MediaSource.isTypeSupported("audio/mp4");
+        const webmSupported = MediaSource.isTypeSupported("audio/webm");
+        
+        addWorkFlowLog(`MediaSource - MIME type support: mpeg=${mpegSupported}, mp4=${mp4Supported}, webm=${webmSupported}`);
+        
+        if (!mpegSupported) {
           // Try alternative formats
-          if (MediaSource.isTypeSupported("audio/mp4")) {
+          if (mp4Supported) {
             mimeType = "audio/mp4";
-          } else if (MediaSource.isTypeSupported("audio/webm")) {
+          } else if (webmSupported) {
             mimeType = "audio/webm";
           } else {
-            console.warn("MediaSource may not support the audio format");
-            addWorkFlowLog('MediaSource - Warning: No supported audio format found');
+            const errorMsg = "MediaSource: No supported audio format found on this device.";
+            console.warn(errorMsg);
+            addWorkFlowLog(`MediaSource - ERROR: ${errorMsg}`);
+            setSpeechRecognitionError(errorMsg);
+            dangerToaster(errorMsg);
+            return;
           }
         }
 
@@ -521,15 +591,35 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
           }
         };
         processQueue();
-      } catch (error) {
-        console.error("Error creating source buffer:", error);
+      } catch (error: any) {
+        const errorMsg = `Error creating source buffer: ${error?.message || error}`;
+        console.error(errorMsg, error);
+        addWorkFlowLog(`MediaSource - ERROR in sourceopen handler: ${errorMsg}`);
+        setSpeechRecognitionError(errorMsg);
+        dangerToaster(errorMsg);
       }
     });
 
     // Use message-specific audio ref if audioReadOut is enabled
     const targetAudioRef = audioReadOut && messageAudioRef ? messageAudioRef : audioRef.current;
-    targetAudioRef.src = URL.createObjectURL(mediaSource);
-    addWorkFlowLog('handleAsk - Set audio source URL');
+    addWorkFlowLog(`handleAsk - Creating object URL for MediaSource (audioReadOut: ${audioReadOut})`);
+    try {
+      const objectURL = URL.createObjectURL(mediaSource);
+      targetAudioRef.src = objectURL;
+      addWorkFlowLog(`handleAsk - Set audio source URL: ${objectURL.substring(0, 50)}...`);
+      
+      // Log MediaSource state after setting src
+      setTimeout(() => {
+        addWorkFlowLog(`handleAsk - MediaSource readyState after setting src: ${mediaSource.readyState} (0=closed, 1=open, 2=ended)`);
+      }, 100);
+    } catch (error: any) {
+      const errorMsg = `Failed to create object URL: ${error?.message || error}`;
+      addWorkFlowLog(`handleAsk - ERROR creating object URL: ${errorMsg}`);
+      setSpeechRecognitionError(errorMsg);
+      dangerToaster(errorMsg);
+      setAiResponseLoading(false);
+      return;
+    }
 
     // Create WebSocket connection with iOS-specific handling
     let ws: WebSocket | null = null;
