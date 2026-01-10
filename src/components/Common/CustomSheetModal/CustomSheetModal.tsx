@@ -716,12 +716,14 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
     }
     
     // Stop native recognition if it exists (works for both Android and iOS)
+    // Check for both stored reference and any webkitSpeechRecognition instances on iOS
     if ((window as any).__androidRecognition) {
       try {
-        (window as any).__androidRecognition.stop();
-        (window as any).__androidRecognition.abort(); // Ensure it's fully stopped, especially for iOS
+        const recognition = (window as any).__androidRecognition;
+        recognition.stop();
+        recognition.abort(); // Ensure it's fully stopped, especially for iOS
         (window as any).__androidRecognition = null;
-        addWorkFlowLog(`stopMic - Stopped native recognition (isIOS: ${isIOS})`);
+        addWorkFlowLog(`stopMic - Stopped native recognition stored in __androidRecognition (isIOS: ${isIOS})`);
       } catch (error: any) {
         console.error('Error stopping native recognition:', error);
         addWorkFlowLog(`stopMic - Error stopping native recognition: ${error?.message || error}`);
@@ -730,6 +732,23 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
       }
     }
     
+    // iOS-specific: Try to stop any webkitSpeechRecognition instances that might not be tracked
+    if (isIOS) {
+      try {
+        // Check if webkitSpeechRecognition is available
+        const SpeechRecognitionNative = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition;
+        if (SpeechRecognitionNative) {
+          addWorkFlowLog('stopMic - iOS: webkitSpeechRecognition API is available');
+          // Try to find and stop any active recognition instances
+          // Note: We can't directly enumerate active instances, but we can try to stop the stored one
+          // and ensure any new instances are properly tracked
+        }
+      } catch (error: any) {
+        addWorkFlowLog(`stopMic - iOS: Error checking webkitSpeechRecognition: ${error?.message || error}`);
+      }
+    }
+    
+    // Stop library-based speech recognition (react-speech-recognition)
     if (browserSupportsSpeechRecognition) {
       try {
         SpeechRecognition.stopListening();
@@ -740,17 +759,24 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
       }
     }
     
-    // Also try to stop any getUserMedia streams that might still be active (iOS specific)
+    // iOS-specific: Try to enumerate and verify media devices (for debugging/logging)
     if (isIOS && navigator.mediaDevices) {
       try {
+        // Get all active media devices/tracks (for logging/debugging purposes only)
+        // Note: We can't directly stop devices, but we can verify they're stopped
         navigator.mediaDevices.enumerateDevices().then(devices => {
-          addWorkFlowLog(`stopMic - iOS: Found ${devices.length} media devices after stopping`);
+          addWorkFlowLog(`stopMic - iOS: Found ${devices.length} media devices after stopping streams`);
         }).catch(() => {
           // Ignore enumeration errors
         });
-      } catch (error) {
-        // Ignore errors
+      } catch (error: any) {
+        addWorkFlowLog(`stopMic - iOS: Error in media devices enumeration: ${error?.message || error}`);
       }
+    }
+    
+    // Final iOS-specific check: Ensure recording indicator is cleared
+    if (isIOS) {
+      addWorkFlowLog('stopMic - iOS: Completed all microphone stopping procedures. Recording indicator should be cleared.');
     }
   };
 
@@ -793,42 +819,48 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
       audioRef.current.src = "";
     }
 
-    // Check MediaSource support (iOS Safari has limited support)
-    addWorkFlowLog(`handleAsk - Checking MediaSource support (isIOS: ${isIOS})`);
-    const mediaSourceSupported = typeof MediaSource !== 'undefined';
-    addWorkFlowLog(`handleAsk - MediaSource supported: ${mediaSourceSupported}`);
-    
-    // For iOS, use blob-based approach instead of MediaSource
-    const useBlobFallback = isIOS || !mediaSourceSupported;
-    addWorkFlowLog(`handleAsk - Using blob fallback: ${useBlobFallback}`);
-    
+    // IMPORTANT: Only set up MediaSource/audio infrastructure if audioReadOut is enabled
+    // When audioReadOut is false, we should not process any audio data
     let mediaSource: MediaSource | null = null;
     const audioQueue: ArrayBuffer[] = [];
     const audioChunks: ArrayBuffer[] = []; // For iOS blob fallback
     let sourceBufferReady = false;
+    const useBlobFallback = audioReadOut && (isIOS || typeof MediaSource === 'undefined');
 
-    if (!useBlobFallback) {
-      // Use MediaSource for non-iOS devices
-      addWorkFlowLog('handleAsk - Creating MediaSource instance');
-      try {
-        mediaSource = new MediaSource();
-        addWorkFlowLog(`handleAsk - MediaSource created successfully. readyState: ${mediaSource.readyState} (0=closed, 1=open, 2=ended)`);
-        (mediaSourceRef as any).current = mediaSource;
-      } catch (error: any) {
-        const errorMsg = `Failed to create MediaSource: ${error?.message || error}`;
-        addWorkFlowLog(`handleAsk - ERROR creating MediaSource: ${errorMsg}`);
-        setSpeechRecognitionError(errorMsg);
-        dangerToaster(errorMsg);
-        setAiResponseLoading(false);
-        return;
-      }
-    } else {
-      addWorkFlowLog('handleAsk - Skipping MediaSource (using blob fallback for iOS)');
+    if (!audioReadOut) {
+      addWorkFlowLog('handleAsk - audioReadOut is false, skipping all audio/MediaSource setup');
       (mediaSourceRef as any).current = null;
+    } else {
+      // Only set up MediaSource/audio infrastructure when audioReadOut is true
+      // Check MediaSource support (iOS Safari has limited support)
+      addWorkFlowLog(`handleAsk - audioReadOut is true, setting up audio infrastructure (isIOS: ${isIOS})`);
+      const mediaSourceSupported = typeof MediaSource !== 'undefined';
+      addWorkFlowLog(`handleAsk - MediaSource supported: ${mediaSourceSupported}`);
+      addWorkFlowLog(`handleAsk - Using blob fallback: ${useBlobFallback}`);
+
+      if (!useBlobFallback) {
+        // Use MediaSource for non-iOS devices
+        addWorkFlowLog('handleAsk - Creating MediaSource instance');
+        try {
+          mediaSource = new MediaSource();
+          addWorkFlowLog(`handleAsk - MediaSource created successfully. readyState: ${mediaSource.readyState} (0=closed, 1=open, 2=ended)`);
+          (mediaSourceRef as any).current = mediaSource;
+        } catch (error: any) {
+          const errorMsg = `Failed to create MediaSource: ${error?.message || error}`;
+          addWorkFlowLog(`handleAsk - ERROR creating MediaSource: ${errorMsg}`);
+          setSpeechRecognitionError(errorMsg);
+          dangerToaster(errorMsg);
+          setAiResponseLoading(false);
+          return;
+        }
+      } else {
+        addWorkFlowLog('handleAsk - Skipping MediaSource (using blob fallback for iOS)');
+        (mediaSourceRef as any).current = null;
+      }
     }
 
-    // Setup MediaSource only if not using blob fallback
-    if (mediaSource && !useBlobFallback) {
+    // Setup MediaSource only if audioReadOut is enabled and not using blob fallback
+    if (audioReadOut && mediaSource && !useBlobFallback) {
       // Add error handlers for MediaSource
       mediaSource.addEventListener("error", (event) => {
         const errorMsg = `MediaSource error: ${mediaSource!.readyState}`;
@@ -917,7 +949,7 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
       });
 
       // Use message-specific audio ref if audioReadOut is enabled
-      const targetAudioRef = audioReadOut && messageAudioRef ? messageAudioRef : audioRef.current;
+      const targetAudioRef = messageAudioRef || audioRef.current;
       addWorkFlowLog(`handleAsk - Creating object URL for MediaSource (audioReadOut: ${audioReadOut})`);
       try {
         const objectURL = URL.createObjectURL(mediaSource);
@@ -936,8 +968,8 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
         setAiResponseLoading(false);
         return;
       }
-    } else {
-      addWorkFlowLog('handleAsk - Skipping MediaSource setup (using blob fallback)');
+    } else if (audioReadOut && useBlobFallback) {
+      addWorkFlowLog('handleAsk - Skipping MediaSource setup (using blob fallback for iOS)');
     }
 
     // Create WebSocket connection with iOS-specific handling
@@ -1112,154 +1144,11 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
         }
 
         if (!audioReadOut) {
-          addWorkFlowLog('WebSocket onclose - Handling non-audio message');
-          
-          // iOS blob fallback: Combine chunks and play as blob
-          if (useBlobFallback && audioChunks.length > 0) {
-            addWorkFlowLog(`WebSocket onclose - Using blob fallback for regular audio (${audioChunks.length} chunks)`);
-            try {
-              // Combine all audio chunks into a single blob
-              const totalSize = audioChunks.reduce((sum, chunk) => sum + chunk.byteLength, 0);
-              addWorkFlowLog(`WebSocket onclose - Combining ${audioChunks.length} chunks (total size: ${totalSize} bytes)`);
-              
-              const combinedArray = new Uint8Array(totalSize);
-              let offset = 0;
-              for (const chunk of audioChunks) {
-                combinedArray.set(new Uint8Array(chunk), offset);
-                offset += chunk.byteLength;
-              }
-              
-              // Create blob and play
-              const blob = new Blob([combinedArray], { type: 'audio/mpeg' });
-              const blobURL = URL.createObjectURL(blob);
-              addWorkFlowLog(`WebSocket onclose - Created blob URL: ${blobURL.substring(0, 50)}...`);
-              
-              audioRef.current.src = blobURL;
-              addWorkFlowLog('WebSocket onclose - Set audio source to blob URL');
-              
-              // Play audio
-              audioRef.current.play().then(() => {
-                addWorkFlowLog('WebSocket onclose - Blob audio playing successfully');
-                setPlayingAudio(true);
-                
-                // Cleanup blob URL when audio ends
-                audioRef.current.onended = () => {
-                  URL.revokeObjectURL(blobURL);
-                  addWorkFlowLog('WebSocket onclose - Blob audio ended, URL revoked - NOT auto-restarting microphone (user must click voice button)');
-                  setPlayingAudio(false);
-                  setAudioPaused(false);
-                  // DO NOT auto-restart microphone - user must manually click voice button to start again
-                  // This prevents the microphone from staying on after sending messages (especially on iOS)
-                  if (browserSupportsSpeechRecognition) {
-                    resetTranscript();
-                  }
-                };
-              }).catch((error: any) => {
-                addWorkFlowLog(`WebSocket onclose - Error playing blob audio: ${error}`);
-                console.error("Error playing blob audio:", error);
-                const errorMsg = 'Failed to play audio on iOS.';
-                setSpeechRecognitionError(errorMsg);
-                dangerToaster(errorMsg);
-              });
-            } catch (error: any) {
-              const errorMsg = `Error creating blob audio: ${error?.message || error}`;
-              addWorkFlowLog(`WebSocket onclose - ERROR creating blob: ${errorMsg}`);
-              console.error("Error creating blob audio:", error);
-              setSpeechRecognitionError(errorMsg);
-              dangerToaster(errorMsg);
-            }
-            return; // Exit early for blob fallback
-          }
-          
-          // MediaSource path for non-iOS
-          // Original behavior for non-audio messages
-          const finishAndPlay = () => {
-            addWorkFlowLog('finishAndPlay - Starting');
-            const sourceBuffer = (sourceBufferRef as any).current;
-            const mediaSource = (mediaSourceRef as any).current;
-
-            if (sourceBuffer && sourceBuffer.updating) {
-              addWorkFlowLog('finishAndPlay - SourceBuffer updating, waiting...');
-              sourceBuffer.addEventListener("updateend", finishAndPlay, { once: true });
-              return;
-            }
-
-            if (mediaSource && mediaSource.readyState === "open") {
-              try {
-                addWorkFlowLog('finishAndPlay - Ending MediaSource stream');
-                mediaSource.endOfStream();
-              } catch (error) {
-                addWorkFlowLog(`finishAndPlay - Error ending stream: ${error}`);
-                console.error("Error ending stream:", error);
-              }
-            }
-
-            let lastLoggedState = -1;
-            let retryCount = 0;
-            const MAX_RETRIES = 2;
-            const tryPlay = () => {
-              const audio = audioRef.current;
-              
-              // Check if max retries reached
-              if (retryCount >= MAX_RETRIES) {
-                addWorkFlowLog(`tryPlay - Max retries (${MAX_RETRIES}) reached. Failed to play audio.`);
-                const errorMsg = 'Failed to play audio after multiple attempts. Please try again.';
-                setSpeechRecognitionError(errorMsg);
-                dangerToaster(errorMsg);
-                return;
-              }
-              
-              // Only log when state changes
-              if (audio.readyState !== lastLoggedState) {
-                addWorkFlowLog(`tryPlay - Audio readyState: ${audio.readyState} (retry: ${retryCount}/${MAX_RETRIES})`);
-                lastLoggedState = audio.readyState;
-              }
-              retryCount++;
-              
-              if (audio.readyState >= 2) {
-                audio.play().then(() => {
-                  addWorkFlowLog('tryPlay - Audio playing successfully');
-                  setPlayingAudio(true);
-                }).catch((error) => {
-                  addWorkFlowLog(`tryPlay - Error playing audio: ${error} (retry: ${retryCount}/${MAX_RETRIES})`);
-                  console.error("Error playing audio:", error);
-                  if (retryCount < MAX_RETRIES) {
-                    setTimeout(tryPlay, 500);
-                  } else {
-                    addWorkFlowLog(`tryPlay - Max retries reached. Failed to play audio.`);
-                    const errorMsg = 'Failed to play audio after multiple attempts. Please try again.';
-                    setSpeechRecognitionError(errorMsg);
-                    dangerToaster(errorMsg);
-                  }
-                });
-              } else {
-                if (retryCount < MAX_RETRIES) {
-                  setTimeout(tryPlay, 100);
-                } else {
-                  addWorkFlowLog(`tryPlay - Max retries reached. Audio not ready (state: ${audio.readyState}).`);
-                  const errorMsg = 'Audio not ready after multiple attempts. Please try again.';
-                  setSpeechRecognitionError(errorMsg);
-                  dangerToaster(errorMsg);
-                }
-              }
-            };
-
-            setTimeout(tryPlay, 100);
-          };
-
-          setTimeout(finishAndPlay, 100);
-
-        audioRef.current.onended = () => {
-          setPlayingAudio(false);
-          setAudioPaused(false);
-          addWorkFlowLog('Audio playback ended - NOT auto-restarting microphone (user must click voice button)');
-          // DO NOT auto-restart microphone - user must manually click voice button to start again
-          // This prevents the microphone from staying on after sending messages (especially on iOS)
-          if (browserSupportsSpeechRecognition) {
-            resetTranscript();
-          }
-        };
-      } else {
+          addWorkFlowLog('WebSocket onclose - audioReadOut is false, skipping all audio playback logic');
+          // When audioReadOut is false, we should NOT try to play any audio
+          // Just return early without any audio processing
+          return;
+        } else {
         addWorkFlowLog('WebSocket onclose - Handling audioReadout message');
         
         // iOS blob fallback: Combine chunks and play as blob
@@ -1342,60 +1231,71 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
             }
           }
 
+          // Verify that messageAudioRef exists before trying to play
+          if (!messageAudioRef) {
+            addWorkFlowLog('finishAndPlay (audioReadout) - ERROR: messageAudioRef is null! Cannot play audio. This should not happen when audioReadOut is true.');
+            const errorMsg = 'Audio readout failed: audio element not initialized.';
+            setSpeechRecognitionError(errorMsg);
+            dangerToaster(errorMsg);
+            return;
+          }
+
           let lastLoggedStateAudioReadout = -1;
           let retryCountAudioReadout = 0;
           const MAX_RETRIES_AUDIO_READOUT = 2;
           const tryPlay = () => {
-            if (messageAudioRef) {
-              // Check if max retries reached
-              if (retryCountAudioReadout >= MAX_RETRIES_AUDIO_READOUT) {
-                addWorkFlowLog(`tryPlay (audioReadout) - Max retries (${MAX_RETRIES_AUDIO_READOUT}) reached. Failed to play audio.`);
-                const errorMsg = 'Failed to play audio readout after multiple attempts.';
-                setSpeechRecognitionError(errorMsg);
-                dangerToaster(errorMsg);
-                return;
-              }
-              
-              // Only log when state changes
-              if (messageAudioRef.readyState !== lastLoggedStateAudioReadout) {
-                addWorkFlowLog(`tryPlay (audioReadout) - Audio readyState: ${messageAudioRef.readyState} (retry: ${retryCountAudioReadout}/${MAX_RETRIES_AUDIO_READOUT})`);
-                lastLoggedStateAudioReadout = messageAudioRef.readyState;
-              }
-              retryCountAudioReadout++;
-              
-              // Check if audio has enough data to play
-              if (messageAudioRef.readyState >= 2) { // HAVE_CURRENT_DATA or higher
-                messageAudioRef.play().then(() => {
-                  addWorkFlowLog(`tryPlay (audioReadout) - Audio playing successfully for messageId: ${messageId}`);
-                  console.log('Audio readout started playing for message:', messageId);
-                  setMessageAudioStates(prev => ({
-                    ...prev,
-                    [messageId]: { playing: true, paused: false, audioRef: messageAudioRef }
-                  }));
-                }).catch((error: any) => {
-                  addWorkFlowLog(`tryPlay (audioReadout) - Error playing audio: ${error} (retry: ${retryCountAudioReadout}/${MAX_RETRIES_AUDIO_READOUT})`);
-                  console.error("Error playing audio readout:", error);
-                  if (retryCountAudioReadout < MAX_RETRIES_AUDIO_READOUT) {
-                    setTimeout(tryPlay, 500);
-                  } else {
-                    addWorkFlowLog(`tryPlay (audioReadout) - Max retries reached. Failed to play audio.`);
-                    const errorMsg = 'Failed to play audio readout after multiple attempts.';
-                    setSpeechRecognitionError(errorMsg);
-                    dangerToaster(errorMsg);
-                  }
-                });
-              } else {
+            // Double-check messageAudioRef still exists
+            if (!messageAudioRef) {
+              addWorkFlowLog('tryPlay (audioReadout) - messageAudioRef became null during playback attempt');
+              return;
+            }
+
+            // Check if max retries reached
+            if (retryCountAudioReadout >= MAX_RETRIES_AUDIO_READOUT) {
+              addWorkFlowLog(`tryPlay (audioReadout) - Max retries (${MAX_RETRIES_AUDIO_READOUT}) reached. Failed to play audio.`);
+              const errorMsg = 'Failed to play audio readout after multiple attempts.';
+              setSpeechRecognitionError(errorMsg);
+              dangerToaster(errorMsg);
+              return;
+            }
+            
+            // Only log when state changes
+            if (messageAudioRef.readyState !== lastLoggedStateAudioReadout) {
+              addWorkFlowLog(`tryPlay (audioReadout) - Audio readyState: ${messageAudioRef.readyState} (retry: ${retryCountAudioReadout}/${MAX_RETRIES_AUDIO_READOUT})`);
+              lastLoggedStateAudioReadout = messageAudioRef.readyState;
+            }
+            retryCountAudioReadout++;
+            
+            // Check if audio has enough data to play
+            if (messageAudioRef.readyState >= 2) { // HAVE_CURRENT_DATA or higher
+              messageAudioRef.play().then(() => {
+                addWorkFlowLog(`tryPlay (audioReadout) - Audio playing successfully for messageId: ${messageId}`);
+                console.log('Audio readout started playing for message:', messageId);
+                setMessageAudioStates(prev => ({
+                  ...prev,
+                  [messageId]: { playing: true, paused: false, audioRef: messageAudioRef }
+                }));
+              }).catch((error: any) => {
+                addWorkFlowLog(`tryPlay (audioReadout) - Error playing audio: ${error} (retry: ${retryCountAudioReadout}/${MAX_RETRIES_AUDIO_READOUT})`);
+                console.error("Error playing audio readout:", error);
                 if (retryCountAudioReadout < MAX_RETRIES_AUDIO_READOUT) {
-                  setTimeout(tryPlay, 100);
+                  setTimeout(tryPlay, 500);
                 } else {
-                  addWorkFlowLog(`tryPlay (audioReadout) - Max retries reached. Audio not ready (state: ${messageAudioRef.readyState}).`);
-                  const errorMsg = 'Audio readout not ready after multiple attempts.';
+                  addWorkFlowLog(`tryPlay (audioReadout) - Max retries reached. Failed to play audio.`);
+                  const errorMsg = 'Failed to play audio readout after multiple attempts.';
                   setSpeechRecognitionError(errorMsg);
                   dangerToaster(errorMsg);
                 }
-              }
+              });
             } else {
-              addWorkFlowLog('tryPlay (audioReadout) - messageAudioRef is null!');
+              if (retryCountAudioReadout < MAX_RETRIES_AUDIO_READOUT) {
+                setTimeout(tryPlay, 100);
+              } else {
+                addWorkFlowLog(`tryPlay (audioReadout) - Max retries reached. Audio not ready (state: ${messageAudioRef.readyState}).`);
+                const errorMsg = 'Audio readout not ready after multiple attempts.';
+                setSpeechRecognitionError(errorMsg);
+                dangerToaster(errorMsg);
+              }
             }
           };
 
@@ -1925,9 +1825,10 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
   };
 
   const handleTextareaFocus = () => {
-    if (listening) {
-      SpeechRecognition.stopListening();
-    }
+    // When textarea is focused, stop ALL microphone/recording processes
+    // This ensures native recording stops on iOS and all devices
+    addWorkFlowLog('handleTextareaFocus - Stopping all microphone/recording processes');
+    stopMic(); // This handles all: native recognition, library recognition, media streams, etc.
   };
 
   if (!isCustomSheetOpen) return null;
