@@ -155,7 +155,18 @@ return (
             <div className="mb-10" style={{ height: '100px' }}></div>
         </IonContent>
         {/* <IonFooter>
-          <PadAIContentAIPanel />
+          <PadAIContentAIPanel
+          showActionsButton={true}
+          showAskAiButton={true}
+          showAudioButtons={true}
+          showSearchButton={false}
+          showTranslateButton={false}
+          showMicButton={false}
+          showDocumentButton={false}
+          showColorPaletteButton={false}
+          showGlobeButton={false}
+          showEllipsisButton={false}
+          />
       </IonFooter> */}
     </IonPage>
 );

@@ -405,6 +405,10 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
 
   const handleSendMessage = async (defaultText: string = '', audioReadOut: boolean = false) => {
     if (defaultText.trim() || inputText.trim()) {
+      // IMPORTANT: Stop microphone FIRST before sending message (especially critical for iOS)
+      addWorkFlowLog(`handleSendMessage - Stopping microphone before sending message (isIOS: ${isIOS})`);
+      stopMic();
+      
       const newMessage: Message = {
         id: Date.now().toString(),
         text: defaultText.trim() ? defaultText.trim() : inputText.trim(),
@@ -697,15 +701,20 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
 
   const stopMic = () => {
     micEnabledRef.current = false;
+    addWorkFlowLog(`stopMic - Stopping microphone (isIOS: ${isIOS})`);
     
-    // Stop native Android recognition if it exists
+    // Stop native recognition if it exists (works for both Android and iOS)
     if ((window as any).__androidRecognition) {
       try {
         (window as any).__androidRecognition.stop();
+        (window as any).__androidRecognition.abort(); // Ensure it's fully stopped, especially for iOS
         (window as any).__androidRecognition = null;
-        addWorkFlowLog('stopMic - Stopped native Android recognition');
-      } catch (error) {
+        addWorkFlowLog(`stopMic - Stopped native recognition (isIOS: ${isIOS})`);
+      } catch (error: any) {
         console.error('Error stopping native recognition:', error);
+        addWorkFlowLog(`stopMic - Error stopping native recognition: ${error?.message || error}`);
+        // Force clear the reference even if stop fails
+        (window as any).__androidRecognition = null;
       }
     }
     
@@ -713,8 +722,9 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
       try {
         SpeechRecognition.stopListening();
         addWorkFlowLog('stopMic - Stopped library speech recognition');
-      } catch (error) {
+      } catch (error: any) {
         console.error('Error stopping speech recognition:', error);
+        addWorkFlowLog(`stopMic - Error stopping library recognition: ${error?.message || error}`);
       }
     }
   };
@@ -1110,14 +1120,13 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
                 // Cleanup blob URL when audio ends
                 audioRef.current.onended = () => {
                   URL.revokeObjectURL(blobURL);
-                  addWorkFlowLog('WebSocket onclose - Blob audio ended, URL revoked');
+                  addWorkFlowLog('WebSocket onclose - Blob audio ended, URL revoked - NOT auto-restarting microphone (user must click voice button)');
                   setPlayingAudio(false);
                   setAudioPaused(false);
-                  if (browserSupportsSpeechRecognition && micEnabledRef.current) {
+                  // DO NOT auto-restart microphone - user must manually click voice button to start again
+                  // This prevents the microphone from staying on after sending messages (especially on iOS)
+                  if (browserSupportsSpeechRecognition) {
                     resetTranscript();
-                    setTimeout(() => {
-                      startMic();
-                    }, isMobile ? 500 : 100);
                   }
                 };
               }).catch((error: any) => {
@@ -1218,13 +1227,12 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
         audioRef.current.onended = () => {
           setPlayingAudio(false);
           setAudioPaused(false);
-        if (browserSupportsSpeechRecognition && micEnabledRef.current) {
-          resetTranscript();
-          // Small delay for mobile browsers
-          setTimeout(() => {
-            startMic();
-          }, isMobile ? 500 : 100);
-        }
+          addWorkFlowLog('Audio playback ended - NOT auto-restarting microphone (user must click voice button)');
+          // DO NOT auto-restart microphone - user must manually click voice button to start again
+          // This prevents the microphone from staying on after sending messages (especially on iOS)
+          if (browserSupportsSpeechRecognition) {
+            resetTranscript();
+          }
         };
       } else {
         addWorkFlowLog('WebSocket onclose - Handling audioReadout message');

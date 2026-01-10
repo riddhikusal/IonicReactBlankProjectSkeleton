@@ -48,6 +48,7 @@
   word-break: initial;
   width: 100%;
   height: 100%;
+  max-height: 250px !important;
 }
 
 .video-js .vjs-tech {
@@ -56,6 +57,14 @@
   left: 0;
   width: 100%;
   height: 100%;
+  max-height: 250px !important;
+}
+
+::ng-deep .video-js {
+  max-height: 250px !important;
+}
+::ng-deep .vjs-tech {
+  max-height: 250px !important;
 }
 
 

@@ -25,7 +25,7 @@ const PadAIVideoContentScreen: React.FC = () => {
                 {/* <PadAIVideoPlayer
                     video={{...VideoContentDummy, url: selectedChapterResources?.url || '', thumbnail: selectedChapterResources?.image || ''}}
                 /> */}
-                { selectedChapterResources?.url  && <div style={{ width: '100%', height: '400px', backgroundColor: 'red' }}>
+                { selectedChapterResources?.url  && <div style={{ width: '100%', backgroundColor: 'red' }}>
                     <NewPadAIVideoPlayer videoUrl={selectedChapterResources?.url || ''} />
                 </div>}
 
@@ -48,7 +48,18 @@ const PadAIVideoContentScreen: React.FC = () => {
                 {/* <PadAIContentAIPanel /> */}
             </IonContent>
             <IonFooter>
-                <PadAIContentAIPanel />
+                <PadAIContentAIPanel
+                showActionsButton={true}
+                showAskAiButton={true}
+                showAudioButtons={true}
+                showSearchButton={false}
+                showTranslateButton={false}
+                showMicButton={false}
+                showDocumentButton={false}
+                showColorPaletteButton={false}
+                showGlobeButton={false}
+                showEllipsisButton={false}
+                />
             </IonFooter>
         </IonPage>
     );
