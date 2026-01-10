@@ -127,6 +127,7 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
   const transcriptRef = useRef<string | null>(null);
   const lastFinalRef = useRef("");
   const micEnabledRef = useRef(true);
+  const activeMediaStreamsRef = useRef<MediaStream[]>([]); // Track all active media streams to stop them properly
 
 
   const [playingAudio, setPlayingAudio] = useState(false);
@@ -286,27 +287,17 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
     };
   }, [listening, isMobile, isIOS, browserSupportsSpeechRecognition]);
 
-  // Handle mobile browser speech recognition initialization and request permissions
+  // Check microphone permission status (without requesting access) when modal opens
+  // IMPORTANT: We do NOT request permission here because on iOS it will start recording
+  // Permission will only be requested when user clicks the voice button
   useEffect(() => {
     if (!browserSupportsSpeechRecognition || !isCustomSheetOpen) {
       return;
     }
 
-    // For mobile browsers (Android PWA and iOS), request microphone permission when modal opens
-    const requestMicrophonePermission = async () => {
-      if (isMobile && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-        try {
-          // Request permission proactively for Android PWA
-          await navigator.mediaDevices.getUserMedia({ audio: true });
-          console.log('Microphone permission granted');
-        } catch (error: any) {
-          console.error('Microphone permission error:', error);
-          // Don't show error immediately, let user try to use voice button
-          // Error will be shown when they actually try to use speech recognition
-        }
-      }
-      
-      // Also check permissions API if available
+    // Only check permission status (without requesting access) to avoid starting recording on iOS
+    const checkMicrophonePermission = async () => {
+      // Check permissions API if available (this doesn't request access, just checks status)
       if (isMobile && navigator.permissions) {
         try {
           const result = await navigator.permissions.query({ name: 'microphone' as PermissionName });
@@ -314,17 +305,22 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
             setSpeechToTextBrowserSupported(false);
             const errorMsg = 'Microphone permission is denied. Please enable it in your browser settings.';
             setSpeechRecognitionError(errorMsg);
+            addWorkFlowLog('Modal open - Microphone permission denied (not requesting access to avoid starting recording)');
+          } else {
+            addWorkFlowLog(`Modal open - Microphone permission status: ${result.state} (not requesting access to avoid starting recording)`);
           }
         } catch (error) {
           // Permissions API might not be available, that's okay
-          console.log('Permissions API not available');
+          addWorkFlowLog('Modal open - Permissions API not available (this is okay)');
         }
+      } else {
+        addWorkFlowLog('Modal open - Permission check skipped (will request when user clicks voice button)');
       }
     };
 
-    // Request permission when modal opens on mobile
+    // Only check status, do NOT request access (this prevents recording indicator from appearing)
     if (isMobile) {
-      requestMicrophonePermission();
+      checkMicrophonePermission();
     }
   }, [browserSupportsSpeechRecognition, isMobile, isCustomSheetOpen]);
 
@@ -468,24 +464,28 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
     micEnabledRef.current = true;
     if (browserSupportsSpeechRecognition) {
       try {
-        // Request microphone permission on mobile (especially important for Android)
-        if (isMobile && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-          addWorkFlowLog(`startMic - Requesting microphone permission (isAndroid: ${!isIOS})`);
+        // Request microphone permission on mobile (Android only - iOS will be handled by speech recognition library)
+        // IMPORTANT: For iOS, we skip getUserMedia here because calling it starts recording immediately
+        // The speech recognition library will handle permission and microphone access for iOS
+        const isAndroid = isMobile && !isIOS;
+        if (isAndroid && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+          addWorkFlowLog(`startMic - Android: Requesting microphone permission`);
           try {
-            await navigator.mediaDevices.getUserMedia({ audio: true });
-            addWorkFlowLog('startMic - Microphone permission granted');
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            // Store the stream so we can stop it later to release the recording indicator
+            activeMediaStreamsRef.current.push(stream);
+            addWorkFlowLog(`startMic - Android: Microphone permission granted, stream stored (active streams: ${activeMediaStreamsRef.current.length})`);
           } catch (error: any) {
             console.error('Microphone permission denied:', error);
-            addWorkFlowLog(`startMic - Microphone permission denied: ${error?.message || error}`);
+            addWorkFlowLog(`startMic - Android: Microphone permission denied: ${error?.message || error}`);
             const errorMsg = 'Microphone permission is required. Please enable it in your browser settings.';
             setSpeechRecognitionError(errorMsg);
             dangerToaster(errorMsg);
             return;
           }
+        } else if (isIOS) {
+          addWorkFlowLog('startMic - iOS: Skipping getUserMedia call, speech recognition library will handle microphone access to avoid starting recording prematurely');
         }
-        
-        // Mobile browsers need different options
-        const isAndroid = isMobile && !isIOS;
         
         // For Android, try native API first for better compatibility
         if (isAndroid) {
@@ -506,15 +506,9 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
               // Add comprehensive event handlers for debugging
               recognition.onstart = () => {
                 addWorkFlowLog('startMic - Native recognition onstart event');
-                // Verify microphone access
-                navigator.mediaDevices.getUserMedia({ audio: true })
-                  .then(stream => {
-                    addWorkFlowLog('startMic - Microphone stream active, tracks: ' + stream.getAudioTracks().length);
-                    // Don't stop the stream, let recognition use it
-                  })
-                  .catch(err => {
-                    addWorkFlowLog(`startMic - WARNING: Could not verify microphone stream: ${err.message}`);
-                  });
+                // Native recognition manages its own stream, so we don't need to request getUserMedia here
+                // Doing so would create an additional stream that needs to be tracked and stopped
+                addWorkFlowLog('startMic - Native recognition started (manages its own media stream)');
               };
               
               recognition.onaudiostart = () => {
@@ -701,7 +695,25 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
 
   const stopMic = () => {
     micEnabledRef.current = false;
-    addWorkFlowLog(`stopMic - Stopping microphone (isIOS: ${isIOS})`);
+    addWorkFlowLog(`stopMic - Stopping microphone and all media streams (isIOS: ${isIOS})`);
+    
+    // CRITICAL: Stop ALL active media streams first (this stops the recording indicator on iOS)
+    if (activeMediaStreamsRef.current.length > 0) {
+      addWorkFlowLog(`stopMic - Stopping ${activeMediaStreamsRef.current.length} active media stream(s)`);
+      activeMediaStreamsRef.current.forEach((stream, index) => {
+        try {
+          // Stop all tracks in the stream
+          stream.getTracks().forEach((track: MediaStreamTrack) => {
+            track.stop();
+            addWorkFlowLog(`stopMic - Stopped track: ${track.kind} (label: ${track.label || 'unknown'})`);
+          });
+        } catch (error: any) {
+          addWorkFlowLog(`stopMic - Error stopping stream ${index}: ${error?.message || error}`);
+        }
+      });
+      activeMediaStreamsRef.current = []; // Clear all references
+      addWorkFlowLog('stopMic - All media streams stopped and cleared');
+    }
     
     // Stop native recognition if it exists (works for both Android and iOS)
     if ((window as any).__androidRecognition) {
@@ -725,6 +737,19 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
       } catch (error: any) {
         console.error('Error stopping speech recognition:', error);
         addWorkFlowLog(`stopMic - Error stopping library recognition: ${error?.message || error}`);
+      }
+    }
+    
+    // Also try to stop any getUserMedia streams that might still be active (iOS specific)
+    if (isIOS && navigator.mediaDevices) {
+      try {
+        navigator.mediaDevices.enumerateDevices().then(devices => {
+          addWorkFlowLog(`stopMic - iOS: Found ${devices.length} media devices after stopping`);
+        }).catch(() => {
+          // Ignore enumeration errors
+        });
+      } catch (error) {
+        // Ignore errors
       }
     }
   };
@@ -1512,17 +1537,26 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
       }
     }
 
-    // Request microphone permission on mobile
-    if (isMobile && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    // Request microphone permission on mobile (Android only - iOS will be handled by speech recognition library)
+    // IMPORTANT: For iOS, we skip getUserMedia here because calling it starts recording immediately
+    // The speech recognition library will handle permission and microphone access for iOS
+    const isAndroid = isMobile && !isIOS;
+    if (isAndroid && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       try {
-        await navigator.mediaDevices.getUserMedia({ audio: true });
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        // Store the stream so we can stop it later to release the recording indicator
+        activeMediaStreamsRef.current.push(stream);
+        addWorkFlowLog(`handleVoiceToggle - Android: Microphone permission granted, stream stored (active streams: ${activeMediaStreamsRef.current.length})`);
       } catch (error: any) {
         console.error('Microphone permission denied:', error);
+        addWorkFlowLog(`handleVoiceToggle - Android: Microphone permission denied: ${error?.message || error}`);
         const errorMsg = 'Microphone permission is required for speech recognition. Please enable it in your browser settings.';
         setSpeechRecognitionError(errorMsg);
         dangerToaster('Microphone permission is required for speech recognition');
         return;
       }
+    } else if (isIOS) {
+      addWorkFlowLog('handleVoiceToggle - iOS: Skipping getUserMedia call here, speech recognition library will handle microphone access to avoid starting recording prematurely');
     }
 
     if (listening) {
@@ -1826,12 +1860,15 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
           }
         }
         
-        // Fallback: Request permission and use library if native API not available or failed
-        if (isMobile && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-          addWorkFlowLog(`handleVoiceToggle - Requesting microphone permission for library fallback`);
+        // Fallback: For iOS, the speech recognition library will handle permission, so we don't need to request getUserMedia separately
+        // Only request permission for Android if we haven't already requested it above
+        if (isAndroid && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+          addWorkFlowLog(`handleVoiceToggle - Requesting microphone permission for library fallback (Android only)`);
           try {
-            await navigator.mediaDevices.getUserMedia({ audio: true });
-            addWorkFlowLog('handleVoiceToggle - Microphone permission granted for library');
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            // Store the stream so we can stop it later
+            activeMediaStreamsRef.current.push(stream);
+            addWorkFlowLog(`handleVoiceToggle - Microphone permission granted for library, stream stored (active streams: ${activeMediaStreamsRef.current.length})`);
           } catch (error: any) {
             console.error('Microphone permission denied:', error);
             addWorkFlowLog(`handleVoiceToggle - Microphone permission denied: ${error?.message || error}`);
@@ -1840,6 +1877,8 @@ const CustomSheetModal: React.FC<CustomSheetModalProps> = ({ isOpen, onClose, tr
             dangerToaster(errorMsg);
             return;
           }
+        } else if (isIOS) {
+          addWorkFlowLog('handleVoiceToggle - iOS: Skipping separate getUserMedia call, speech recognition library will handle microphone access');
         }
         
         // Mobile browsers need different options
