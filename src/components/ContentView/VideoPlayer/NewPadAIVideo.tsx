@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import videojs from "video.js";
 import 'video.js/dist/video-js.min.css';
 import 'video.js/dist/video-js.min.css';
+import './VideoPlayer.css';
 
 
 export interface NewPadAIVideoPlayerProps {
@@ -103,7 +104,8 @@ export interface NewPadAIVideoPlayerProps {
             videoEl.style.setProperty('opacity', '1', 'important');
             videoEl.style.setProperty('width', '100%', 'important');
             videoEl.style.setProperty('height', '100%', 'important');
-            videoEl.style.setProperty('min-height', '400px', 'important');
+            videoEl.style.setProperty('min-height', '250px', 'important');
+            videoEl.style.setProperty('max-height', '250px', 'important');
             videoEl.style.setProperty('object-fit', 'contain', 'important');
             videoEl.style.setProperty('position', 'relative', 'important');
             videoEl.style.setProperty('z-index', '1', 'important');
@@ -115,7 +117,7 @@ export interface NewPadAIVideoPlayerProps {
           if (playerEl) {
             playerEl.style.setProperty('width', '100%', 'important');
             playerEl.style.setProperty('height', '100%', 'important');
-            playerEl.style.setProperty('min-height', '400px', 'important');
+            playerEl.style.setProperty('min-height', '250px', 'important');
             playerEl.style.setProperty('display', 'block', 'important');
           }
           
@@ -384,8 +386,8 @@ export interface NewPadAIVideoPlayerProps {
           style={{ 
             width: "100%", 
             height: "100%",
-            minHeight: "400px",
-            backgroundColor: "#000",
+            minHeight: "250px",
+            backgroundColor: "#fff",
             display: "block",
             visibility: "visible",
             opacity: 1,

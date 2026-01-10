@@ -29,7 +29,18 @@ const PadAIPDFViewerContentScreen: React.FC = () => {
                { currentActiveMode === 'PDF' ? <PadAIPdfViewer fileUrl={selectedChapterResources?.url || ''} /> : <PadaiHtmlContentViwer url={selectedChapterResources?.script || ''} /> }
             </IonContent>
             <IonFooter>
-                <PadAIContentAIPanel />
+                <PadAIContentAIPanel 
+                showActionsButton={true}
+                showAskAiButton={true}
+                showAudioButtons={true}
+                showSearchButton={false}
+                showTranslateButton={false}
+                showMicButton={false}
+                showDocumentButton={false}
+                showColorPaletteButton={false}
+                showGlobeButton={false}
+                showEllipsisButton={false}
+                />
             </IonFooter>
         </IonPage>
     )

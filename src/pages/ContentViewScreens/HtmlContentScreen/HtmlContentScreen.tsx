@@ -27,7 +27,18 @@ import PadaiHtmlContentViwerNew from '../../../components/ContentView/HtmlViewer
           {/* <PadAIContentAIPanel /> */}
       </IonContent>
       <IonFooter>
-          <PadAIContentAIPanel />
+          <PadAIContentAIPanel
+          showActionsButton={true}
+          showAskAiButton={true}
+          showAudioButtons={true}
+          showSearchButton={false}
+          showTranslateButton={false}
+          showMicButton={false}
+          showDocumentButton={false}
+          showColorPaletteButton={false}
+          showGlobeButton={false}
+          showEllipsisButton={false}
+          />
       </IonFooter>
   </IonPage>
     );
